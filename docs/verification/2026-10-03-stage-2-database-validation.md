@@ -17,8 +17,16 @@
 依赖变更后又启动了独立临时 Sandbox（port 19003、独立临时 SQLite，不改变共享服务），执行
 `pytest -m "not database" -q -p no:cacheprovider --sandbox-url http://127.0.0.1:19003`：
 **79 passed，26 database tests 明确 deselected**，包含 13 个真实 HTTP 集成测试，无 skips。
-数据库 tests 已 collect 为 26 项，等待真实 PostgreSQL CI，不把 collect 当作执行通过。
+数据库 tests 在真实 PostgreSQL CI 执行：**26 passed，22.81s，无 skip**。
 
 本机没有 PostgreSQL/Docker，真实 PostgreSQL 测试必须由本 PR 的 database CI job 证明。
 该 job 使用独立 PostgreSQL 17 服务；每条测试创建并只清理自己生成的 schema。
-当前尚未取得此 job 结果，不宣称 Stage 2 数据库出口已通过。容器 build/start 仍未验证。
+实现提交 `eeb9aca418438b8d9fc078be562919e2c19b869f` 的
+[PR CI run 37109759410](https://github.com/Mark-UM/FDE-test/actions/runs/37109759410)
+全部成功：backend 66 个单元测试、database 26 个真实 PG 测试、frontend lint/type/build、
+Compose config。database job `111165226471` 日志确认执行数量和时间，不采用跳过结果。
+PG 测试覆盖迁移 up/down/up、ORM/schema 一致性、幂等 Seed 与 Argon2id、外键/版本/幂等
+约束、失败与空结果、六表 append-only、Approval 唯一性、乐观锁、原来源时间保留。
+
+数据库候选的技术检查已通过；两名开发者 Review 和 main 合并仍未完成。
+容器 build/start 仍未验证，不能以 Compose config 代替运行验收。
