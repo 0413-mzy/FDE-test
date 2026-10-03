@@ -26,8 +26,8 @@ Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/�
 
 | 交付 | 状态 | 证据 |
 | --- | --- | --- |
-| Stage 1 契约 PR | 准备提交 | 六份契约、完整 fixture、文档验证记录 |
-| Stage 2 数据库/Seed | 待实现 | 预计 Product schema、迁移、真实 PG CI |
+| Stage 1 契约 PR | 已提交；CI 通过；人工 Review 未完成 | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2)，commit cc2f262 |
+| Stage 2 数据库/Seed | 候选实现已编写；真实 PG CI 待执行 | 12 表、迁移、幂等 Seed、独立 PG 测试；API 不连接数据库 |
 | Stage 2 静态工作台 | 待实现 | 预计静态虚构场景、lint/type/build/界面检查 |
 | 人工 Review / main 合并 | 未完成 | 不由自动化代签 |
 | main 保护 / 容器运行 | 未完成 | 不安装系统服务或修改仓库治理设置 |

@@ -111,5 +111,9 @@ No authentication, domain/database behavior, Evidence Engine, CaseContext resolv
 LLM integration or support workbench is present. No Product send API is added;
 SandboxMessageProvider only verifies the simulated external boundary and does not
 decide approval. Authorization and approval are required before future exposure.
-SQLAlchemy 2, Alembic and the database driver remain deferred; the
-`postgresql+psycopg` DATABASE_URL convention reserves that future configuration.
+On the Stage 2 database candidate branch, persistence dependencies, twelve workflow
+tables, a frozen migration and demo Seed CLI are implemented. The API still has no
+database startup/session or business behavior. Six historical tables reject UPDATE/
+DELETE with PostgreSQL triggers; authorization and version relationships require
+the later service layer, as defined by the contracts. `postgresql+psycopg` remains
+the explicit connection convention.
