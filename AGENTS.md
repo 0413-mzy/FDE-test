@@ -20,6 +20,12 @@ a CRM, ERP, or a complete ecommerce platform. Avoid unrelated refactors.
 - The implemented Sandbox S0-S1 schemas/routes are authoritative for raw HTTP;
   canonical Product types follow docs/external-system-contract.md. Record mismatches.
 - Freeze conceptual interfaces in documentation before adding implementations.
+- Core MVP Stage 1 contracts are in `docs/contracts/README.md`, pending developer
+  review and merge. On 2026-10-03 the user authorized automatic execution and plan
+  advancement, including Stage 2 candidate database/seed and static-workbench work
+  on branches based on the contract PR. This permits preparing dependent draft PRs
+  before contract merge; it does not count as developer review or authorize merging
+  main. Stage 3+ behavior remains outside these Stage 2 deliverables.
 
 ## Non-negotiable boundaries
 

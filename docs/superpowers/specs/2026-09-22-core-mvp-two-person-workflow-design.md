@@ -97,7 +97,10 @@ main
 
 `main` 必须保持可构建、可测试。两名成员不得直接向 `main` push；所有修改通过 PR 合并。
 
-本方案的文档分支从当前最完整的 `origin/phase-1-external-integration` 建立，因为远端 `main` 仍只有占位 README。现有基础经过验证并合并到 `main` 后，所有新的功能分支都必须从最新 `main` 创建。
+本方案最初从 `origin/phase-1-external-integration` 建立。2026-10-03 同步确认：Phase 1
+已通过 PR #1 合并到 `main`（`33857e2`），不再是占位 README。当前协作文档仍在
+`docs/core-mvp-contracts` 上；后续功能分支必须从更新后的 `main` 创建。具体任务见
+[当前交付与下一阶段计划](../../plans/04_core_mvp_next_stage_plan.md)。
 
 ### 5.2 短期交付分支
 
@@ -152,6 +155,9 @@ git push
 
 退出条件：`main` 包含可启动骨架，现有检查通过，README 准确说明当前状态。
 
+2026-10-03 状态：基线合并、本地检查与远端三项 CI 已通过；main 分支保护尚未配置，
+容器构建/联启尚未验证。Stage 0 不应标记为所有事项均完成；契约文档可继续推进。
+
 ### Stage 1：冻结 Core MVP 契约
 
 分支：`docs/core-mvp-contracts`
@@ -166,6 +172,10 @@ git push
 - Core MVP 验收场景。
 
 退出条件：两人对契约完成 Review；没有 `TBD`、隐含权限或不明确的数据所有权。
+
+2026-10-03 Stage 1 文档已按用户授权完成成稿：见 [六份契约与明确设计决定](../../contracts/README.md)。
+它们尚待两名开发者 Review/合并；本次未开始 Stage 2。后续默认 `codex/` 分支前缀及
+订单快照读取依赖 Stage 4 的调整，以 [当前执行计划](../../plans/04_core_mvp_next_stage_plan.md)为准。
 
 ### Stage 2：数据库与前端外壳并行
 

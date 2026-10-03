@@ -61,6 +61,15 @@ See the complete responsibilities, branch names, commands, dependencies, PR rule
 and Definition of Done in
 [the two-person Core MVP workflow](docs/superpowers/specs/2026-09-22-core-mvp-two-person-workflow-design.md).
 
+As of 2026-10-03, Phase 1 is merged into `main`; the collaboration documents remain
+on `docs/core-mvp-contracts`. **Stage 1: Core MVP contracts** are now prepared as a
+documentation package, pending the two developers' review and merge. Read the
+[contract index and decisions](docs/contracts/README.md), then the six linked contracts.
+Database and workbench-shell implementation tasks follow that review.
+See [current delivery status and the six next-stage tasks](docs/plans/04_core_mvp_next_stage_plan.md).
+The runtime remains Phase 1; the contract package does not implement these capabilities. Main branch
+protection and container startup verification remain outstanding.
+
 ## Repository
 
 ```text
@@ -170,14 +179,13 @@ process liveness, not database connectivity or external-system readiness.
 
 ### Latest validation status
 
-On 2026-09-23, the local backend lint, format and non-integration tests, plus the
-frontend lint, type-check and build, were reported as completing without errors.
-Docker/runtime checks, GitHub Actions status and the real Sandbox HTTP integration
-remain unverified. This is a **basic validation result**, not full Phase 1 acceptance.
-
-See the dated
-[Phase 1 basic validation record](docs/verification/2026-09-23-phase-1-basic-validation.md)
-for the commands, evidence boundary and outstanding checks.
+On 2026-10-03, local backend lint/format, all **70 tests (13 real HTTP integration
+tests, no skips)**, frontend lint/typecheck/build and runtime `/health` passed.
+The fetched main baseline's GitHub backend/frontend/compose jobs also passed.
+Local Docker is unavailable; container build/startup has not been verified.
+See [the observed validation record](docs/verification/2026-10-03-repository-sync-validation.md)
+for exact revisions and evidence. The [2026-09-23 basic record](docs/verification/2026-09-23-phase-1-basic-validation.md)
+is historical and was based on reported results only.
 
 ## Sandbox integration and real HTTP tests
 
