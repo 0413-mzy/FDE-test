@@ -9,9 +9,10 @@ evidence and help an agent prepare a careful reply.
 Canonical snapshots, clocks, four Provider protocols and DemoCommerce HTTP adapters
 are implemented and tested against the independent S0-S1 service. This explicitly
 authorized phase supersedes the original roadmap's Phase 1 database/seed ordering.
-The Product API still only exposes `GET /health`; the frontend remains the Phase 0
-static shell. There is no business workflow, AI, Evidence, CaseContext, authentication,
-retry or cache. PostgreSQL is provisioned but the application does not connect to it.
+The Product API still only exposes `GET /health`. This Stage 2 candidate adds a static
+workbench using fictional, precomputed contract examples. There is no business
+workflow, AI, Evidence Engine, CaseContext resolver, authentication, retry or cache.
+PostgreSQL persistence is a separate Stage 2 candidate PR, not runtime code on this branch.
 
 ## Core V1 target
 
@@ -65,10 +66,14 @@ As of 2026-10-03, Phase 1 is merged into `main`; the collaboration documents rem
 on `docs/core-mvp-contracts`. **Stage 1: Core MVP contracts** are now prepared as a
 documentation package, pending the two developers' review and merge. Read the
 [contract index and decisions](docs/contracts/README.md), then the six linked contracts.
-Database and workbench-shell implementation tasks follow that review.
+The user authorized Stage 2 candidates ahead of that review: database/seed in
+[PR #3](https://github.com/Mark-UM/FDE-test/pull/3) and the static workbench on
+`codex/core-workbench-shell`, both based on the contract PR. Candidate preparation
+does not replace human review or authorize merging main.
 See [current delivery status and the six next-stage tasks](docs/plans/04_core_mvp_next_stage_plan.md).
-The runtime remains Phase 1; the contract package does not implement these capabilities. Main branch
-protection and container startup verification remain outstanding.
+See [the automatic execution log](docs/plans/05_core_mvp_execution_log.md) for the
+latest branch and check status. Main protection and container startup verification
+remain outstanding.
 
 ## Repository
 
@@ -78,7 +83,9 @@ backend/                    FastAPI, environment settings, tests, Dockerfile
     sandbox/                Raw HTTP schemas, client, explicit source adapters
   app/core/clock.py         SystemClock and deterministic FixedClock
   tests/integration/        Real HTTP tests (opt in with --sandbox-url)
-frontend/                   React + TypeScript + Vite shell, Dockerfile
+frontend/                   React + TypeScript + Vite static workbench, Dockerfile
+  src/core-contexts.json     Fictional precomputed contract context fixtures
+  tests/                    Playwright behavior and fixture-parity checks
 docs/
   plans/01_core_plan.md      Authoritative product roadmap
   plans/03_ecommerce_environment_plan.md  Future external Sandbox specification
@@ -162,6 +169,8 @@ From `frontend/`:
 npm run lint
 npm run typecheck
 npm run build
+npx playwright install chromium
+npm test
 ```
 
 From the repository root, validate without a personal `.env`:
@@ -171,6 +180,10 @@ docker compose --env-file .env.example config --quiet
 ```
 
 CI runs unit tests (`pytest -m "not integration"`) and the lint/build/config checks.
+The frontend job also runs all Playwright tests in Chromium. If Microsoft Edge is
+already installed locally, PowerShell can use `$env:PLAYWRIGHT_CHANNEL='msedge'; npm test`
+instead of installing Chromium. The test server uses loopback port 15173 and must
+start its own server; leave that port free.
 The independent Sandbox is not available in this repository's CI; real HTTP tests
 must run separately as described below, and skipped tests do not prove integration.
 `/health` returns exactly
@@ -239,6 +252,20 @@ ownership, typed failures, and idempotency. Fixed seed scenarios have no unknown
 statuses or malformed payloads; supplemental unit tests cover those conditions.
 
 ## Limitations and next work
+
+The static workbench displays six fictional scenarios: normal, multiple parcels,
+stale data, partial source failure, unknown source time, and conflicting sources.
+Loading, empty and error views are explicit preview states. Draft examples are
+handwritten; edits exist only in page memory. Validation is marked unexecuted and
+approval stays disabled. No business or external-system requests are issued.
+These controls do not implement permissions, freshness computation, AI, approval,
+or sending. Source failures remain distinct from parcel business statuses.
+
+`frontend/src/core-contexts.json` copies only `cases[].name` and `cases[].context`
+from `docs/contracts/examples/core-contexts.json`, keeping the frontend Docker build
+context independent of repository docs. `fixtures.spec.ts` requires exact parity;
+update the copied contexts when the authoritative examples change. Fixtures are
+Product contract examples, not records returned by a running Sandbox.
 
 No support workflow or send endpoint is exposed. Provider send is a low-level
 integration operation; authorization/approval will be implemented before exposure.

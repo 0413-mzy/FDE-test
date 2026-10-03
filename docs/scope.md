@@ -19,6 +19,14 @@ The user authorized Core MVP Stage 1 on 2026-10-03. This delivery is the
 it selects future interfaces and rules without implementing them. Database/API/Evidence/AI
 remain the separately authorized implementation stages in the [execution plan](plans/04_core_mvp_next_stage_plan.md).
 
+The later request to automatically execute and advance the plan authorizes Stage 2
+candidates based on the contract PR. This branch implements the static workbench
+only: fictional precomputed examples, source timestamps and quality display, local
+draft preview/editing, loading/empty/error states, and browser tests. Database/seed
+is a separate candidate. Review and main merge remain pending. No authenticated
+business API, runtime Evidence/CaseContext, LLM, validation, approval or sending is
+implemented here. Stage 3 and later implementation does not belong to this delivery.
+
 ## Future Core V1 in scope
 
 - Order-status support consultation for a small/cross-border ecommerce team.

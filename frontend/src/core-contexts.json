@@ -1,0 +1,1200 @@
+{
+  "cases": [
+    {
+      "name": "NORMAL",
+      "context": {
+        "schema_version": "core-mvp-v1",
+        "context_id": "30000000-0000-4000-8000-000000000001",
+        "inquiry_id": "10000000-0000-4000-8000-000000000001",
+        "run_id": "20000000-0000-4000-8000-000000000001",
+        "context_version": 1,
+        "created_at": "2026-09-20T06:00:00Z",
+        "policy_version": "core-policy-v1",
+        "freshness_policy": {
+          "version": "freshness-v1",
+          "fetch_max_age_seconds": 1800,
+          "source_max_age_seconds": {
+            "order": 86400,
+            "parcel": 86400,
+            "warehouse_note": 86400,
+            "shipment": 21600,
+            "shipment_event": 21600
+          }
+        },
+        "authorization_scope": {
+          "inquiry_id": "10000000-0000-4000-8000-000000000001",
+          "external_order_id": "ORD-FIXTURE-001",
+          "team_id": "60000000-0000-4000-8000-000000000001",
+          "assigned_agent_id": "70000000-0000-4000-8000-000000000001"
+        },
+        "question": {
+          "text": "请问我的订单现在到哪里了？",
+          "source_system": "demo_support",
+          "source_record_id": "INQ-FIXTURE-001",
+          "created_at": "2026-09-20T05:40:00Z"
+        },
+        "order": {
+          "external_order_id": "ORD-FIXTURE-001",
+          "status_evidence_id": "ev-7a7159da347f0e1e79c7cef99e3838cc415bb0a7c1011691ab06334e8d72b87a"
+        },
+        "parcels": [
+          {
+            "parcel_id": "PAR-FIXTURE-001-1",
+            "tracking_number_evidence_id": "ev-075f92d808e50a9ec0866908db2569b6c7f004048db9f9426632de6c751e2aca",
+            "shipment_status_evidence_id": "ev-afbb6a0de26e53ade09ba04ed7f912f3862b7616f012d74ba29eac3502224f8e",
+            "event_evidence_ids": [
+              "ev-93d6acc82dcb8eaa97f6750b28c209117c910c77abdfd51e5493a4674674bac1"
+            ]
+          }
+        ],
+        "source_outcomes": [
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000101",
+            "operation": "get_inquiry",
+            "target_id": "INQ-FIXTURE-001",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000102",
+            "operation": "get_order",
+            "target_id": "ORD-FIXTURE-001",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000103",
+            "operation": "get_parcels",
+            "target_id": "ORD-FIXTURE-001",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000104",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-001-1",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000107",
+            "operation": "get_notes",
+            "target_id": "ORD-FIXTURE-001",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev-7a7159da347f0e1e79c7cef99e3838cc415bb0a7c1011691ab06334e8d72b87a",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "ORD-FIXTURE-001",
+            "snapshot_id": "50000000-0000-4000-8000-000000000102",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "SHIPPED",
+            "source_updated_at": "2026-09-20T05:30:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-075f92d808e50a9ec0866908db2569b6c7f004048db9f9426632de6c751e2aca",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-001-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000103",
+            "snapshot_version": 1,
+            "pointer": "/records/0/tracking_number",
+            "value": "TRK-FIXTURE-001-1",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-afbb6a0de26e53ade09ba04ed7f912f3862b7616f012d74ba29eac3502224f8e",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-001-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000104",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-93d6acc82dcb8eaa97f6750b28c209117c910c77abdfd51e5493a4674674bac1",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-001-1-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000104",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-20T05:50:00Z",
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-fe05edb6f74c1c6310c10fbd77516bc7ada343ae45d71e779ade4c6e3954f458",
+            "kind": "SOURCE_TEXT",
+            "source_system": "demo_warehouse",
+            "source_record_id": "NOTE-FIXTURE-001",
+            "snapshot_id": "50000000-0000-4000-8000-000000000107",
+            "snapshot_version": 1,
+            "pointer": "/records/0/note_text",
+            "value": "Packing record available.",
+            "source_updated_at": "2026-09-20T05:40:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          }
+        ],
+        "facts": [
+          "ev-7a7159da347f0e1e79c7cef99e3838cc415bb0a7c1011691ab06334e8d72b87a",
+          "ev-075f92d808e50a9ec0866908db2569b6c7f004048db9f9426632de6c751e2aca",
+          "ev-afbb6a0de26e53ade09ba04ed7f912f3862b7616f012d74ba29eac3502224f8e",
+          "ev-93d6acc82dcb8eaa97f6750b28c209117c910c77abdfd51e5493a4674674bac1"
+        ],
+        "source_texts": [
+          "ev-fe05edb6f74c1c6310c10fbd77516bc7ada343ae45d71e779ade4c6e3954f458"
+        ],
+        "unknowns": [],
+        "missing_information": [],
+        "conflicts": [],
+        "quality": "COMPLETE",
+        "risk_flags": []
+      }
+    },
+    {
+      "name": "MULTI_PARCEL",
+      "context": {
+        "schema_version": "core-mvp-v1",
+        "context_id": "30000000-0000-4000-8000-000000000002",
+        "inquiry_id": "10000000-0000-4000-8000-000000000002",
+        "run_id": "20000000-0000-4000-8000-000000000002",
+        "context_version": 1,
+        "created_at": "2026-09-20T06:00:00Z",
+        "policy_version": "core-policy-v1",
+        "freshness_policy": {
+          "version": "freshness-v1",
+          "fetch_max_age_seconds": 1800,
+          "source_max_age_seconds": {
+            "order": 86400,
+            "parcel": 86400,
+            "warehouse_note": 86400,
+            "shipment": 21600,
+            "shipment_event": 21600
+          }
+        },
+        "authorization_scope": {
+          "inquiry_id": "10000000-0000-4000-8000-000000000002",
+          "external_order_id": "ORD-FIXTURE-002",
+          "team_id": "60000000-0000-4000-8000-000000000001",
+          "assigned_agent_id": "70000000-0000-4000-8000-000000000001"
+        },
+        "question": {
+          "text": "请问我的订单现在到哪里了？",
+          "source_system": "demo_support",
+          "source_record_id": "INQ-FIXTURE-002",
+          "created_at": "2026-09-20T05:40:00Z"
+        },
+        "order": {
+          "external_order_id": "ORD-FIXTURE-002",
+          "status_evidence_id": "ev-35929e68743fabe018232aee212f1e9d84d9573c576f29c570b25170691e96be"
+        },
+        "parcels": [
+          {
+            "parcel_id": "PAR-FIXTURE-002-1",
+            "tracking_number_evidence_id": "ev-cb1ef5840414199e46f46952ce29bcacdaaf0ec15d0db68d541bbfe9b93668e0",
+            "shipment_status_evidence_id": "ev-613ec0de0e7d4cdc402fc93ade0330c043d853e8759c20eb3869600cc8dca0a6",
+            "event_evidence_ids": [
+              "ev-9ab5780e7268bf2a65f9452ecaa5bdefd3acc6e4fe90027b9ed3e5218eef2d8d"
+            ]
+          },
+          {
+            "parcel_id": "PAR-FIXTURE-002-2",
+            "tracking_number_evidence_id": "ev-704ba0d9c7fad8bd2dd106beb5e324113f2aaf7d6a7780e5508bca33343ffcef",
+            "shipment_status_evidence_id": "ev-30c304f30506c59bd126632bd8d32cc33794153060beb09929c65f0013fd4267",
+            "event_evidence_ids": [
+              "ev-da9c46fa26df5aa74f32e5afcac3c7befe2f51d2cafc91266012c4ce5481d425"
+            ]
+          }
+        ],
+        "source_outcomes": [
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000201",
+            "operation": "get_inquiry",
+            "target_id": "INQ-FIXTURE-002",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000202",
+            "operation": "get_order",
+            "target_id": "ORD-FIXTURE-002",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000203",
+            "operation": "get_parcels",
+            "target_id": "ORD-FIXTURE-002",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000204",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-002-1",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000205",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-002-2",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000207",
+            "operation": "get_notes",
+            "target_id": "ORD-FIXTURE-002",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev-35929e68743fabe018232aee212f1e9d84d9573c576f29c570b25170691e96be",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "ORD-FIXTURE-002",
+            "snapshot_id": "50000000-0000-4000-8000-000000000202",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "PARTIALLY_SHIPPED",
+            "source_updated_at": "2026-09-20T05:30:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-cb1ef5840414199e46f46952ce29bcacdaaf0ec15d0db68d541bbfe9b93668e0",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-002-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000203",
+            "snapshot_version": 1,
+            "pointer": "/records/0/tracking_number",
+            "value": "TRK-FIXTURE-002-1",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-613ec0de0e7d4cdc402fc93ade0330c043d853e8759c20eb3869600cc8dca0a6",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-002-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000204",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-9ab5780e7268bf2a65f9452ecaa5bdefd3acc6e4fe90027b9ed3e5218eef2d8d",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-002-1-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000204",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-20T05:50:00Z",
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-704ba0d9c7fad8bd2dd106beb5e324113f2aaf7d6a7780e5508bca33343ffcef",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-002-2",
+            "snapshot_id": "50000000-0000-4000-8000-000000000203",
+            "snapshot_version": 1,
+            "pointer": "/records/1/tracking_number",
+            "value": "TRK-FIXTURE-002-2",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-30c304f30506c59bd126632bd8d32cc33794153060beb09929c65f0013fd4267",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-002-2",
+            "snapshot_id": "50000000-0000-4000-8000-000000000205",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "NOT_COLLECTED",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-da9c46fa26df5aa74f32e5afcac3c7befe2f51d2cafc91266012c4ce5481d425",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-002-2-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000205",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "LABEL_CREATED",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-20T05:50:00Z",
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-6f07dda201d7a05f3dc2bca286a46dbb27e4d99231da9ddbea81175c178f7330",
+            "kind": "SOURCE_TEXT",
+            "source_system": "demo_warehouse",
+            "source_record_id": "NOTE-FIXTURE-002",
+            "snapshot_id": "50000000-0000-4000-8000-000000000207",
+            "snapshot_version": 1,
+            "pointer": "/records/0/note_text",
+            "value": "Packing record available.",
+            "source_updated_at": "2026-09-20T05:40:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          }
+        ],
+        "facts": [
+          "ev-35929e68743fabe018232aee212f1e9d84d9573c576f29c570b25170691e96be",
+          "ev-cb1ef5840414199e46f46952ce29bcacdaaf0ec15d0db68d541bbfe9b93668e0",
+          "ev-613ec0de0e7d4cdc402fc93ade0330c043d853e8759c20eb3869600cc8dca0a6",
+          "ev-9ab5780e7268bf2a65f9452ecaa5bdefd3acc6e4fe90027b9ed3e5218eef2d8d",
+          "ev-704ba0d9c7fad8bd2dd106beb5e324113f2aaf7d6a7780e5508bca33343ffcef",
+          "ev-30c304f30506c59bd126632bd8d32cc33794153060beb09929c65f0013fd4267",
+          "ev-da9c46fa26df5aa74f32e5afcac3c7befe2f51d2cafc91266012c4ce5481d425"
+        ],
+        "source_texts": [
+          "ev-6f07dda201d7a05f3dc2bca286a46dbb27e4d99231da9ddbea81175c178f7330"
+        ],
+        "unknowns": [],
+        "missing_information": [],
+        "conflicts": [],
+        "quality": "COMPLETE",
+        "risk_flags": []
+      }
+    },
+    {
+      "name": "STALE",
+      "context": {
+        "schema_version": "core-mvp-v1",
+        "context_id": "30000000-0000-4000-8000-000000000003",
+        "inquiry_id": "10000000-0000-4000-8000-000000000003",
+        "run_id": "20000000-0000-4000-8000-000000000003",
+        "context_version": 1,
+        "created_at": "2026-09-20T06:00:00Z",
+        "policy_version": "core-policy-v1",
+        "freshness_policy": {
+          "version": "freshness-v1",
+          "fetch_max_age_seconds": 1800,
+          "source_max_age_seconds": {
+            "order": 86400,
+            "parcel": 86400,
+            "warehouse_note": 86400,
+            "shipment": 21600,
+            "shipment_event": 21600
+          }
+        },
+        "authorization_scope": {
+          "inquiry_id": "10000000-0000-4000-8000-000000000003",
+          "external_order_id": "ORD-FIXTURE-003",
+          "team_id": "60000000-0000-4000-8000-000000000001",
+          "assigned_agent_id": "70000000-0000-4000-8000-000000000001"
+        },
+        "question": {
+          "text": "请问我的订单现在到哪里了？",
+          "source_system": "demo_support",
+          "source_record_id": "INQ-FIXTURE-003",
+          "created_at": "2026-09-20T05:40:00Z"
+        },
+        "order": {
+          "external_order_id": "ORD-FIXTURE-003",
+          "status_evidence_id": "ev-4909ed741b4bc279db6d755a6896f2a52518be7ea688218dd99445de4bff4f42"
+        },
+        "parcels": [
+          {
+            "parcel_id": "PAR-FIXTURE-003-1",
+            "tracking_number_evidence_id": "ev-6d035c28d748dab6bd476fd6c1768eb416cad68bd06b0e7476c88c7e58dbe821",
+            "shipment_status_evidence_id": "ev-2d07b667f02f9ccf13ddec68ec8e610bb28abe3ba7c539e50b9e7d9cc25cfe7c",
+            "event_evidence_ids": [
+              "ev-06bcca33ba890d55a4c6752a96085c7b2b29573dbdce7a3c9bac37ed767eb26d"
+            ]
+          }
+        ],
+        "source_outcomes": [
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000301",
+            "operation": "get_inquiry",
+            "target_id": "INQ-FIXTURE-003",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000302",
+            "operation": "get_order",
+            "target_id": "ORD-FIXTURE-003",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000303",
+            "operation": "get_parcels",
+            "target_id": "ORD-FIXTURE-003",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000304",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-003-1",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000307",
+            "operation": "get_notes",
+            "target_id": "ORD-FIXTURE-003",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev-4909ed741b4bc279db6d755a6896f2a52518be7ea688218dd99445de4bff4f42",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "ORD-FIXTURE-003",
+            "snapshot_id": "50000000-0000-4000-8000-000000000302",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "SHIPPED",
+            "source_updated_at": "2026-09-20T05:30:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-6d035c28d748dab6bd476fd6c1768eb416cad68bd06b0e7476c88c7e58dbe821",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-003-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000303",
+            "snapshot_version": 1,
+            "pointer": "/records/0/tracking_number",
+            "value": "TRK-FIXTURE-003-1",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-2d07b667f02f9ccf13ddec68ec8e610bb28abe3ba7c539e50b9e7d9cc25cfe7c",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-003-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000304",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-17T06:00:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "STALE"
+          },
+          {
+            "id": "ev-06bcca33ba890d55a4c6752a96085c7b2b29573dbdce7a3c9bac37ed767eb26d",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-003-1-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000304",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-17T06:00:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-17T06:00:00Z",
+            "freshness_status": "STALE"
+          },
+          {
+            "id": "ev-0a8005f00bf9997b74a58fc9d51dc9a0dd734441a2484a45652e87418fdd17fa",
+            "kind": "SOURCE_TEXT",
+            "source_system": "demo_warehouse",
+            "source_record_id": "NOTE-FIXTURE-003",
+            "snapshot_id": "50000000-0000-4000-8000-000000000307",
+            "snapshot_version": 1,
+            "pointer": "/records/0/note_text",
+            "value": "Packing record available.",
+            "source_updated_at": "2026-09-20T05:40:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          }
+        ],
+        "facts": [
+          "ev-4909ed741b4bc279db6d755a6896f2a52518be7ea688218dd99445de4bff4f42",
+          "ev-6d035c28d748dab6bd476fd6c1768eb416cad68bd06b0e7476c88c7e58dbe821",
+          "ev-2d07b667f02f9ccf13ddec68ec8e610bb28abe3ba7c539e50b9e7d9cc25cfe7c",
+          "ev-06bcca33ba890d55a4c6752a96085c7b2b29573dbdce7a3c9bac37ed767eb26d"
+        ],
+        "source_texts": [
+          "ev-0a8005f00bf9997b74a58fc9d51dc9a0dd734441a2484a45652e87418fdd17fa"
+        ],
+        "unknowns": [],
+        "missing_information": [],
+        "conflicts": [],
+        "quality": "DEGRADED",
+        "risk_flags": [
+          "STALE_DATA"
+        ]
+      }
+    },
+    {
+      "name": "SOURCE_FAILURE",
+      "context": {
+        "schema_version": "core-mvp-v1",
+        "context_id": "30000000-0000-4000-8000-000000000004",
+        "inquiry_id": "10000000-0000-4000-8000-000000000004",
+        "run_id": "20000000-0000-4000-8000-000000000004",
+        "context_version": 1,
+        "created_at": "2026-09-20T06:00:00Z",
+        "policy_version": "core-policy-v1",
+        "freshness_policy": {
+          "version": "freshness-v1",
+          "fetch_max_age_seconds": 1800,
+          "source_max_age_seconds": {
+            "order": 86400,
+            "parcel": 86400,
+            "warehouse_note": 86400,
+            "shipment": 21600,
+            "shipment_event": 21600
+          }
+        },
+        "authorization_scope": {
+          "inquiry_id": "10000000-0000-4000-8000-000000000004",
+          "external_order_id": "ORD-FIXTURE-004",
+          "team_id": "60000000-0000-4000-8000-000000000001",
+          "assigned_agent_id": "70000000-0000-4000-8000-000000000001"
+        },
+        "question": {
+          "text": "请问我的订单现在到哪里了？",
+          "source_system": "demo_support",
+          "source_record_id": "INQ-FIXTURE-004",
+          "created_at": "2026-09-20T05:40:00Z"
+        },
+        "order": {
+          "external_order_id": "ORD-FIXTURE-004",
+          "status_evidence_id": "ev-37e842f12249ffea8fa65b5fa3c62002575363a730404829e8036cf8be3c7c79"
+        },
+        "parcels": [
+          {
+            "parcel_id": "PAR-FIXTURE-004-1",
+            "tracking_number_evidence_id": "ev-ee3512b01f630e02fc64fa1383f4068c39a8885fee1f6d33faa11cb2b0dcf05b",
+            "shipment_status_evidence_id": "ev-b31cf06d29514ab772191b492d3f8243d9068c2d778d3909bdc72600904bc0ba",
+            "event_evidence_ids": [
+              "ev-caf1fb7ece4b12892bde1b1c2c742b81a4dedf04311886d6c0c1c31245cc1431"
+            ]
+          },
+          {
+            "parcel_id": "PAR-FIXTURE-004-2",
+            "tracking_number_evidence_id": "ev-43eb3e82d48f6a9469cb588fcb6b2f260aaa9fd337864183986ca8f436eb2628",
+            "shipment_status_evidence_id": null,
+            "event_evidence_ids": []
+          }
+        ],
+        "source_outcomes": [
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000401",
+            "operation": "get_inquiry",
+            "target_id": "INQ-FIXTURE-004",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000402",
+            "operation": "get_order",
+            "target_id": "ORD-FIXTURE-004",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000403",
+            "operation": "get_parcels",
+            "target_id": "ORD-FIXTURE-004",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000404",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-004-1",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000405",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-004-2",
+            "outcome": "TIMEOUT",
+            "error_code": "TIMEOUT",
+            "fetched_at": null
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000407",
+            "operation": "get_notes",
+            "target_id": "ORD-FIXTURE-004",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev-37e842f12249ffea8fa65b5fa3c62002575363a730404829e8036cf8be3c7c79",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "ORD-FIXTURE-004",
+            "snapshot_id": "50000000-0000-4000-8000-000000000402",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "PARTIALLY_SHIPPED",
+            "source_updated_at": "2026-09-20T05:30:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-ee3512b01f630e02fc64fa1383f4068c39a8885fee1f6d33faa11cb2b0dcf05b",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-004-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000403",
+            "snapshot_version": 1,
+            "pointer": "/records/0/tracking_number",
+            "value": "TRK-FIXTURE-004-1",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-b31cf06d29514ab772191b492d3f8243d9068c2d778d3909bdc72600904bc0ba",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-004-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000404",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-caf1fb7ece4b12892bde1b1c2c742b81a4dedf04311886d6c0c1c31245cc1431",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-004-1-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000404",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-20T05:50:00Z",
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-43eb3e82d48f6a9469cb588fcb6b2f260aaa9fd337864183986ca8f436eb2628",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-004-2",
+            "snapshot_id": "50000000-0000-4000-8000-000000000403",
+            "snapshot_version": 1,
+            "pointer": "/records/1/tracking_number",
+            "value": "TRK-FIXTURE-004-2",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-9b11ccbbba17511ad6179498dc23a0e1e58728650c23675720e47888323bb7ba",
+            "kind": "SOURCE_TEXT",
+            "source_system": "demo_warehouse",
+            "source_record_id": "NOTE-FIXTURE-004",
+            "snapshot_id": "50000000-0000-4000-8000-000000000407",
+            "snapshot_version": 1,
+            "pointer": "/records/0/note_text",
+            "value": "Packing record available.",
+            "source_updated_at": "2026-09-20T05:40:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          }
+        ],
+        "facts": [
+          "ev-37e842f12249ffea8fa65b5fa3c62002575363a730404829e8036cf8be3c7c79",
+          "ev-ee3512b01f630e02fc64fa1383f4068c39a8885fee1f6d33faa11cb2b0dcf05b",
+          "ev-b31cf06d29514ab772191b492d3f8243d9068c2d778d3909bdc72600904bc0ba",
+          "ev-caf1fb7ece4b12892bde1b1c2c742b81a4dedf04311886d6c0c1c31245cc1431",
+          "ev-43eb3e82d48f6a9469cb588fcb6b2f260aaa9fd337864183986ca8f436eb2628"
+        ],
+        "source_texts": [
+          "ev-9b11ccbbba17511ad6179498dc23a0e1e58728650c23675720e47888323bb7ba"
+        ],
+        "unknowns": [],
+        "missing_information": [
+          {
+            "code": "SOURCE_TIMEOUT",
+            "scope": "PAR-FIXTURE-004-2",
+            "evidence_ids": []
+          }
+        ],
+        "conflicts": [],
+        "quality": "DEGRADED",
+        "risk_flags": [
+          "MISSING_INFORMATION",
+          "PARTIAL_SOURCE_FAILURE"
+        ]
+      }
+    },
+    {
+      "name": "UNKNOWN_TIME",
+      "context": {
+        "schema_version": "core-mvp-v1",
+        "context_id": "30000000-0000-4000-8000-000000000005",
+        "inquiry_id": "10000000-0000-4000-8000-000000000005",
+        "run_id": "20000000-0000-4000-8000-000000000005",
+        "context_version": 1,
+        "created_at": "2026-09-20T06:00:00Z",
+        "policy_version": "core-policy-v1",
+        "freshness_policy": {
+          "version": "freshness-v1",
+          "fetch_max_age_seconds": 1800,
+          "source_max_age_seconds": {
+            "order": 86400,
+            "parcel": 86400,
+            "warehouse_note": 86400,
+            "shipment": 21600,
+            "shipment_event": 21600
+          }
+        },
+        "authorization_scope": {
+          "inquiry_id": "10000000-0000-4000-8000-000000000005",
+          "external_order_id": "ORD-FIXTURE-005",
+          "team_id": "60000000-0000-4000-8000-000000000001",
+          "assigned_agent_id": "70000000-0000-4000-8000-000000000001"
+        },
+        "question": {
+          "text": "请问我的订单现在到哪里了？",
+          "source_system": "demo_support",
+          "source_record_id": "INQ-FIXTURE-005",
+          "created_at": "2026-09-20T05:40:00Z"
+        },
+        "order": {
+          "external_order_id": "ORD-FIXTURE-005",
+          "status_evidence_id": "ev-34fe5c354d2ae3d1e73b0803751d484607f6ce26a2113ce5718149f0a9214d1a"
+        },
+        "parcels": [
+          {
+            "parcel_id": "PAR-FIXTURE-005-1",
+            "tracking_number_evidence_id": "ev-2e0696ac1e9bf69bff6da28fbe9ce5ce3e6b433874f1e6be8ea8059452c5aca2",
+            "shipment_status_evidence_id": "ev-890105ddf7fedfe4bbfd18c3c59dcf1023159caeb8d4fe3699a2cb4b2b8fb828",
+            "event_evidence_ids": [
+              "ev-b0b074b5de1b5db960160a5736353281b03fd3e92648ca3f041dd4a15dd286c8"
+            ]
+          }
+        ],
+        "source_outcomes": [
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000501",
+            "operation": "get_inquiry",
+            "target_id": "INQ-FIXTURE-005",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000502",
+            "operation": "get_order",
+            "target_id": "ORD-FIXTURE-005",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000503",
+            "operation": "get_parcels",
+            "target_id": "ORD-FIXTURE-005",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000504",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-005-1",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000507",
+            "operation": "get_notes",
+            "target_id": "ORD-FIXTURE-005",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev-34fe5c354d2ae3d1e73b0803751d484607f6ce26a2113ce5718149f0a9214d1a",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "ORD-FIXTURE-005",
+            "snapshot_id": "50000000-0000-4000-8000-000000000502",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "SHIPPED",
+            "source_updated_at": "2026-09-20T05:30:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-2e0696ac1e9bf69bff6da28fbe9ce5ce3e6b433874f1e6be8ea8059452c5aca2",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-005-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000503",
+            "snapshot_version": 1,
+            "pointer": "/records/0/tracking_number",
+            "value": "TRK-FIXTURE-005-1",
+            "source_updated_at": null,
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "UNKNOWN"
+          },
+          {
+            "id": "ev-890105ddf7fedfe4bbfd18c3c59dcf1023159caeb8d4fe3699a2cb4b2b8fb828",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-005-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000504",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-b0b074b5de1b5db960160a5736353281b03fd3e92648ca3f041dd4a15dd286c8",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-005-1-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000504",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "IN_TRANSIT",
+            "source_updated_at": null,
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-20T05:50:00Z",
+            "freshness_status": "UNKNOWN"
+          },
+          {
+            "id": "ev-0ea2082fd5e8776424de76d6b35723e6270496816809d069dfb3b45d12ae48cf",
+            "kind": "SOURCE_TEXT",
+            "source_system": "demo_warehouse",
+            "source_record_id": "NOTE-FIXTURE-005",
+            "snapshot_id": "50000000-0000-4000-8000-000000000507",
+            "snapshot_version": 1,
+            "pointer": "/records/0/note_text",
+            "value": "Packing record available.",
+            "source_updated_at": null,
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "UNKNOWN"
+          }
+        ],
+        "facts": [
+          "ev-34fe5c354d2ae3d1e73b0803751d484607f6ce26a2113ce5718149f0a9214d1a",
+          "ev-2e0696ac1e9bf69bff6da28fbe9ce5ce3e6b433874f1e6be8ea8059452c5aca2",
+          "ev-890105ddf7fedfe4bbfd18c3c59dcf1023159caeb8d4fe3699a2cb4b2b8fb828",
+          "ev-b0b074b5de1b5db960160a5736353281b03fd3e92648ca3f041dd4a15dd286c8"
+        ],
+        "source_texts": [
+          "ev-0ea2082fd5e8776424de76d6b35723e6270496816809d069dfb3b45d12ae48cf"
+        ],
+        "unknowns": [
+          {
+            "code": "UNKNOWN_SOURCE_TIME",
+            "evidence_ids": [
+              "ev-0ea2082fd5e8776424de76d6b35723e6270496816809d069dfb3b45d12ae48cf"
+            ]
+          },
+          {
+            "code": "UNKNOWN_SOURCE_TIME",
+            "evidence_ids": [
+              "ev-2e0696ac1e9bf69bff6da28fbe9ce5ce3e6b433874f1e6be8ea8059452c5aca2"
+            ]
+          },
+          {
+            "code": "UNKNOWN_SOURCE_TIME",
+            "evidence_ids": [
+              "ev-b0b074b5de1b5db960160a5736353281b03fd3e92648ca3f041dd4a15dd286c8"
+            ]
+          }
+        ],
+        "missing_information": [],
+        "conflicts": [],
+        "quality": "DEGRADED",
+        "risk_flags": [
+          "UNKNOWN_FRESHNESS"
+        ]
+      }
+    },
+    {
+      "name": "CONFLICT",
+      "context": {
+        "schema_version": "core-mvp-v1",
+        "context_id": "30000000-0000-4000-8000-000000000006",
+        "inquiry_id": "10000000-0000-4000-8000-000000000006",
+        "run_id": "20000000-0000-4000-8000-000000000006",
+        "context_version": 1,
+        "created_at": "2026-09-20T06:00:00Z",
+        "policy_version": "core-policy-v1",
+        "freshness_policy": {
+          "version": "freshness-v1",
+          "fetch_max_age_seconds": 1800,
+          "source_max_age_seconds": {
+            "order": 86400,
+            "parcel": 86400,
+            "warehouse_note": 86400,
+            "shipment": 21600,
+            "shipment_event": 21600
+          }
+        },
+        "authorization_scope": {
+          "inquiry_id": "10000000-0000-4000-8000-000000000006",
+          "external_order_id": "ORD-FIXTURE-006",
+          "team_id": "60000000-0000-4000-8000-000000000001",
+          "assigned_agent_id": "70000000-0000-4000-8000-000000000001"
+        },
+        "question": {
+          "text": "请问我的订单现在到哪里了？",
+          "source_system": "demo_support",
+          "source_record_id": "INQ-FIXTURE-006",
+          "created_at": "2026-09-20T05:40:00Z"
+        },
+        "order": {
+          "external_order_id": "ORD-FIXTURE-006",
+          "status_evidence_id": "ev-e900c87af9a251f0d09504405924242e924d1a1503ae3471f1afb63373c0c26a"
+        },
+        "parcels": [
+          {
+            "parcel_id": "PAR-FIXTURE-006-1",
+            "tracking_number_evidence_id": "ev-363c7b715118e7818026599198d2d72641541601661911a8a30165930b687802",
+            "shipment_status_evidence_id": "ev-d5aba559f6a9df5a7818e41b51d85a509059839db563265d1b7fd395d1fdce6c",
+            "event_evidence_ids": [
+              "ev-c85a1159da33d23baf3ff5011c857989a4278286fe1529ca660ca4d2d2edee79"
+            ]
+          }
+        ],
+        "source_outcomes": [
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000601",
+            "operation": "get_inquiry",
+            "target_id": "INQ-FIXTURE-006",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000602",
+            "operation": "get_order",
+            "target_id": "ORD-FIXTURE-006",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000603",
+            "operation": "get_parcels",
+            "target_id": "ORD-FIXTURE-006",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000604",
+            "operation": "get_shipment",
+            "target_id": "PAR-FIXTURE-006-1",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          },
+          {
+            "fetch_id": "50000000-0000-4000-8000-000000000607",
+            "operation": "get_notes",
+            "target_id": "ORD-FIXTURE-006",
+            "outcome": "SUCCESS",
+            "error_code": null,
+            "fetched_at": "2026-09-20T06:00:00Z"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev-e900c87af9a251f0d09504405924242e924d1a1503ae3471f1afb63373c0c26a",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "ORD-FIXTURE-006",
+            "snapshot_id": "50000000-0000-4000-8000-000000000602",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "SHIPPED",
+            "source_updated_at": "2026-09-20T05:30:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-363c7b715118e7818026599198d2d72641541601661911a8a30165930b687802",
+            "kind": "FACT",
+            "source_system": "demo_oms",
+            "source_record_id": "PAR-FIXTURE-006-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000603",
+            "snapshot_version": 1,
+            "pointer": "/records/0/tracking_number",
+            "value": "TRK-FIXTURE-006-1",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-d5aba559f6a9df5a7818e41b51d85a509059839db563265d1b7fd395d1fdce6c",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "PAR-FIXTURE-006-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000604",
+            "snapshot_version": 1,
+            "pointer": "/records/0/status",
+            "value": "PICKED_UP",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-c85a1159da33d23baf3ff5011c857989a4278286fe1529ca660ca4d2d2edee79",
+            "kind": "FACT",
+            "source_system": "demo_logistics",
+            "source_record_id": "EVT-FIXTURE-006-1-1",
+            "snapshot_id": "50000000-0000-4000-8000-000000000604",
+            "snapshot_version": 1,
+            "pointer": "/records/0/events/0/status",
+            "value": "PICKED_UP",
+            "source_updated_at": "2026-09-20T05:50:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": "2026-09-20T05:50:00Z",
+            "freshness_status": "FRESH"
+          },
+          {
+            "id": "ev-0aa8be28cf1a6e4f3a2c8a3ab3e5adfb3513dbb11e4e2e263a44324e148f1d21",
+            "kind": "SOURCE_TEXT",
+            "source_system": "demo_warehouse",
+            "source_record_id": "NOTE-FIXTURE-006",
+            "snapshot_id": "50000000-0000-4000-8000-000000000607",
+            "snapshot_version": 1,
+            "pointer": "/records/0/note_text",
+            "value": "Parcel has not been handed to carrier today.",
+            "source_updated_at": "2026-09-20T05:40:00Z",
+            "fetched_at": "2026-09-20T06:00:00Z",
+            "occurred_at": null,
+            "freshness_status": "FRESH"
+          }
+        ],
+        "facts": [
+          "ev-e900c87af9a251f0d09504405924242e924d1a1503ae3471f1afb63373c0c26a",
+          "ev-363c7b715118e7818026599198d2d72641541601661911a8a30165930b687802",
+          "ev-d5aba559f6a9df5a7818e41b51d85a509059839db563265d1b7fd395d1fdce6c",
+          "ev-c85a1159da33d23baf3ff5011c857989a4278286fe1529ca660ca4d2d2edee79"
+        ],
+        "source_texts": [
+          "ev-0aa8be28cf1a6e4f3a2c8a3ab3e5adfb3513dbb11e4e2e263a44324e148f1d21"
+        ],
+        "unknowns": [],
+        "missing_information": [],
+        "conflicts": [
+          {
+            "id": "conflict-1",
+            "code": "POSSIBLE_HANDOVER_CONFLICT",
+            "evidence_ids": [
+              "ev-0aa8be28cf1a6e4f3a2c8a3ab3e5adfb3513dbb11e4e2e263a44324e148f1d21",
+              "ev-d5aba559f6a9df5a7818e41b51d85a509059839db563265d1b7fd395d1fdce6c"
+            ],
+            "explanation": "同日仓库备注与物流状态可能冲突，需人工核实。"
+          }
+        ],
+        "quality": "DEGRADED",
+        "risk_flags": [
+          "CONFLICTING_SOURCES"
+        ]
+      }
+    }
+  ]
+}

@@ -102,13 +102,19 @@ Retries remain outside the Core MVP implementation slice.
 - Pydantic Settings reads root `.env` and process variables (`APP_ENV`, `DATABASE_URL`,
   `SANDBOX_BASE_URL`, `SANDBOX_TIMEOUT_SECONDS`).
   The URL is masked in representations and is not used to connect in Phase 0.
-- React + TypeScript + Vite renders only a static title/status page.
+- React + TypeScript + Vite now has a Stage 2 static workbench candidate: six
+  precomputed fictional Context examples, per-parcel source/timestamp display,
+  quality warnings, local draft editing and explicit loading/empty/error previews.
+  It issues no business requests, calculates no Evidence/CaseContext/freshness,
+  executes no validation and keeps approval disabled. A fixture-parity test binds
+  the packaged frontend examples to the Stage 1 documentation examples.
 - Development Compose provides backend, frontend and PostgreSQL. Backend startup
   waits for the PostgreSQL container health check, but `/health` never queries it.
 - Pytest, Ruff, ESLint, TypeScript, Vite build and Compose config validation form CI.
 
 No authentication, domain/database behavior, Evidence Engine, CaseContext resolver,
-LLM integration or support workbench is present. No Product send API is added;
+LLM integration or connected support workflow is present on this branch. Database
+models/migrations/seed are a separate Stage 2 candidate in PR #3. No Product send API is added;
 SandboxMessageProvider only verifies the simulated external boundary and does not
 decide approval. Authorization and approval are required before future exposure.
 SQLAlchemy 2, Alembic and the database driver remain deferred; the
