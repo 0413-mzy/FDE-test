@@ -28,7 +28,7 @@ Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/�
 | --- | --- | --- |
 | Stage 1 契约 PR | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2) 已提交，CI 通过 | `cc2f262`；六份契约、完整 fixture、文档验证记录 |
 | Stage 2 数据库/Seed | [Draft PR #3](https://github.com/Mark-UM/FDE-test/pull/3)，CI 全通过 | `eeb9aca`；12 表、迁移/Seed、26 项真实 PostgreSQL 测试；[CI](https://github.com/Mark-UM/FDE-test/actions/runs/37109759410) |
-| Stage 2 静态工作台 | 本地实现与检查完成，准备 Draft PR | 六个虚构场景；lint/type/build 与 13 项 Edge 浏览器测试通过；Chromium CI 待执行 |
+| Stage 2 静态工作台 | [Draft PR #4](https://github.com/Mark-UM/FDE-test/pull/4)，CI 全通过 | `745089a`；13 项 Edge 测试；[Chromium CI](https://github.com/Mark-UM/FDE-test/actions/runs/37128966983) 13 passed，7.4s；lint/type/build/Compose 通过 |
 | 人工 Review / main 合并 | 未完成 | 不由自动化代签 |
 | main 保护 / 容器运行 | 未完成 | 不安装系统服务或修改仓库治理设置 |
 

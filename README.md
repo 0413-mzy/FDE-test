@@ -195,6 +195,10 @@ process liveness, not database connectivity or external-system readiness.
 On 2026-10-03, local backend lint/format, all **70 tests (13 real HTTP integration
 tests, no skips)**, frontend lint/typecheck/build and runtime `/health` passed.
 The fetched main baseline's GitHub backend/frontend/compose jobs also passed.
+Stage 2 candidates additionally passed **26 real PostgreSQL tests** in database PR
+CI and **13 browser tests** locally in Edge and in Linux Chromium CI. Their scope
+and commands are recorded in [database validation](docs/verification/2026-10-03-stage-2-database-validation.md)
+and [workbench validation](docs/verification/2026-10-03-stage-2-workbench-validation.md).
 Local Docker is unavailable; container build/startup has not been verified.
 See [the observed validation record](docs/verification/2026-10-03-repository-sync-validation.md)
 for exact revisions and evidence. The [2026-09-23 basic record](docs/verification/2026-09-23-phase-1-basic-validation.md)

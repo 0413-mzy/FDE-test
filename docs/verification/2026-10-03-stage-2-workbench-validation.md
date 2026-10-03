@@ -21,6 +21,7 @@
 | `npm run typecheck` | 通过；包含 Playwright 配置和测试 |
 | `npm run build` | 通过；Vite 31 modules，JS 269.56 kB，gzip 78.34 kB |
 | `PLAYWRIGHT_CHANNEL=msedge npm test`（PowerShell 环境变量） | 13 passed，8.6s，无 skip/retry |
+| 后端 `ruff check` / `ruff format --check` / `pytest -m "not integration"` | 通过；20 文件格式正确，57 passed，13 integration deselected |
 | 浏览器人工查看 | 本地 15174 预览，桌面列表/证据/草稿布局正常 |
 
 13 项测试包含 fixture parity、初始来源时间、不同包裹状态、旧更新时间、局部超时、未知时间、
@@ -32,7 +33,11 @@
 
 ## CI 与未完成项
 
-CI 配置新增 Chromium 安装和 `npm test`；创建 PR 后验证 Linux Chromium 结果并更新记录。
+实现提交 `745089a` 的 [PR #4 CI](https://github.com/Mark-UM/FDE-test/actions/runs/37128966983)
+全部通过：backend、frontend、compose。frontend job `111220035112` 日志确认 Chromium
+**13 passed，7.4s，无 skips/retries**，包括 lint/typecheck/build；Compose config 通过。
+随后补充网络测试 reload，让请求监听覆盖初次页面加载以及后续操作；本地重新执行
+lint/typecheck 与 Edge 测试，**13 passed，9.4s**。最新提交 CI 重跑同一套检查。
 本机无 Docker，容器 build/start 未验证；Compose config 在 CI 单独验证，不能替代启动。
 没有认证、业务 API、AI、持久化编辑、校验/批准行为，不能据此宣称 Core MVP 已完成。
 两名开发者 Review、main 保护和 main 合并仍未完成。

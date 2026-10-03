@@ -133,6 +133,8 @@ test("static workbench makes no business or external requests", async ({
     )
       calls.push(request.url());
   });
+  // Capture initial application requests as well as later preview interactions.
+  await page.reload();
   await page.getByRole("button", { name: /部分包裹暂时无法查询/ }).click();
   await page.getByRole("textbox", { name: "回复内容" }).fill("本地编辑。");
   await page.getByRole("button", { name: "来源查询", exact: true }).click();
