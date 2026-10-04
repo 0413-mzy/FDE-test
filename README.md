@@ -292,9 +292,18 @@ pytest tests/database -q
 Tests create uniquely named `fde_test_<uuid>` schemas and clean up only those
 schemas. They validate migration upgrade/downgrade/re-upgrade, ORM/schema agreement,
 Seed idempotency, keys/FKs/enums/UTC, empty-vs-failed JSON, append-only history,
-one-Approval uniqueness and an optimistic-lock write. If the URL is absent they
+one-Approval uniqueness and rejection of a stale-version write in one transaction.
+That test is not evidence of two independent concurrent transactions; Stage 3–5
+service tests must verify actual concurrency and semantic ownership. If the URL is absent they
 visibly skip; skips do not satisfy the Stage 2 exit gate. CI provides disposable
 PostgreSQL 17 and runs these tests separately without skips.
+
+Revision `0002_nonblank_constraints` upgrades the seven nonblank checks using
+PostgreSQL POSIX `[:space:]` (including spaces, tabs and line breaks). It validates
+but does not trim or rewrite text. Existing whitespace-only values abort the upgrade
+transaction; investigate in a controlled environment rather than deleting records
+or disabling history triggers. Frozen revision `0001_core_mvp` is unchanged.
+Downgrading to 0001 restores its weaker checks and is not a production workaround.
 
 Model references and JSON are storage structures; Stage 3–5 services must still
 enforce same-Inquiry/team, source schema, Context version, Validation and approval
@@ -302,3 +311,6 @@ preconditions in transactions. No record insertion is an authorization grant.
 Implementation references: [SQLAlchemy declarative](https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html),
 [Alembic tutorial](https://alembic.sqlalchemy.org/en/latest/tutorial.html),
 [psycopg installation](https://www.psycopg.org/psycopg3/docs/basic/install.html).
+
+Review fixes and their RED/GREEN validation evidence are recorded in
+[the 2026-10-04 database review log](docs/verification/2026-10-04-database-review-fixes.md).
