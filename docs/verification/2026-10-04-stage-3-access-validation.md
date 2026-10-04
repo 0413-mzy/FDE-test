@@ -13,7 +13,7 @@
 - 本地 `pytest -m "not integration and not database" -q -p no:cacheprovider`：
   **103 passed，72 deselected**。包含新增 37 项纯函数/HTTP 边界检查。
 - `pytest tests/database --collect-only` 收集 **59** 项：Stage 2 原有 26 + 新增 33 项
-  真实 PG API/事务检查。尚未执行不能算通过，待 CI PostgreSQL job 验证。
+  真实 PG API/事务检查；执行结果见下方 CI 证据。
 
 新 PG 检查通过 ASGI HTTP + 真实隔离 schema，覆盖登录摘要/Audit、统一凭据失败、退出仅
 撤销当前 Session、精确八小时边界、当前角色/team/active 变更、授权分页、同形拒绝、
@@ -25,7 +25,22 @@
 前端 lint/type/build 通过（28 modules）；完整本地后端回归包含临时独立 Sandbox
 `4131f1c4` 的真实 HTTP：`pytest -m "not database" --sandbox-url http://127.0.0.1:19004
 -q -p no:cacheprovider` 为 **116 passed，59 database deselected，无 skips**，其中 13 个
-真实 HTTP。37 个 Python 文件格式检查通过。Compose 与真实 PG CI 待完成。
+真实 HTTP。37 个 Python 文件格式检查通过。
+
+## 远端 CI 执行证据
+
+[Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) base 为 `codex/core-database`，
+实现提交 `7c91dc764a3431a6e0d05547b55f8c451bac02ef`。
+[CI run 37178404364](https://github.com/Mark-UM/FDE-test/actions/runs/37178404364)
+backend/frontend/database/compose 全部成功。
+database job `111365772719` 使用 PostgreSQL 17，日志确认
+**59 passed，53.70s，无 skips，1 个依赖弃用 warning**；不是 collect 或 mock DB 结果。
+Compose 使用 `.env.example` 实际运行 config --quiet，验证了 CORS JSON 环境变量传递配置。
+测试不宣称容器已 build/start，不将无 Provider 调用的 Stage 3 测试当作 Evidence 取数验收。
+技术验收已通过，人工 Review 与依赖合并仍待完成。
+
+## 未完成出口
+
 本机无 PostgreSQL/Docker；不安装系统服务、不用 SQLite/mock DB 代替。
 TestClient/anyio 依赖发出弃用警告，测试成功；不隐瞒或声称无警告。
 容器 build/start、HTTPS/登录防暴破部署评审、main 保护和人工 Review/合并未完成。

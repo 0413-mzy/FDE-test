@@ -226,6 +226,12 @@ process liveness, not database connectivity or external-system readiness.
 
 ### Latest validation status
 
+Stage 3 candidate on 2026-10-04: **116 local tests passed**, including all 13 real
+Sandbox HTTP tests; **59 real PostgreSQL tests passed** in CI (26 persistence + 33
+API/transaction cases). Ruff, frontend lint/type/build and Compose configuration
+also passed. Review and container startup remain pending. See the
+[Stage 3 observed record](docs/verification/2026-10-04-stage-3-access-validation.md).
+
 On 2026-10-03, local backend lint/format, all **70 tests (13 real HTTP integration
 tests, no skips)**, frontend lint/typecheck/build and runtime `/health` passed.
 The fetched main baseline's GitHub backend/frontend/compose jobs also passed.

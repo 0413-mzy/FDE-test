@@ -38,7 +38,7 @@ PostgreSQL CI，工作台只展示虚构预计算数据。身份授权、Evidenc
 | Stage 0：正式基线 | main 合并与 CI 已完成；保护和容器运行未完成 | Phase 0、已授权的集成 Phase 1 | 补齐治理/运行验证，保留未完成项 |
 | Stage 1：Core MVP 契约 | PR #2 已提交，CI 通过；待两人 Review/合并 | 支撑原 Phase 1、2、4、5、6 | Review 后合并作为稳定依据 |
 | Stage 2：数据库 / 工作台外壳 | 两条依赖契约的候选已实现；具体验证见执行日志 | 原 Phase 1、Phase 7 外壳 | Review 后 rebase main、改 base、重跑 CI 并合并 |
-| Stage 3：身份授权与咨询 API | 2026-10-04 用户单独授权；依赖 PR #3 的候选已实现，待真实 PG CI / Review | auth/Inquiry 读取；order 无 Context 返回 409 | 见执行日志，之后才安排 Stage 4 |
+| Stage 3：身份授权与咨询 API | 2026-10-04 单独授权；[Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 候选及真 PG CI 已通过，待 Review | auth/Inquiry 读取；order 无 Context 返回 409 | 依赖审查/合并后，单独授权 Stage 4 |
 | Stage 4：Evidence / CaseContext | 未开始 | 原 Phase 4 | 授权/API 与来源契约就绪后开始 |
 | Stage 5：AI 草稿 / Validation / Review | 未开始 | 原 Phase 5、6、人工审核部分 | 只接收已授权、可追踪的 CaseContext |
 | Stage 6：工作台 / MVP 端到端验收 | 未开始 | 原 Phase 7、10 的最小子集 | 正常及失败路径都通过，人工修改后重新校验 |

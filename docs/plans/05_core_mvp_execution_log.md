@@ -33,7 +33,7 @@ Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/�
 | Stage 1 契约 PR | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2) 已提交，CI 通过 | `cc2f262`；六份契约、完整 fixture、文档验证记录 |
 | Stage 2 数据库/Seed | [Draft PR #3](https://github.com/Mark-UM/FDE-test/pull/3)，CI 全通过 | `eeb9aca`；12 表、迁移/Seed、26 项真实 PostgreSQL 测试；[CI](https://github.com/Mark-UM/FDE-test/actions/runs/37109759410) |
 | Stage 2 静态工作台 | [Draft PR #4](https://github.com/Mark-UM/FDE-test/pull/4)，CI 通过 | `d033d95`；13 项 Edge 与 Chromium 测试均通过；[最终 CI](https://github.com/Mark-UM/FDE-test/actions/runs/37129301879) |
-| Stage 3 身份授权 / 咨询 API | 实现候选已准备，本地检查通过，真实 PG CI 待执行 | login/me/logout、权限列表/详情、order 前置错误；103 本地测试 + 13 真实 HTTP 通过；新增 33 个 PG API 检查 |
+| Stage 3 身份授权 / 咨询 API | [Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5)，CI 全通过，待 Review | `7c91dc7`；116 本地测试（含 13 真实 HTTP）+ 59 真 PG（含新增 33 项 API/事务）通过；[CI](https://github.com/Mark-UM/FDE-test/actions/runs/37178404364) |
 | 人工 Review / main 合并 | 未完成 | 不由自动化代签 |
 | main 保护 / 容器运行 | 未完成 | 不安装系统服务或修改仓库治理设置 |
 
@@ -46,3 +46,10 @@ PostgreSQL 17 服务运行并全部通过。本机无 PostgreSQL，不将离线 
 工作台候选只有本地预览行为；不取数、不产生 Evidence、不执行 Validation/批准/发送。
 两条候选均依赖 Stage 1，审查和合并后才作为稳定基线。后续用户已单独授权 Stage 3
 依赖候选；它继续保留人工 Review/合并出口，停止在身份与咨询 API，不开始 Stage 4。
+
+第三阶段技术出口已通过，最新实现/验收见
+[Stage 3 记录](../verification/2026-10-04-stage-3-access-validation.md)。下次若授权 Stage 4，
+应先核对依赖审查/合并基线，再实现手动 resolve 的幂等 Run、Provider 来源记录、不可变
+Evidence/Context、来源质量与失败归档，以及只读取当前 Context 的 order 入口。
+必须真实 HTTP + FixedClock，保持权限在取数之前及提交前检查；不混入 AI、批准、发送、
+重试或缓存。Stage 3 不调用 Provider，不能替代这些第四阶段验收。
