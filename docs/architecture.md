@@ -6,6 +6,12 @@ test system only. The canonical pipeline below is still a future target. The
 explicitly authorized Product Phase 1 adds external integration only, overriding
 the old roadmap's Phase 1 database/seed ordering without changing product scope.
 
+Planning synchronized on 2026-10-03: Phase 1 is already in main. Core MVP Stage 1
+now delivers [six contracts](contracts/README.md), prepared for human review before database/API/Evidence/AI work.
+See [the current execution plan](plans/04_core_mvp_next_stage_plan.md) for dependency
+order, responsibilities and acceptance gates; no new business modules are implemented
+by that planning update.
+
 ## Canonical future pipeline
 
 ```text
@@ -86,7 +92,9 @@ code will determine freshness from original timestamps and explicit cache/failur
 metadata; a cache read must retain its original `fetched_at`. Unknown source update
 times remain unknown. Source failure, empty results and partial results are distinct;
 a logistics timeout is not proof of a parcel exception. All parcels must be accounted
-for before an order-wide statement is made. Retry/freshness thresholds are deferred.
+for before an order-wide statement is made. Runtime freshness behavior is deferred;
+the [Stage 1 contract](contracts/evidence-case-context.md) selects versioned default thresholds.
+Retries remain outside the Core MVP implementation slice.
 
 ## Runtime foundation today
 

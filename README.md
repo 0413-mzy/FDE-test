@@ -29,6 +29,47 @@ This is not a general chatbot, SaaS/Agent platform, CRM, ERP, or ecommerce platf
 Core V1 excludes autonomous support, multi-tenancy, payment, inventory forecasting,
 marketing, and execution of refunds, cancellations, address changes, or compensation.
 
+## Two-person Core MVP delivery
+
+The active collaboration goal is a Core-only minimum vertical slice:
+
+```text
+Inquiry → authorized facts → Evidence → CaseContext → structured AI draft
+→ deterministic validation → human edit and approval
+```
+
+DemoCommerce Sandbox expansion is not part of this delivery slice. Existing Sandbox
+adapter code remains available, but the team will not add Sandbox features while
+building the Core MVP.
+
+The two-person ownership model is:
+
+- **Data, test and AI owner:** database design, SQLAlchemy models, Alembic migrations,
+  seed data, database and scenario tests, LLM integration and AI evaluation.
+- **Application owner:** repositories, services, APIs, permissions, deterministic
+  Evidence/CaseContext construction, validation, frontend and deployment.
+- **Shared:** contracts, pull-request review, stage acceptance and end-to-end demo.
+
+Branches represent short-lived deliverables rather than people. `main` is the only
+long-lived stable branch; direct pushes are not part of the workflow. The intended
+sequence is contracts → database/workbench shell → order/inquiry API → Evidence and
+CaseContext → AI draft/validation → workbench/end-to-end acceptance. Each branch is
+created from an updated `main`, merged by reviewed PR after its checks pass, and then
+deleted.
+
+See the complete responsibilities, branch names, commands, dependencies, PR rules
+and Definition of Done in
+[the two-person Core MVP workflow](docs/superpowers/specs/2026-09-22-core-mvp-two-person-workflow-design.md).
+
+As of 2026-10-03, Phase 1 is merged into `main`; the collaboration documents remain
+on `docs/core-mvp-contracts`. **Stage 1: Core MVP contracts** are now prepared as a
+documentation package, pending the two developers' review and merge. Read the
+[contract index and decisions](docs/contracts/README.md), then the six linked contracts.
+Database and workbench-shell implementation tasks follow that review.
+See [current delivery status and the six next-stage tasks](docs/plans/04_core_mvp_next_stage_plan.md).
+The runtime remains Phase 1; the contract package does not implement these capabilities. Main branch
+protection and container startup verification remain outstanding.
+
 ## Repository
 
 ```text
@@ -41,6 +82,7 @@ frontend/                   React + TypeScript + Vite shell, Dockerfile
 docs/
   plans/01_core_plan.md      Authoritative product roadmap
   plans/03_ecommerce_environment_plan.md  Future external Sandbox specification
+  superpowers/specs/         Approved delivery and collaboration designs
   architecture.md           Responsibility boundaries and future pipeline
   scope.md                  Phase 0 and Core V1 scope
   external-system-contract.md  Conceptual external data contract
@@ -134,6 +176,16 @@ must run separately as described below, and skipped tests do not prove integrati
 `/health` returns exactly
 `{"status":"ok","service":"ecommerce-order-support-backend"}`; it reports
 process liveness, not database connectivity or external-system readiness.
+
+### Latest validation status
+
+On 2026-10-03, local backend lint/format, all **70 tests (13 real HTTP integration
+tests, no skips)**, frontend lint/typecheck/build and runtime `/health` passed.
+The fetched main baseline's GitHub backend/frontend/compose jobs also passed.
+Local Docker is unavailable; container build/startup has not been verified.
+See [the observed validation record](docs/verification/2026-10-03-repository-sync-validation.md)
+for exact revisions and evidence. The [2026-09-23 basic record](docs/verification/2026-09-23-phase-1-basic-validation.md)
+is historical and was based on reported results only.
 
 ## Sandbox integration and real HTTP tests
 

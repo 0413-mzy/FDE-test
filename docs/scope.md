@@ -14,6 +14,11 @@ freshness policy, Sandbox implementation or real logistics/channel integrations.
 Simulated reply dispatch is tested only at the Provider boundary; no Product
 approval or send endpoint is exposed.
 
+The user authorized Core MVP Stage 1 on 2026-10-03. This delivery is the
+[documentation contract package](contracts/README.md), prepared for two-person review;
+it selects future interfaces and rules without implementing them. Database/API/Evidence/AI
+remain the separately authorized implementation stages in the [execution plan](plans/04_core_mvp_next_stage_plan.md).
+
 ## Future Core V1 in scope
 
 - Order-status support consultation for a small/cross-border ecommerce team.

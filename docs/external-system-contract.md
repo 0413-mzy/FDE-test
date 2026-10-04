@@ -254,8 +254,11 @@ will not replace Product user authorization.
 The actual implementation was inspected in the independent sibling checkout
 `demo-commerce-sandbox`: `app/schemas.py`, `app/routers/*`, `docs/api-contract.md`
 and `docs/scenarios.md`. Generated `/openapi.json` is checked by real HTTP tests.
-At inspection, S0-S1 implementation files were uncommitted in that separate repository;
-its Git HEAD alone is therefore not a reproducible version pin. No files there are changed.
+The initial Phase 1 inspection found uncommitted S0-S1 implementation files.
+On 2026-10-03 the independent repository was clean at committed revision
+`4131f1c4be7af6a6981e15379214d238228e8fa2` (also fetched origin/main), and Product's
+real HTTP tests were rerun successfully against that baseline. No Sandbox files
+or existing database were changed. See [the validation record](verification/2026-10-03-repository-sync-validation.md).
 
 Scenario numbering differs from the original plan. S02/S04/S06/S07/S08/S09/S10/S11/S12
 are tested against actual HTTP, with S01 for successful emptiness and S05 for null
