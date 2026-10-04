@@ -223,9 +223,9 @@ def test_failure_cannot_be_fabricated_as_snapshot(database, outcome, payload, fe
             session.flush()
 
 
-def historical_chain(session):
+def historical_chain(session, *, field=None, value=None):
     inquiry, _ = demo(session)
-    run = run_record(inquiry)
+    run = run_record(inquiry, **({"idempotency_key": value} if field == "run_key" else {}))
     session.add(run)
     session.flush()
     context = ContextVersion(
@@ -244,7 +244,7 @@ def historical_chain(session):
         inquiry_id=inquiry.id,
         context_id=context.id,
         actor_id=inquiry.assigned_agent_id,
-        idempotency_key="generate-test",
+        idempotency_key=value if field == "generation_key" else "generate-test",
         request_hash="a" * 64,
         state="SUCCEEDED",
         request_id="req-test",
@@ -260,7 +260,7 @@ def historical_chain(session):
         revision=1,
         origin="AI",
         analysis={},
-        reply_text="Test persistence record only.",
+        reply_text=value if field == "reply_text" else "Test persistence record only.",
         text_hash="b" * 64,
         created_at=T0,
     )
@@ -285,7 +285,7 @@ def historical_chain(session):
         draft_id=draft.id,
         validation_id=validation.id,
         reviewer_id=inquiry.assigned_agent_id,
-        idempotency_key="approve-test",
+        idempotency_key=value if field == "approval_key" else "approve-test",
         request_hash="c" * 64,
         text_hash=draft.text_hash,
         approved_at=T0,
@@ -314,6 +314,38 @@ def historical_chain(session):
     session.add_all([approval, audit, source])
     session.flush()
     return inquiry, context, draft, validation, approval, audit, source
+
+
+@pytest.mark.parametrize("blank", [" ", "\t", "\n", " \r\n\t\f\v "])
+@pytest.mark.parametrize("field", ["external_inquiry_id", "external_order_id", "escalation_reason"])
+def test_inquiry_rejects_whitespace_only_values(database, field, blank):
+    engine, _, _ = database
+    with Session(engine) as session, session.begin():
+        inquiry, _ = demo(session)
+        with pytest.raises(IntegrityError), session.begin_nested():
+            if field == "escalation_reason":
+                inquiry.state = "ESCALATED"
+            setattr(inquiry, field, blank)
+            session.flush()
+
+
+@pytest.mark.parametrize("blank", [" ", "\t", "\n", " \r\n\t\f\v "])
+@pytest.mark.parametrize("field", ["run_key", "generation_key", "reply_text", "approval_key"])
+def test_workflow_rejects_whitespace_only_values(database, field, blank):
+    engine, _, _ = database
+    with Session(engine) as session, session.begin():
+        with pytest.raises(IntegrityError), session.begin_nested():
+            historical_chain(session, field=field, value=blank)
+
+
+def test_nonblank_reply_preserves_original_whitespace(database):
+    engine, _, _ = database
+    original = " \t订单记录\n仍需核实。\r\n "
+    with Session(engine) as session, session.begin():
+        _, _, draft, _, _, _, _ = historical_chain(session, field="reply_text", value=original)
+        draft_id = draft.id
+    with Session(engine) as session:
+        assert session.get(DraftRevision, draft_id).reply_text == original
 
 
 @pytest.mark.parametrize("table", APPEND_ONLY_TABLES)
