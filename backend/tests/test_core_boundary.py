@@ -148,6 +148,8 @@ def test_database_failure_does_not_disclose_exception_or_configuration(caplog):
     assert response.status_code == 500
     assert response.json()["error"]["code"] == "INTERNAL_ERROR"
     assert sensitive not in response.text + caplog.text
+    assert "INTERNAL_ERROR" in caplog.text
+    assert response.headers["x-request-id"] in caplog.text
 
 
 def test_password_and_token_material():

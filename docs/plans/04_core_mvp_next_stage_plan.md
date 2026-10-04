@@ -21,9 +21,9 @@
 | main 保护 | branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
 | 容器运行 | 本机没有 Docker 命令；本次未构建/联启容器 | 待具备 Docker 的环境验证；不能用 compose config 代替 |
 
-Product API 仍只有 `/health`。Stage 2 数据库/Seed 与静态工作台候选已准备；数据库有独立
-PostgreSQL CI，工作台只展示虚构预计算数据。身份授权、Evidence/CaseContext 运行计算、AI、人工审核
-工作流未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
+main 的 Product API 仍只有 `/health`。Stage 2 数据库/Seed 与静态工作台候选已准备；数据库有独立
+PostgreSQL CI，工作台只展示虚构预计算数据。Stage 3 依赖候选已实现后端身份授权与咨询读取，
+Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
 仍需后续模拟发送、幂等、审计和指标，不能把 MVP 验收表当作整个 Core V1 已完成。
 
 详细证据见 [本次验证记录](../verification/2026-10-03-repository-sync-validation.md)。

@@ -1,5 +1,6 @@
 """HTTP bridge; authentication precedes manual request-schema validation."""
 
+import logging
 from collections.abc import Callable
 
 from fastapi import APIRouter, Request
@@ -13,6 +14,7 @@ from app.services.core_access import CoreAccess
 
 router = APIRouter(prefix="/api/v1")
 SECURITY = {"security": [{"BearerAuth": []}]}
+logger = logging.getLogger(__name__)
 
 
 async def invoke(request: Request, action: Callable, *, login: bool = False) -> Response:
@@ -34,6 +36,7 @@ async def invoke(request: Request, action: Callable, *, login: bool = False) -> 
                     result = exc
         except Exception:
             # Database errors may contain parameters/config; do not log or disclose them.
+            logger.warning("INTERNAL_ERROR request_id=%s", request.state.request_id)
             raise ApiError(500, "INTERNAL_ERROR") from None
         if isinstance(result, ApiError):
             raise result

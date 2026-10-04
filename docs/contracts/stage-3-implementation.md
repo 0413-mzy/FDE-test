@@ -36,6 +36,7 @@ X-Request-Id 沿用契约 ASCII 白名单；无效时生成 UUID。所有 /api/v
 没有资源内容；它们不启用未来阶段。内部/数据库异常仅返回 500 INTERNAL_ERROR/request_id，
 事务回滚，不将 SQL、连接配置或凭据传给普通日志。推荐启动命令和 Dockerfile 禁用
 原始 URL access log，避免非法 query 携带凭据/客户内容时泄漏；使用安全 Audit 记录。
+事务内部失败只在普通日志记录 INTERNAL_ERROR 与 request_id，不记录异常或 SQL 文本。
 
 CORS_ALLOWED_ORIGINS 是明确 HTTP(S) origin JSON 数组，默认 []，禁止 *、credentials、
 query/path/fragment；不使用 cookie。未知 Origin 的业务请求（含 preflight）直接拒绝，

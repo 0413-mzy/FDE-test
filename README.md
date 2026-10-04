@@ -182,7 +182,9 @@ transactional and contain only safe internal metadata.
 The documented launch command and container disable raw URL access logs, which
 could otherwise record caller-supplied query content; use the safe Audit records.
 
-Use `/docs` to inspect/try the API, with the returned Bearer token kept only in memory.
+Use `/docs` to inspect the API. To try requests from that page, also explicitly add
+the trusted API page origin (for example `http://localhost:8000`) to the allowed
+origins below; it is not silently authorized by the server. Keep Bearer tokens only in memory.
 Do not log or persist it in URL/localStorage. `CORS_ALLOWED_ORIGINS` is an explicit JSON
 origin array; default [] rejects Origin-bearing business requests. `.env.example`
 allows only the two local frontend origins on 5173; change it when your port changes.
