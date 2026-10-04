@@ -15,14 +15,15 @@
 | Product Phase 0 | 仓库骨架、健康接口、前端外壳、CI | 已实现 |
 | Product Phase 1：外部集成基础 | `2bfab022f0f7796aabfaa1eaf51978130419d575`；canonical snapshots、Clock、四个协议、HTTP adapters | 已实现；本次 70 tests passed，含 13 个真实 HTTP 测试 |
 | 正式 main 基线 | `33857e2ac42472c690d583fc50e670d994f6a436`，PR #1 已合并 | 已包含 Phase 1；不是占位 README |
-| 最新协作文档 | 远端 `docs/core-mvp-contracts`：`0d04cfcdcf65c79b10e27e18866c10c6856b547b` | 已拉到本地；截至同步时尚未合并 main，无对应 PR |
+| 最新协作文档 | `docs/core-mvp-contracts`：`cc2f262`，[PR #2](https://github.com/Mark-UM/FDE-test/pull/2) | 契约已提交，CI 通过；待 Review/合并 |
 | 外部 Sandbox S0–S1 | 独立仓库 main：`4131f1c4be7af6a6981e15379214d238228e8fa2` | 已提交；本次 fetch 后无新提交，工作区干净 |
 | 远端 CI | [Product checks](https://github.com/Mark-UM/FDE-test/actions/runs/35831745007)：backend、frontend、compose 成功 | 验证的是上面的 main SHA；不包含真实 HTTP 集成测试 |
 | main 保护 | branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
 | 容器运行 | 本机没有 Docker 命令；本次未构建/联启容器 | 待具备 Docker 的环境验证；不能用 compose config 代替 |
 
-Product API 仍只有 `/health`，业务数据库、身份授权、Evidence、CaseContext、AI、人工审核
-工作流都未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
+Product API 仍只有 `/health`。Stage 2 数据库/Seed 与静态工作台候选已准备；数据库有独立
+PostgreSQL CI，工作台只展示虚构预计算数据。身份授权、Evidence/CaseContext 运行计算、AI、人工审核
+工作流未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
 仍需后续模拟发送、幂等、审计和指标，不能把 MVP 验收表当作整个 Core V1 已完成。
 
 详细证据见 [本次验证记录](../verification/2026-10-03-repository-sync-validation.md)。
@@ -35,8 +36,8 @@ Product API 仍只有 `/health`，业务数据库、身份授权、Evidence、Ca
 | 交付 Stage | 本次状态 | 对应原始路线图 | 下一步 |
 | --- | --- | --- | --- |
 | Stage 0：正式基线 | main 合并与 CI 已完成；保护和容器运行未完成 | Phase 0、已授权的集成 Phase 1 | 补齐治理/运行验证，保留未完成项 |
-| Stage 1：Core MVP 契约 | 六份契约、完整示例与验收矩阵已成稿；待两人 Review/合并 | 支撑原 Phase 1、2、4、5、6 | **当前交付阶段**；进入 Stage 2 前关闭人工出口 |
-| Stage 2：数据库 / 工作台外壳 | 未开始 | 原 Phase 1、Phase 7 外壳 | Stage 1 合并后启动两个独立任务 |
+| Stage 1：Core MVP 契约 | PR #2 已提交，CI 通过；待两人 Review/合并 | 支撑原 Phase 1、2、4、5、6 | Review 后合并作为稳定依据 |
+| Stage 2：数据库 / 工作台外壳 | 两条依赖契约的候选已实现；具体验证见执行日志 | 原 Phase 1、Phase 7 外壳 | Review 后 rebase main、改 base、重跑 CI 并合并 |
 | Stage 3：身份授权与咨询 API | 未开始；订单当前快照读取随 Stage 4 开启 | 原 Phase 2、必要 Repository/API | 数据迁移可用后接入；授权先于事实暴露 |
 | Stage 4：Evidence / CaseContext | 未开始 | 原 Phase 4 | 授权/API 与来源契约就绪后开始 |
 | Stage 5：AI 草稿 / Validation / Review | 未开始 | 原 Phase 5、6、人工审核部分 | 只接收已授权、可追踪的 CaseContext |
@@ -53,7 +54,8 @@ Product API 仍只有 `/health`，业务数据库、身份授权、Evidence、Ca
 才成为后续实现依据。本次文档检查不替代两人审查。
 
 执行分支：继续 `docs/core-mvp-contracts`，PR base 为 `main`。main 已含完整 Phase 1，
-无需再创建基线合并 PR。下一阶段编码分支在契约合并后从最新 main 创建。
+无需再创建基线合并 PR。用户后续授权允许 Stage 2 候选先从契约分支创建；契约合并后
+须 rebase 最新 main 并重跑 CI，不能省略人工审查。
 
 ## 4. 六项契约交付与验收
 

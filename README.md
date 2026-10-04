@@ -13,6 +13,11 @@ The Product API still only exposes `GET /health`; the frontend remains the Phase
 static shell. There is no business workflow, AI, Evidence, CaseContext, authentication,
 retry or cache. PostgreSQL is provisioned but the application does not connect to it.
 
+This candidate branch adds **Stage 2 Product persistence**: SQLAlchemy records,
+an explicit Alembic migration and a development/test Seed CLI. They are not wired
+into API startup, and no authentication or workflow routes are exposed. The work
+depends on the Stage 1 contract PR and remains pending developer review.
+
 ## Core V1 target
 
 Inquiry → Authentication / Authorization → Order lookup → All parcels / Logistics
@@ -170,7 +175,8 @@ From the repository root, validate without a personal `.env`:
 docker compose --env-file .env.example config --quiet
 ```
 
-CI runs unit tests (`pytest -m "not integration"`) and the lint/build/config checks.
+CI runs unit tests (`pytest -m "not integration and not database"`), a separate
+real PostgreSQL database job, and the lint/build/config checks.
 The independent Sandbox is not available in this repository's CI; real HTTP tests
 must run separately as described below, and skipped tests do not prove integration.
 `/health` returns exactly
@@ -247,8 +253,66 @@ If events fail after shipment retrieval, the operation raises the typed failure,
 rather than returning an apparently complete shipment. A parcel without tracking
 cannot be queried yet and produces a local ValueError without HTTP.
 
-SQLAlchemy 2, Alembic, and a PostgreSQL driver remain deferred. HTTPX is now a
-runtime dependency. Further work requires a separately authorized phase.
+SQLAlchemy 2, Alembic, psycopg and Argon2id are available for explicit Stage 2 CLI
+work. They do not connect a database, authenticate users or implement workflows
+when `/health` starts. HTTPX remains the external integration dependency.
 React Router and TanStack Query are deferred until there are workflows to route
 or fetch. Frontend dependencies are locked in `package-lock.json`; Python uses
 bounded dependency ranges and does not yet have a full transitive lock.
+
+## Product database and demo Seed (Stage 2 candidate)
+
+Use Product PostgreSQL only. Migrations read the process `DATABASE_URL`, using
+`postgresql+psycopg`; for a host CLI use localhost instead of Compose's `postgres`
+hostname. Configure the URL/password in your shell, never in command-line arguments
+or source. Then from `backend/`:
+
+```sh
+python -m alembic upgrade head
+python -m alembic current
+# Explicit development/test only; set DEMO_SEED_PASSWORD securely in the shell first.
+python -m app.db.seed
+```
+
+Seed requires `APP_ENV=development` or `test` and an explicit 12–128 character
+`DEMO_SEED_PASSWORD`; production is rejected before database access. It inserts
+two demo teams, five users (agent.a/b/c, supervisor, admin), and twelve fixed
+Inquiry bindings. It hashes passwords with the contract's Argon2id parameters
+and never resets existing passwords, ownership or workflow. It does not copy
+orders, parcels or Sandbox data. Clear the temporary password environment variable
+after use. Downgrade is destructive; only use it on a disposable test database.
+
+To run actual PostgreSQL tests, configure `TEST_DATABASE_URL` for an isolated
+development/test server where the test role can create schemas:
+
+```sh
+pytest tests/database -q
+```
+
+Tests create uniquely named `fde_test_<uuid>` schemas and clean up only those
+schemas. They validate migration upgrade/downgrade/re-upgrade, ORM/schema agreement,
+Seed idempotency, keys/FKs/enums/UTC, empty-vs-failed JSON, append-only history,
+one-Approval uniqueness and rejection of a stale-version write in one transaction.
+That test is not evidence of two independent concurrent transactions; Stage 3–5
+service tests must verify actual concurrency and semantic ownership. If the URL is absent they
+visibly skip; skips do not satisfy the Stage 2 exit gate. CI provides disposable
+PostgreSQL 17 and runs these tests separately without skips.
+
+Revision `0002_nonblank_constraints` upgrades the seven nonblank checks using
+PostgreSQL POSIX `[:space:]` (including spaces, tabs and line breaks). It validates
+but does not trim or rewrite text. Existing whitespace-only values abort the upgrade
+transaction; investigate in a controlled environment rather than deleting records
+or disabling history triggers. Frozen revision `0001_core_mvp` is unchanged.
+Downgrading to 0001 restores its weaker checks and is not a production workaround.
+
+Model references and JSON are storage structures; Stage 3–5 services must still
+enforce same-Inquiry/team, source schema, Context version, Validation and approval
+preconditions in transactions. No record insertion is an authorization grant.
+Implementation references: [SQLAlchemy declarative](https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html),
+[Alembic tutorial](https://alembic.sqlalchemy.org/en/latest/tutorial.html),
+[psycopg installation](https://www.psycopg.org/psycopg3/docs/basic/install.html).
+
+Review fixes and their RED/GREEN validation evidence are recorded in
+[the 2026-10-04 database review log](docs/verification/2026-10-04-database-review-fixes.md).
+Database PR integration, native PostgreSQL 17 migration/Seed validation and local
+instance safety notes are in [the local database validation record](docs/verification/2026-10-04-database-local-integration.md).
