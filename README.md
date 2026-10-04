@@ -314,3 +314,5 @@ Implementation references: [SQLAlchemy declarative](https://docs.sqlalchemy.org/
 
 Review fixes and their RED/GREEN validation evidence are recorded in
 [the 2026-10-04 database review log](docs/verification/2026-10-04-database-review-fixes.md).
+Database PR integration, native PostgreSQL 17 migration/Seed validation and local
+instance safety notes are in [the local database validation record](docs/verification/2026-10-04-database-local-integration.md).
