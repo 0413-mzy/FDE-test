@@ -48,6 +48,39 @@ pytest -m 'not integration and not database' -q
 结果：lint 通过、30 个文件格式通过、**66 passed，70 deselected**。
 deselected 包含 13 个外部 HTTP 集成测试和 57 个 PostgreSQL 测试，不当作通过证据。
 
-当前状态：实现已修改，等待 GREEN 的真实 PostgreSQL CI；尚未宣称修复通过。
+### GREEN：真实 PostgreSQL 修复后验证
+
+实现提交 `d9251525381f8b111f04cd21e3037e7a26cc981c`：
+[push CI run 37183226651](https://github.com/Mark-UM/FDE-test/actions/runs/37183226651)
+全部四个任务成功，database job `111379810014` 为 **57 passed，51.55s，无 skips**。
+backend 为 **66 passed，70 deselected**，Ruff lint/format 成功；frontend lint/type/build
+和 Compose config 成功。
+[PR CI run 37183228812](https://github.com/Mark-UM/FDE-test/actions/runs/37183228812)
+也全部成功，验证同一实现提交。57 条包含原 26 条和新增 31 条；原文保留、增量迁移往返、
+旧非法历史导致升级回滚均已执行。
+
+### 改动清单与交接
+
+- `backend/app/db/models.py`：七处 CHECK 使用一致的非空白条件。
+- `backend/migrations/versions/0002_nonblank_constraints.py`：增量升级及降级 SQL，
+  不导入当前 ORM，不改写 0001，不更新/删除业务行。
+- `backend/tests/database/test_persistence.py`：28 个负例、原文保留、2 个迁移用例；
+  迁移版本断言跟随 Alembic head；准确命名单事务乐观锁测试。
+- `docs/contracts/core-data.md`：明确 Stage 2 与 Stage 3–5 验收职责。
+- `README.md`：迁移行为、测试局限及本记录入口。
+- `docs/verification/2026-10-03-stage-2-database-validation.md`：保留历史证据，追加澄清。
+- 本记录：授权、基线、RED/GREEN、结果、限制与交接。
+
+修复提交已验证通过，记录结果的后续提交仅修改文档。交付在
+[草稿 PR #6](https://github.com/Mark-UM/FDE-test/pull/6)，base 为 `codex/core-database`。
+未合并 PR #6/#3/#2，未修改队友分支或 main。下一步先审查/整合 #6，再按依赖关系
+处理契约与数据库 PR；换 base 或同步 main 后必须重跑检查。
+
+## 未完成项与操作限制
+
+两个独立服务事务的并发、跨 Inquiry/team 语义授权、真实容器 build/start、外部 HTTP
+集成测试未在本次修复验证；不把单事务乐观锁或 Compose config 当作对应运行证据。
+旧库若存在非法历史，升级会报约束错误并停在 0001；需数据负责人在受控流程核查，
+不得通过改写历史、禁用 trigger、自动删除数据来绕过。
 本机未安装 PostgreSQL/Docker；数据库证据来自 CI 的独立可销毁 PostgreSQL 服务，
 不运行用户数据库、不用 SQLite 替代。不改动 Provider、API、AI 或前端功能。
