@@ -98,6 +98,16 @@ Retries remain outside the Core MVP implementation slice.
 
 ## Runtime foundation today
 
+The user authorized a Stage 3 dependent candidate on 2026-10-04. This branch now
+implements login/me/logout and permission-scoped Inquiry list/detail through
+`api/core.py` and `services/core_access.py`. Connections are lazy, sessions store
+only token digests, and reads lock current User → AuthSession → Inquiry in the
+same transaction. Failed login and access denial retain safe audit records; SQL
+or input text never reaches public errors. Authentication precedes manual closed
+request validation. Explicit CORS origins gate browser access. The order route
+returns binding/Context precondition errors and performs no Provider calls.
+See [the frozen implementation slice](contracts/stage-3-implementation.md).
+
 - FastAPI + Pydantic v2 exposes a deterministic, dependency-independent `/health`.
 - Pydantic Settings reads root `.env` and process variables (`APP_ENV`, `DATABASE_URL`,
   `SANDBOX_BASE_URL`, `SANDBOX_TIMEOUT_SECONDS`).
@@ -107,13 +117,14 @@ Retries remain outside the Core MVP implementation slice.
   waits for the PostgreSQL container health check, but `/health` never queries it.
 - Pytest, Ruff, ESLint, TypeScript, Vite build and Compose config validation form CI.
 
-No authentication, domain/database behavior, Evidence Engine, CaseContext resolver,
-LLM integration or support workbench is present. No Product send API is added;
+No Evidence Engine, CaseContext resolver, LLM integration or connected support
+workbench is present. Stage 2 static UI remains a separate candidate. No Product send API is added;
 SandboxMessageProvider only verifies the simulated external boundary and does not
 decide approval. Authorization and approval are required before future exposure.
 On the Stage 2 database candidate branch, persistence dependencies, twelve workflow
-tables, a frozen migration and demo Seed CLI are implemented. The API still has no
-database startup/session or business behavior. Six historical tables reject UPDATE/
-DELETE with PostgreSQL triggers; authorization and version relationships require
-the later service layer, as defined by the contracts. `postgresql+psycopg` remains
+tables, a frozen migration and demo Seed CLI are implemented. Stage 3 now uses these
+records for sessions and authorized Inquiry reads without startup connections or
+workflow mutations. Six historical tables reject UPDATE/DELETE with PostgreSQL
+triggers; future Context/draft version relationships remain later service work.
+`postgresql+psycopg` remains
 the explicit connection convention.

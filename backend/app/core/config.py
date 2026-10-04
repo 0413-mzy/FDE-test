@@ -1,4 +1,4 @@
-"""Environment configuration; no database connections are opened in Phase 0."""
+"""Environment configuration; /health never requires a database connection."""
 
 from pathlib import Path
 from typing import Literal
@@ -18,6 +18,25 @@ class Settings(BaseSettings):
     database_url: SecretStr | None = None
     sandbox_base_url: HttpUrl | None = None
     sandbox_timeout_seconds: float = Field(default=5.0, gt=0, allow_inf_nan=False)
+    cors_allowed_origins: list[str] = Field(default_factory=list)
+
+    @field_validator("cors_allowed_origins")
+    @classmethod
+    def cors_origins(cls, values: list[str]) -> list[str]:
+        result = []
+        for value in values:
+            origin = HttpUrl(value)
+            if (
+                "*" in value
+                or origin.username
+                or origin.password
+                or origin.query
+                or origin.fragment
+                or origin.path not in (None, "/")
+            ):
+                raise ValueError("CORS origins must be explicit HTTP(S) origins")
+            result.append(str(origin).rstrip("/"))
+        return list(dict.fromkeys(result))
 
     @field_validator("sandbox_base_url")
     @classmethod

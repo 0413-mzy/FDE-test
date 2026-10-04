@@ -5,6 +5,10 @@
 
 ## 当前执行范围
 
+2026-10-04 用户明确授权“继续我的下一阶段”：新增 Stage 3 依赖候选
+`codex/core-auth-inquiries` → `codex/core-database`，只交付后端身份会话与咨询读取。
+不将第二阶段 PR 未合并误写为已在 main，不自动合并；Stage 4+ 未授权。
+
 1. 检查/提交 Stage 1 文档，创建 `docs/core-mvp-contracts` → main 的审查 PR。
 2. Stage 2 数据库候选：SQLAlchemy 2、Alembic、Product PostgreSQL schema、幂等虚构 Seed，
    真 PostgreSQL CI 测试。分支 `codex/core-database` 依赖契约 PR。
@@ -28,7 +32,8 @@ Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/�
 | --- | --- | --- |
 | Stage 1 契约 PR | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2) 已提交，CI 通过 | `cc2f262`；六份契约、完整 fixture、文档验证记录 |
 | Stage 2 数据库/Seed | [Draft PR #3](https://github.com/Mark-UM/FDE-test/pull/3)，CI 全通过 | `eeb9aca`；12 表、迁移/Seed、26 项真实 PostgreSQL 测试；[CI](https://github.com/Mark-UM/FDE-test/actions/runs/37109759410) |
-| Stage 2 静态工作台 | [Draft PR #4](https://github.com/Mark-UM/FDE-test/pull/4) 已提交 | `745089a`；六个虚构场景；lint/type/build 与 13 项 Edge 浏览器测试通过；Chromium CI 待执行 |
+| Stage 2 静态工作台 | [Draft PR #4](https://github.com/Mark-UM/FDE-test/pull/4)，CI 通过 | `d033d95`；13 项 Edge 与 Chromium 测试均通过；[最终 CI](https://github.com/Mark-UM/FDE-test/actions/runs/37129301879) |
+| Stage 3 身份授权 / 咨询 API | 实现候选已准备，本地检查通过，真实 PG CI 待执行 | login/me/logout、权限列表/详情、order 前置错误；103 本地测试 + 13 真实 HTTP 通过；新增 33 个 PG API 检查 |
 | 人工 Review / main 合并 | 未完成 | 不由自动化代签 |
 | main 保护 / 容器运行 | 未完成 | 不安装系统服务或修改仓库治理设置 |
 
@@ -39,5 +44,5 @@ Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/�
 数据库候选本地 66 个单元 + 13 个真实 Sandbox HTTP 测试通过；26 个数据库测试在 CI
 PostgreSQL 17 服务运行并全部通过。本机无 PostgreSQL，不将离线 SQL 生成视为数据库验收。
 工作台候选只有本地预览行为；不取数、不产生 Evidence、不执行 Validation/批准/发送。
-两条候选均依赖 Stage 1，审查和合并后才作为 Stage 3 基线。Stage 3 将实现身份/咨询 API，
-本次停止在 Stage 2 可审查交付；不自动越过 Review 进入业务 API 编码。
+两条候选均依赖 Stage 1，审查和合并后才作为稳定基线。后续用户已单独授权 Stage 3
+依赖候选；它继续保留人工 Review/合并出口，停止在身份与咨询 API，不开始 Stage 4。

@@ -1,6 +1,8 @@
 # Core MVP 身份、授权与 API 契约
 
 契约版本：`core-mvp-v1`；**下列 `/api/v1` 路由均为后续设计，当前只有 `/health`**。
+2026-10-04 更新：main 仍只有 `/health`；Stage 3 依赖候选实现 auth/Inquiry 读取切片，
+详见 [实现边界](stage-3-implementation.md)。表中 Stage 4/5 路由仍未实现。
 状态/幂等顺序见 [生命周期](core-lifecycle.md)，实体见 [数据契约](core-data.md)。
 
 ## 1. 最小会话

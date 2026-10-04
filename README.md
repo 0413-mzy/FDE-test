@@ -9,14 +9,16 @@ evidence and help an agent prepare a careful reply.
 Canonical snapshots, clocks, four Provider protocols and DemoCommerce HTTP adapters
 are implemented and tested against the independent S0-S1 service. This explicitly
 authorized phase supersedes the original roadmap's Phase 1 database/seed ordering.
-The Product API still only exposes `GET /health`; the frontend remains the Phase 0
-static shell. There is no business workflow, AI, Evidence, CaseContext, authentication,
-retry or cache. PostgreSQL is provisioned but the application does not connect to it.
+Main still exposes only `GET /health`. This dependent candidate implements Stage 3
+backend authentication and permission-scoped Inquiry reads using Stage 2 Product
+persistence. There is no Evidence Engine, CaseContext resolver, AI, retry or cache.
+The static workbench remains a separate candidate in PR #4; this branch's frontend
+is the foundation shell.
 
 This candidate branch adds **Stage 2 Product persistence**: SQLAlchemy records,
-an explicit Alembic migration and a development/test Seed CLI. They are not wired
-into API startup, and no authentication or workflow routes are exposed. The work
-depends on the Stage 1 contract PR and remains pending developer review.
+an explicit Alembic migration and a development/test Seed CLI. Database connections
+are created lazily for business requests; startup and /health remain independent.
+Stage 3 depends on database PR #3 and remains pending developer review.
 
 ## Core V1 target
 
@@ -70,10 +72,12 @@ As of 2026-10-03, Phase 1 is merged into `main`; the collaboration documents rem
 on `docs/core-mvp-contracts`. **Stage 1: Core MVP contracts** are now prepared as a
 documentation package, pending the two developers' review and merge. Read the
 [contract index and decisions](docs/contracts/README.md), then the six linked contracts.
-Database and workbench-shell implementation tasks follow that review.
+Stage 2 candidates are [database PR #3](https://github.com/Mark-UM/FDE-test/pull/3)
+and [workbench PR #4](https://github.com/Mark-UM/FDE-test/pull/4), with passing checks.
+The user's 2026-10-04 request authorizes Stage 3 as a dependent candidate on PR #3.
 See [current delivery status and the six next-stage tasks](docs/plans/04_core_mvp_next_stage_plan.md).
-The runtime remains Phase 1; the contract package does not implement these capabilities. Main branch
-protection and container startup verification remain outstanding.
+Main protection, developer review/merge and container startup verification remain
+outstanding. Candidate preparation does not replace those gates.
 
 ## Repository
 
@@ -82,6 +86,8 @@ backend/                    FastAPI, environment settings, tests, Dockerfile
   app/integrations/         Canonical models, protocols, explicit external errors
     sandbox/                Raw HTTP schemas, client, explicit source adapters
   app/core/clock.py         SystemClock and deterministic FixedClock
+  app/api/core.py           Stage 3 session and Inquiry HTTP endpoints
+  app/services/core_access.py  Current identity/ownership and transactional reads
   tests/integration/        Real HTTP tests (opt in with --sandbox-url)
 frontend/                   React + TypeScript + Vite shell, Dockerfile
 docs/
@@ -137,7 +143,7 @@ python -m venv .venv
 # POSIX: source .venv/bin/activate
 # PowerShell: .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000 --no-access-log
 ```
 
 In a second terminal:
@@ -150,6 +156,41 @@ npm run dev
 
 Host CLI ports are explicit arguments; `BACKEND_PORT` and `FRONTEND_PORT` in `.env`
 control Compose port publishing. The frontend currently makes no API calls.
+
+## Stage 3 backend API candidate
+
+Migrate and seed the Product PostgreSQL database using the explicit commands below
+before using business endpoints. No database is required for /health. Test identities
+are `agent.a`, `agent.b`, `agent.c`, `supervisor`, and `admin`; passwords come from your
+explicit development/test `DEMO_SEED_PASSWORD`, never a repository default.
+
+| Endpoint | Behavior |
+| --- | --- |
+| `POST /api/v1/auth/login` | Closed JSON username/password; opaque token with fixed 8h expiry |
+| `GET /api/v1/auth/me` | Current active identity/role/team, requires Bearer |
+| `POST /api/v1/auth/logout` | Revoke current session; empty 204 |
+| `GET /api/v1/inquiries?limit=20&offset=0` | Authorized summaries; stable newest-first pagination |
+| `GET /api/v1/inquiries/{id}` | Agent's assigned Inquiry or Supervisor's same-team Inquiry |
+| `GET /api/v1/inquiries/{id}/order` | Authorized placeholder: 422 if unbound, otherwise 409 CONTEXT_REQUIRED |
+
+Admin has no business access and receives an empty list. Unknown and forbidden Inquiry
+UUIDs both return the same 403. Request validation follows identity/ownership checks;
+caller role/team/order values cannot grant access. Responses are no-store, with a
+validated/generated X-Request-Id. Error bodies never echo credentials, input values,
+SQL or connection configuration. Login/failed-login/logout/access-denied audits are
+transactional and contain only safe internal metadata.
+The documented launch command and container disable raw URL access logs, which
+could otherwise record caller-supplied query content; use the safe Audit records.
+
+Use `/docs` to inspect/try the API, with the returned Bearer token kept only in memory.
+Do not log or persist it in URL/localStorage. `CORS_ALLOWED_ORIGINS` is an explicit JSON
+origin array; default [] rejects Origin-bearing business requests. `.env.example`
+allows only the two local frontend origins on 5173; change it when your port changes.
+Compose passes the same setting. No cookie authentication is used. Deployment must
+use HTTPS; login abuse protection and deployment review remain future operational gates.
+
+See [the Stage 3 slice](docs/contracts/stage-3-implementation.md) and
+[validation status](docs/verification/2026-10-04-stage-3-access-validation.md).
 
 ## Checks
 

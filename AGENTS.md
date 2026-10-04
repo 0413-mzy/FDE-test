@@ -26,6 +26,11 @@ a CRM, ERP, or a complete ecommerce platform. Avoid unrelated refactors.
   on branches based on the contract PR. This permits preparing dependent draft PRs
   before contract merge; it does not count as developer review or authorize merging
   main. Stage 3+ behavior remains outside these Stage 2 deliverables.
+- On 2026-10-04 the user explicitly requested the next stage. Stage 3 is now
+  authorized as a dependent candidate on the database PR: backend login/session/
+  logout and permission-scoped Inquiry list/detail, plus an authorized order-read
+  placeholder that returns CONTEXT_REQUIRED without fetching facts. No Stage 4+
+  implementation or main merge is authorized. Keep the pending review gates visible.
 
 ## Non-negotiable boundaries
 
