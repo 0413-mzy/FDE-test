@@ -8,6 +8,7 @@ import pytest
 from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import func, inspect, select, text, update
 from sqlalchemy.exc import IntegrityError, StatementError
 from sqlalchemy.orm import Session
@@ -62,7 +63,9 @@ def test_migration_roundtrip_and_orm_schema_match(database):
     with engine.connect() as connection:
         assert set(Base.metadata.tables) <= set(inspect(connection).get_table_names())
         assert compare_metadata(MigrationContext.configure(connection), Base.metadata) == []
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0001_core_mvp"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
+            ScriptDirectory.from_config(config).get_current_head()
+        )
     command.downgrade(config, "base")
     with engine.connect() as connection:
         assert not set(Base.metadata.tables) & set(inspect(connection).get_table_names())
@@ -348,6 +351,40 @@ def test_nonblank_reply_preserves_original_whitespace(database):
         assert session.get(DraftRevision, draft_id).reply_text == original
 
 
+def test_nonblank_migration_preserves_existing_history_and_is_reversible(database):
+    engine, config, _ = database
+    command.downgrade(config, "0001_core_mvp")
+    original = " \t历史回复\n必须保留。\r\n "
+    with Session(engine) as session, session.begin():
+        _, _, draft, _, approval, _, _ = historical_chain(
+            session, field="reply_text", value=original
+        )
+        draft_id, approval_id, original_hash = draft.id, approval.id, draft.text_hash
+    for revision in ("head", "0001_core_mvp", "head"):
+        command.upgrade(config, revision) if revision == "head" else command.downgrade(
+            config, revision
+        )
+        with Session(engine) as session:
+            stored = session.get(DraftRevision, draft_id)
+            assert stored.reply_text == original and stored.text_hash == original_hash
+            assert session.get(Approval, approval_id).draft_id == draft_id
+            assert session.scalar(select(func.count()).select_from(Inquiry)) == 12
+
+
+def test_nonblank_migration_rejects_legacy_invalid_data_without_rewriting_it(database):
+    engine, config, _ = database
+    command.downgrade(config, "0001_core_mvp")
+    with Session(engine) as session, session.begin():
+        _, _, draft, _, _, _, _ = historical_chain(session, field="reply_text", value="\n\t")
+        draft_id = draft.id
+    with pytest.raises(IntegrityError):
+        command.upgrade(config, "head")
+    with engine.connect() as connection:
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0001_core_mvp"
+    with Session(engine) as session:
+        assert session.get(DraftRevision, draft_id).reply_text == "\n\t"
+
+
 @pytest.mark.parametrize("table", APPEND_ONLY_TABLES)
 def test_historical_records_cannot_be_updated_or_deleted(database, table):
     engine, _, _ = database
@@ -383,7 +420,7 @@ def test_only_one_approval_and_restrict_delete(database):
             session.flush()
 
 
-def test_optimistic_lock_write_rejects_second_actor(database):
+def test_optimistic_lock_predicate_rejects_stale_version_in_one_transaction(database):
     engine, _, _ = database
     with Session(engine) as session, session.begin():
         inquiry, _ = demo(session)

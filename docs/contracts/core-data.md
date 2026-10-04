@@ -111,7 +111,10 @@ team-2 的 Agent C、无业务权限的 Admin；将 12 个虚构外部 Inquiry �
 
 ## 6. 交接与验收
 
-Stage 2 验证迁移、Seed、唯一性、错误外键、不可变历史和同 Inquiry 引用；Stage 3/5 再验证
-授权和并发事务行为。完整场景与负责人见 [验收矩阵](core-mvp-acceptance.md)。
+Stage 2 验证迁移、Seed、唯一性、外键目标存在、不可变历史和非空白字段约束。
+跨行同 team/同 Inquiry/run、当前版本、授权和独立事务并发行为由 Stage 3–5 对应服务
+验证；单个外键有效不代表引用链属于同一个 Inquiry。同事务重复执行带版本条件的 UPDATE
+只验证旧版本写入被拒绝，不作为双用户并发证明。完整场景与负责人见
+[验收矩阵](core-mvp-acceptance.md)。
 数据负责人交接 schema、迁移、Seed 说明和真实 PostgreSQL 结果；应用负责人依据
 [生命周期](core-lifecycle.md)及 [API](core-api.md)实现服务，不从 JSON 快照推导权限。

@@ -91,13 +91,14 @@ class Inquiry(Record, Base):
     __table_args__ = (
         UniqueConstraint("source_system", "external_inquiry_id"),
         CheckConstraint("lock_version > 0", name="lock_version"),
-        CheckConstraint("btrim(external_inquiry_id) <> ''", name="external_inquiry_id"),
+        CheckConstraint("external_inquiry_id ~ '[^[:space:]]'", name="external_inquiry_id"),
         CheckConstraint(
-            "external_order_id IS NULL OR btrim(external_order_id) <> ''", name="external_order_id"
+            "external_order_id IS NULL OR external_order_id ~ '[^[:space:]]'",
+            name="external_order_id",
         ),
         CheckConstraint(
             "(state = 'ESCALATED' AND escalation_reason IS NOT NULL "
-            "AND btrim(escalation_reason) <> '') OR "
+            "AND escalation_reason ~ '[^[:space:]]') OR "
             "(state <> 'ESCALATED' AND escalation_reason IS NULL)",
             name="escalation_reason",
         ),
@@ -140,7 +141,7 @@ class ResolutionRun(Record, Base):
         UniqueConstraint("inquiry_id", "version"),
         UniqueConstraint("inquiry_id", "idempotency_key"),
         CheckConstraint("version > 0", name="version"),
-        CheckConstraint("btrim(idempotency_key) <> ''", name="idempotency_key"),
+        CheckConstraint("idempotency_key ~ '[^[:space:]]'", name="idempotency_key"),
         CheckConstraint("request_hash ~ '^[0-9a-f]{64}$'", name="request_hash"),
         CheckConstraint(
             "(state = 'RUNNING' AND finished_at IS NULL) OR "
@@ -262,7 +263,7 @@ class GenerationAttempt(Record, Base):
     __tablename__ = "generation_attempts"
     __table_args__ = (
         UniqueConstraint("inquiry_id", "idempotency_key"),
-        CheckConstraint("btrim(idempotency_key) <> ''", name="idempotency_key"),
+        CheckConstraint("idempotency_key ~ '[^[:space:]]'", name="idempotency_key"),
         CheckConstraint("request_hash ~ '^[0-9a-f]{64}$'", name="request_hash"),
         CheckConstraint(
             "(state = 'RUNNING' AND finished_at IS NULL) OR "
@@ -300,7 +301,8 @@ class DraftRevision(Record, Base):
         CheckConstraint("revision > 0", name="revision"),
         CheckConstraint("text_hash ~ '^[0-9a-f]{64}$'", name="text_hash"),
         CheckConstraint(
-            "length(reply_text) BETWEEN 1 AND 10000 AND btrim(reply_text) <> ''", name="reply_text"
+            "length(reply_text) BETWEEN 1 AND 10000 AND reply_text ~ '[^[:space:]]'",
+            name="reply_text",
         ),
         CheckConstraint(
             "(origin = 'AI' AND generation_attempt_id IS NOT NULL AND editor_id IS NULL) "
@@ -348,7 +350,7 @@ class Approval(Record, Base):
     __tablename__ = "approvals"
     __table_args__ = (
         UniqueConstraint("inquiry_id", "idempotency_key"),
-        CheckConstraint("btrim(idempotency_key) <> ''", name="idempotency_key"),
+        CheckConstraint("idempotency_key ~ '[^[:space:]]'", name="idempotency_key"),
         CheckConstraint("request_hash ~ '^[0-9a-f]{64}$'", name="request_hash"),
         CheckConstraint("text_hash ~ '^[0-9a-f]{64}$'", name="text_hash"),
     )
