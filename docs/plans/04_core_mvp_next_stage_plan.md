@@ -20,7 +20,7 @@ Stage 3 人工 Review/合并仍待完成；Stage 4+ 未授权。
 | Product 数据库 | [PR #3](https://github.com/Mark-UM/FDE-test/pull/3)、[PR #6](https://github.com/Mark-UM/FDE-test/pull/6) | 已合并；0001 保持不变，0002 收紧七项空白约束 |
 | 外部 Sandbox S0–S1 | 独立仓库已提交版本：`4131f1c4be7af6a6981e15379214d238228e8fa2` | 本次按该版本运行独立真实 HTTP 测试 |
 | 历史远端 CI | [Product checks](https://github.com/Mark-UM/FDE-test/actions/runs/35831745007)：backend、frontend、compose 成功 | 当时验证 main `33857e2`；本次 Stage 3 新 CI 见最新验证记录 |
-| main 保护 | branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
+| main 保护 | 本次 branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
 | 本机验证环境 | Docker 29.8.1；独立 PostgreSQL 17.11 容器；Product Uvicorn 真实 HTTP | Stage 3 本地验证已通过；完整 Compose 构建/联启仍待验证 |
 
 main 的 Product API 仍只有 `/health`。Stage 2 数据库/Seed 已合并；静态工作台 PR #4 仍是
@@ -29,7 +29,7 @@ Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人
 仍需后续模拟发送、幂等、审计和指标，不能把 MVP 验收表当作整个 Core V1 已完成。
 
 最新证据见 [Stage 3 main 整合验证](../verification/2026-10-06-stage-3-main-integration.md)。
-2026-10-03 的远端 CI 与分支保护查询保留为历史观察，不代表本次重新验收治理设置。
+2026-10-03 的远端 CI 保留为历史观察；本次重新只读核对保护配置，未修改治理设置。
 
 ## 2. 阶段编号与依赖
 
@@ -41,7 +41,7 @@ Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人
 | Stage 0：正式基线 | main 合并与 CI 已完成；保护和容器运行未完成 | Phase 0、已授权的集成 Phase 1 | 补齐治理/运行验证，保留未完成项 |
 | Stage 1：Core MVP 契约 | PR #2 已合并 | 支撑原 Phase 1、2、4、5、6 | 后续实现沿用冻结契约 |
 | Stage 2：数据库 / 工作台外壳 | 数据库及修复已合并；工作台 PR #4 独立待审 | 原 Phase 1、Phase 7 外壳 | 工作台另行同步基线并 Review |
-| Stage 3：身份授权与咨询 API | [Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 已整合 main；本地 91 真 PG + 116 后端测试通过 | auth/Inquiry 读取；order 无 Context 返回 409 | 改 base 为 main，CI 通过后交人工 Review；停止在本阶段 |
+| Stage 3：身份授权与咨询 API | [Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 已整合 main 并改 base；91 真 PG + 116 本地回归及新 CI 通过 | auth/Inquiry 读取；order 无 Context 返回 409 | 交人工 Review；停止在本阶段 |
 | Stage 4：Evidence / CaseContext | 未开始 | 原 Phase 4 | 授权/API 与来源契约就绪后开始 |
 | Stage 5：AI 草稿 / Validation / Review | 未开始 | 原 Phase 5、6、人工审核部分 | 只接收已授权、可追踪的 CaseContext |
 | Stage 6：工作台 / MVP 端到端验收 | 未开始 | 原 Phase 7、10 的最小子集 | 正常及失败路径都通过，人工修改后重新校验 |

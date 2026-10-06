@@ -8,7 +8,9 @@
 2026-10-06 用户要求检查并完成图片中的下一步：继续 PR #5 的 Stage 3，不重复开发。
 远端 main 已包含契约 PR #2、数据库 PR #3 与修复 PR #6，SHA 为 `58aac36`。
 本次已整合该 main，并新增数据库升级后既有会话/咨询权限的回归测试；同步 PR #5
-base 为 main 后重跑 CI。Stage 3 仍待人工 Review/合并，不开始 Stage 4。
+base 已改为 main，新基线
+[CI](https://github.com/Mark-UM/FDE-test/actions/runs/37450116062) 四项全部通过
+（实现/测试提交 `cf421fd`）。Stage 3 仍待人工 Review/合并，不开始 Stage 4。
 
 本地结果：91 项真实 PostgreSQL（57 数据库 + 34 API/事务），116 项后端回归（含
 13 独立 Sandbox HTTP）全部通过；Ruff、前端 lint/type/build、Compose config 通过。

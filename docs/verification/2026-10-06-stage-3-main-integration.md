@@ -52,8 +52,16 @@ supervisor 11、admin 0。验证自身详情 200、其他客服/跨团队/未知
 
 ## 远端与阶段出口
 
-本次 PR base 为 main；新 head 的 backend、database、frontend、compose 四项 CI
-执行结果在提交后补充核验。旧 head 的成功不能替代新基线验证。
+PR #5 base 已改为 main，仍为 OPEN / Draft，GitHub 确认 MERGEABLE。
+实现与测试提交 `cf421fdc048c6bcb6f4e7e62d6faa8cedfeb9f3f` 的
+[main 基线 CI](https://github.com/Mark-UM/FDE-test/actions/runs/37450116062)
+backend、database、frontend、compose 四项全部成功。database job `112224372790`
+实际运行 91 项真实 PG 测试；backend 实际运行 103 项单元/HTTP 边界测试。
+独立 Sandbox 的 13 项真实 HTTP 在本地运行，不属于该 CI 的运行范围。
+这之后只补充文档结果，未改动已验证的代码或测试；最终 head 的 CI 在 PR checks 中核验。
+
+本次只读查询确认 main protection API 为 404（Branch not protected），effective rules
+为 `[]`。未修改仓库治理设置或绕过人工审查。CI 的 Actions/runner 迁移提示不影响本次结果。
 
 待完成：Stage 3 人工 Review/合并、PR #4 静态工作台、main 保护与完整 Compose
 build/start 部署验收。本次只启动 PostgreSQL 容器与主机上的 Product/Sandbox 服务，

@@ -75,7 +75,7 @@ The user's request to finish the pictured Stage 3 steps continues
 [PR #5](https://github.com/Mark-UM/FDE-test/pull/5) on the latest main database baseline.
 Its integration results are recorded in
 [Stage 3 main integration](docs/verification/2026-10-06-stage-3-main-integration.md).
-See [current delivery status and the six next-stage tasks](docs/plans/04_core_mvp_next_stage_plan.md).
+See [current delivery status and Stage 3 exit criteria](docs/plans/04_core_mvp_next_stage_plan.md).
 Stage 3 developer review/merge, main protection and full Compose build/start verification remain
 outstanding. Local PostgreSQL container and Product HTTP validation do not replace those gates.
 
