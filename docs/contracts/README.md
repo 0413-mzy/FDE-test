@@ -3,8 +3,8 @@
 初次交付：2026-10-03。2026-10-06 状态：**Stage 1 契约 PR #2 已合并 main**。
 以下决定是实现与验收依据；契约合并不表示后续业务功能全部实现，机器检查不代替人工审查记录。
 产品范围以 [Core 计划](../plans/01_core_plan.md) 为准，执行顺序见
-[Stage 计划](../plans/04_core_mvp_next_stage_plan.md)。main 包含外部集成与 Stage 2 数据库；
-Stage 3 API 仍是待审候选，其他契约描述的后续运行行为尚未实现。
+[Stage 计划](../plans/04_core_mvp_next_stage_plan.md)。Stage 3 API 在本 PR 交付并通过自审，
+用户已授权其合入 main；其他契约描述的后续运行行为尚未实现。
 
 ## 阅读顺序与责任
 

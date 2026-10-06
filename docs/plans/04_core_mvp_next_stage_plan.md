@@ -2,8 +2,9 @@
 
 同步日期：2026-10-06（Asia/Shanghai）。本文件是执行顺序与任务拆分，产品边界仍以
 [01_core_plan.md](01_core_plan.md) 为准。契约 PR #2、数据库 PR #3 和修复 PR #6
-已合并 main；Stage 3 继续现有 Draft PR #5，整合最新 main、改 base 并重跑验证。
-Stage 3 人工 Review/合并仍待完成；Stage 4+ 未授权。
+已合并 main；Stage 3 PR #5 已整合最新 main、改 base 并重跑验证。
+用户随后授权“自行审查并合并”：自审通过后按最新成功 CI 合并现有 PR #5，
+不声称独立开发者批准。Stage 4+ 未授权，合并结果以 PR #5 为准。
 
 2026-10-03 授权历史：用户要求“自动执行并推进计划”。开始提交契约 PR，并在明确依赖该 PR 的
 候选分支执行 Stage 2 数据库/Seed 与静态工作台。允许先准备依赖 PR，不把未合并契约称为
@@ -15,7 +16,7 @@ Stage 3 人工 Review/合并仍待完成；Stage 4+ 未授权。
 | --- | --- | --- |
 | Product Phase 0 | 仓库骨架、健康接口、前端外壳、CI | 已实现 |
 | Product Phase 1：外部集成基础 | `2bfab022f0f7796aabfaa1eaf51978130419d575`；canonical snapshots、Clock、四个协议、HTTP adapters | 已实现；本次整合回归仍含 13 个真实 HTTP 测试 |
-| 正式 main 基线 | `58aac3645f9d831ebd6df30a78b849761de4a3ff` | 已包含 Phase 1、契约、Stage 2 数据库和增量修复 |
+| Stage 3 合并基线 | [PR #5](https://github.com/Mark-UM/FDE-test/pull/5)；整合源 main 为 `58aac36` | 本 PR 合入后包含 Stage 3；具体合并提交以 PR 记录为准 |
 | Core MVP 契约 | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2) | 已合并 main；后续阶段按契约验收 |
 | Product 数据库 | [PR #3](https://github.com/Mark-UM/FDE-test/pull/3)、[PR #6](https://github.com/Mark-UM/FDE-test/pull/6) | 已合并；0001 保持不变，0002 收紧七项空白约束 |
 | 外部 Sandbox S0–S1 | 独立仓库已提交版本：`4131f1c4be7af6a6981e15379214d238228e8fa2` | 本次按该版本运行独立真实 HTTP 测试 |
@@ -23,8 +24,9 @@ Stage 3 人工 Review/合并仍待完成；Stage 4+ 未授权。
 | main 保护 | 本次 branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
 | 本机验证环境 | Docker 29.8.1；独立 PostgreSQL 17.11 容器；Product Uvicorn 真实 HTTP | Stage 3 本地验证已通过；完整 Compose 构建/联启仍待验证 |
 
-main 的 Product API 仍只有 `/health`。Stage 2 数据库/Seed 已合并；静态工作台 PR #4 仍是
-候选且只展示虚构预计算数据。Stage 3 候选已实现后端身份授权与咨询读取，
+本 PR 合入后的 Product API 包含 `/health` 和 Stage 3 的六个身份/咨询入口。
+Stage 2 数据库/Seed 已合并；静态工作台 PR #4 仍是候选且只展示虚构预计算数据。
+Stage 3 已实现后端身份授权与咨询读取，
 Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
 仍需后续模拟发送、幂等、审计和指标，不能把 MVP 验收表当作整个 Core V1 已完成。
 
@@ -41,7 +43,7 @@ Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人
 | Stage 0：正式基线 | main 合并与 CI 已完成；保护和容器运行未完成 | Phase 0、已授权的集成 Phase 1 | 补齐治理/运行验证，保留未完成项 |
 | Stage 1：Core MVP 契约 | PR #2 已合并 | 支撑原 Phase 1、2、4、5、6 | 后续实现沿用冻结契约 |
 | Stage 2：数据库 / 工作台外壳 | 数据库及修复已合并；工作台 PR #4 独立待审 | 原 Phase 1、Phase 7 外壳 | 工作台另行同步基线并 Review |
-| Stage 3：身份授权与咨询 API | [Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 已整合 main 并改 base；91 真 PG + 116 本地回归及新 CI 通过 | auth/Inquiry 读取；order 无 Context 返回 409 | 交人工 Review；停止在本阶段 |
+| Stage 3：身份授权与咨询 API | [PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 已整合 main；测试与自审通过，用户授权合并 | auth/Inquiry 读取；order 无 Context 返回 409 | 按最新成功 CI 合并；停止在本阶段 |
 | Stage 4：Evidence / CaseContext | 未开始 | 原 Phase 4 | 授权/API 与来源契约就绪后开始 |
 | Stage 5：AI 草稿 / Validation / Review | 未开始 | 原 Phase 5、6、人工审核部分 | 只接收已授权、可追踪的 CaseContext |
 | Stage 6：工作台 / MVP 端到端验收 | 未开始 | 原 Phase 7、10 的最小子集 | 正常及失败路径都通过，人工修改后重新校验 |
@@ -161,7 +163,8 @@ expected result；结构化结果不能自行获得发送/业务写入权限。
 2. 验证升级 0002 后既有会话、授权列表/详情、退出、过期和越权拒绝仍然正确。
 3. 重跑 PostgreSQL、独立 Sandbox HTTP、Ruff、前端 lint/type/build 和 Compose config；
    同步 PR #5 base 为 main，并确认新基线 CI。
-4. 人工审查 Stage 3 API/权限与异常场景。仅人工 Review/合并完成后才是 main 的业务能力。
+4. 按用户后续明确授权完成 Stage 3 自审并通过 PR #5 合并；自审记录与 CI 可追溯，
+   不代签两名开发者的独立批准。本 PR 合并后这些 API 才是 main 的业务能力。
 5. main 保护与完整 Compose build/start 仍是独立未完成出口。本次 PG 容器与 Product
    HTTP 验证不替代完整部署验收。
 6. 下一次明确授权后再规划 Stage 4 Evidence/CaseContext；当前不取事实、不接 AI。
@@ -183,5 +186,5 @@ Evidence 放 Stage 4；AI 放 Stage 5。此顺序是计划，后续实现需单�
 这些决定已有明确契约和正反例，无需后续实现者猜测。六个完整 Product Context 示例与
 30 项验收矩阵见 [契约包](../contracts/README.md)，本次机械检查见
 [Stage 1 验证记录](../verification/2026-10-03-stage-1-contract-validation.md)。
-契约与数据库已合并；Stage 3 人工 Review/合并、工作台 PR #4、main 保护及完整 Compose
-运行验收仍未完成。不自动推进 Stage 4。
+契约与数据库已合并；Stage 3 已完成自审并获用户明确合并授权。
+工作台 PR #4、main 保护及完整 Compose 运行验收仍未完成。不自动推进 Stage 4。

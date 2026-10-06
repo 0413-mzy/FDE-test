@@ -5,11 +5,11 @@ order?” by manually collecting facts from order systems, logistics systems, an
 warehouse notes. This product will bring those facts together into traceable
 evidence and help an agent prepare a careful reply.
 
-**Current implementation: Product Phase 1 — External Integration Foundation.**
+**Current delivery: Core MVP Stage 3 — Sessions and authorized Inquiry APIs.**
 Canonical snapshots, clocks, four Provider protocols and DemoCommerce HTTP adapters
 are implemented and tested against the independent S0-S1 service. This explicitly
 authorized phase supersedes the original roadmap's Phase 1 database/seed ordering.
-Main still exposes only `GET /health`. This dependent candidate implements Stage 3
+This delivery implements Stage 3 alongside the dependency-independent `GET /health`:
 backend authentication and permission-scoped Inquiry reads using Stage 2 Product
 persistence. There is no Evidence Engine, CaseContext resolver, AI, retry or cache.
 The static workbench remains a separate candidate in PR #4; this branch's frontend
@@ -18,7 +18,8 @@ is the foundation shell.
 Main now includes **Stage 2 Product persistence**: SQLAlchemy records,
 Alembic migrations and a development/test Seed CLI. Database connections
 are created lazily for business requests; startup and /health remain independent.
-Stage 3 is integrated with the merged database fixes and remains pending developer review in PR #5.
+Stage 3 is integrated with the merged database fixes. PR #5 has passed self-review;
+the user explicitly authorized its merge. Independent developer approval is not claimed.
 
 ## Core V1 target
 
@@ -71,13 +72,16 @@ and Definition of Done in
 As of 2026-10-06, contracts PR #2, database PR #3 and database fixes PR #6 are merged
 into `main` (`58aac36`). Read the [contract index and decisions](docs/contracts/README.md).
 The static [workbench PR #4](https://github.com/Mark-UM/FDE-test/pull/4) remains a separate draft.
-The user's request to finish the pictured Stage 3 steps continues
+The user's subsequent request authorizes self-review and merge of
 [PR #5](https://github.com/Mark-UM/FDE-test/pull/5) on the latest main database baseline.
+Its merged status and merge commit are available in that PR. Review findings and scope are recorded in
+[Stage 3 self-review](docs/verification/2026-10-06-stage-3-self-review.md).
 Its integration results are recorded in
 [Stage 3 main integration](docs/verification/2026-10-06-stage-3-main-integration.md).
 See [current delivery status and Stage 3 exit criteria](docs/plans/04_core_mvp_next_stage_plan.md).
-Stage 3 developer review/merge, main protection and full Compose build/start verification remain
-outstanding. Local PostgreSQL container and Product HTTP validation do not replace those gates.
+Main protection and full Compose build/start verification remain outstanding.
+Local PostgreSQL container and Product HTTP validation do not replace those gates.
+Stage 4+ remains outside this delivery and requires a separate task.
 
 ## Repository
 

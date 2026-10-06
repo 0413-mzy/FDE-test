@@ -98,7 +98,7 @@ Retries remain outside the Core MVP implementation slice.
 
 ## Runtime foundation today
 
-The user authorized a Stage 3 dependent candidate on 2026-10-04. This branch now
+The user authorized Stage 3 on 2026-10-04 and self-review/merge on 2026-10-06. This delivery
 implements login/me/logout and permission-scoped Inquiry list/detail through
 `api/core.py` and `services/core_access.py`. Connections are lazy, sessions store
 only token digests, and reads lock current User → AuthSession → Inquiry in the
@@ -124,7 +124,7 @@ decide approval. Authorization and approval are required before future exposure.
 Stage 2 database PR #3 and fixes PR #6 are merged into main as of 2026-10-06:
 persistence dependencies, twelve workflow tables, frozen migration 0001,
 incremental nonblank-constraint migration 0002 and demo Seed CLI are implemented.
-The Stage 3 candidate now uses these
+Stage 3 now uses these
 records for sessions and authorized Inquiry reads without startup connections or
 workflow mutations. Six historical tables reject UPDATE/DELETE with PostgreSQL
 triggers; future Context/draft version relationships remain later service work.
