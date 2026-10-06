@@ -70,6 +70,7 @@ Sandbox，网页只有基础外壳。这能支持客服辅助实验，却不能�
 
 ## 7. 当前授权与交付
 
-第一步定位已交付；用户随后授权第二步，当前交付 [commerce-v1契约](../commerce/README.md)：
-领域关系、权限、状态/事务、API及验收场景。契约不等于实现，第三步代码与界面未开始。
+第一步定位和第二步 [commerce-v1契约](../commerce/README.md)已交付。用户请求第三步，
+本分支新增购买与履约代码及双端界面；范围见[实现切片](../commerce/step-3-implementation.md)，
+结果见[验证记录](../verification/2026-10-06-commerce-step-3.md)。第四步消息/售后仍未开始。
 见 [路线与阶段出口](04_core_mvp_next_stage_plan.md) 和 [范围](../scope.md)。

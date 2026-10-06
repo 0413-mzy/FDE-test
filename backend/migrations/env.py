@@ -4,10 +4,11 @@ import os
 
 from alembic import context
 
+from app.commerce.models import Base as CommerceBase
 from app.db.connection import product_engine
 from app.db.models import Base
 
-target_metadata = Base.metadata
+target_metadata = [Base.metadata, CommerceBase.metadata]
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     raise RuntimeError("DATABASE_URL is required for Product migrations")

@@ -55,7 +55,9 @@ def test_health_and_openapi_do_not_connect_and_only_authorized_stage_4_routes_ex
         assert client.get("/health").json()["status"] == "ok"
         schema = client.get("/openapi.json").json()
         future = client.post("/api/v1/inquiries/invalid/approve")
-    assert set(schema["paths"]) == {
+    assert {
+        path for path in schema["paths"] if path.startswith("/api/v1/") or path == "/health"
+    } == {
         "/health",
         "/api/v1/auth/login",
         "/api/v1/auth/me",
@@ -206,3 +208,60 @@ def test_login_password_is_not_trimmed_or_echoed_in_validation_error():
         )
     assert result.value.details == {"field_errors": ["password"]}
     assert secret not in json.dumps(result.value.payload("req-test"))
+
+
+def test_commerce_step3_endpoint_inventory_is_separate_and_closed():
+    with TestClient(create_app(Settings(_env_file=None), session_factory=no_database)) as client:
+        schema = client.get("/openapi.json").json()
+    paths = {
+        path.removeprefix("/api/commerce/v1")
+        for path in schema["paths"]
+        if path.startswith("/api/commerce/v1")
+    }
+    assert paths == {
+        "/auth/login",
+        "/auth/me",
+        "/auth/logout",
+        "/catalog/products",
+        "/catalog/products/{product}",
+        "/merchant/shops",
+        "/merchant/shops/{shop}/products",
+        "/merchant/shops/{shop}/products/{product}",
+        "/merchant/shops/{shop}/products/{product}/edit",
+        "/merchant/shops/{shop}/products/{product}/publish",
+        "/merchant/shops/{shop}/products/{product}/archive",
+        "/merchant/shops/{shop}/products/{product}/skus",
+        "/merchant/shops/{shop}/products/{product}/skus/{sku}/edit",
+        "/merchant/shops/{shop}/inventory/{sku}",
+        "/merchant/shops/{shop}/inventory/{sku}/adjust",
+        "/customer/cart",
+        "/customer/cart/lines",
+        "/customer/cart/lines/{sku}",
+        "/customer/checkouts",
+        "/customer/checkouts/{checkout}",
+        "/customer/orders",
+        "/customer/orders/{order}",
+        "/customer/orders/{order}/address",
+        "/customer/orders/{order}/cancel",
+        "/customer/orders/{order}/payments",
+        "/customer/orders/{order}/confirm-receipt",
+        "/merchant/shops/{shop}/orders",
+        "/merchant/shops/{shop}/orders/{order}",
+        "/merchant/shops/{shop}/orders/{order}/shipments",
+        "/customer/orders/{order}/shipments/{shipment}",
+        "/merchant/shops/{shop}/orders/{order}/shipments/{shipment}",
+        "/demo/pending",
+        "/demo/payments/{attempt}/result",
+        "/demo/shipments/{shipment}/events",
+        "/demo/orders/expire",
+    }
+    assert schema["paths"]["/api/commerce/v1/auth/me"]["get"]["security"] == [
+        {"CommerceBearer": []}
+    ]
+    assert schema["components"]["securitySchemes"]["CommerceBearer"]["scheme"] == "bearer"
+    for path, methods in schema["paths"].items():
+        if not path.startswith("/api/commerce/v1"):
+            continue
+        for method in methods.values():
+            for name in __import__("re").findall(r"{(\w+)}", path):
+                assert any(p["name"] == name and p["in"] == "path" for p in method["parameters"])

@@ -1,9 +1,8 @@
 # 当前代码的启动与验证
 
-本页保留重设计前已有代码的运行说明。它启动客服基础与静态前端，**不会生成尚未实现的
-商城、客户/商家账号、商品或购物流程**。路径中的 Stage/Phase 均指旧客服交付编号。
-产品新方向见 [主计划](plans/01_core_plan.md)。
-后续实现商城功能时，必须同时更新本页的迁移、Seed、启动和演示说明。
+本页说明第三步商城及保留的客服模块。Stage/Phase 编号仅指旧客服交付。
+商城实际范围见 [第三步切片](commerce/step-3-implementation.md)，结果见
+[验证记录](verification/2026-10-06-commerce-step-3.md)。
 
 ## Local setup
 
@@ -53,7 +52,60 @@ npm run dev
 ```
 
 Host CLI ports are explicit arguments; `BACKEND_PORT` and `FRONTEND_PORT` in `.env`
-control Compose port publishing. The frontend currently makes no API calls.
+control Compose port publishing. Set `VITE_API_BASE_URL` to the backend origin before
+starting/building Vite (default `http://localhost:8000`). Configure the matching frontend
+origin in `CORS_ALLOWED_ORIGINS`; alternate ports are not automatically trusted.
+
+## 商城迁移、账号与双端演示
+
+以下命令在 backend 目录执行，使用显式 DATABASE_URL 连接你的开发 PostgreSQL。
+迁移/商城Seed读取进程环境：仅复制根目录.env不会把值导入shell；运行CLI前需显式设置
+DATABASE_URL、APP_ENV和DEMO_SEED_PASSWORD（不要把值提交Git）：
+
+```sh
+python -m alembic upgrade head
+# 先在当前 shell 设置 APP_ENV=development 与自行选择的 DEMO_SEED_PASSWORD（12..128字符）
+python -m app.commerce.seed
+```
+
+容器模式改用 `docker compose exec backend python -m alembic upgrade head`。
+Seed 密码不自动传入容器；在本地 shell 设置后，用
+`docker compose exec -e DEMO_SEED_PASSWORD backend python -m app.commerce.seed`
+显式传入（backend 已设置 development）。商城种子不由启动服务隐式重置。
+
+
+Seed 仅 development/test 运行，重复执行保留已有账号、商品、库存和历史；改密码环境变量
+不会覆盖已有账号。不要把密码、Bearer 或真实客户资料写入 Git/普通日志。商城新增迁移
+0003，与旧客服 0001/0002 共存；旧客服 Seed 不会生成商城数据。
+
+所有演示账号使用本次显式配置的密码：
+
+| 账号 | 能力 |
+| --- | --- |
+| customer.a / customer.b | 各自购物车、订单与收货 |
+| owner.a / owner.b | shopA / shopB 店主，商品、库存与履约 |
+| staff.a | shopA 履约成员，无商品/库存修改权 |
+| dual.a | 客户与 shopA 店主，能力分开校验 |
+| demo | 独立模拟事件操作者；不具备客户/商家权限 |
+
+种子是虚构商品 A/B/L/Z，覆盖两家店铺、最后一件和缺货。金额为 CNY 整数分，运费/税费0。
+前端密码/Bearer仅存内存，刷新后重新登录；购物车和订单仍在服务器数据库中。
+
+用独立浏览器会话演示：
+
+1. customer.a 选购 A 与 B，填写虚构地址下单；按两店生成两张独立订单。
+2. 客户在各订单发起模拟付款，状态先为处理中。
+3. demo 进入“模拟事件”，分别提交付款成功/失败；客户刷新详情读取实际结果。
+4. owner.a 与 owner.b 进入“店铺工作台”，选择本店订单、填写数量创建包裹。
+   A 数量为2时可分两次各发1件。
+5. demo 对包裹提交运输/异常/送达事件，发生时间不早于出库且不在未来；客户刷新物流。
+6. 全部应发商品已发且包裹送达后，客户确认收货。重新登录仍读取已完成订单。
+
+商品与库存页面可创建草稿、SKU、调整库存、编辑价格和发布/归档；服务端处理版本冲突。
+付款预留15分钟，GET不自动清理库存；客户取消/付款或 DEMO 指定订单到期结算触发事务。
+不确定的写请求保留原请求重试，禁止通过刷新版本重复扣库存或重复发货。
+模拟控制台仅development/test注册；生产环境没有结果注入端点。
+消息、退款、退货、真实支付与真实物流尚未实现，不作为本次演示步骤。
 
 ## Backend APIs (Stage 3 baseline + Stage 4 feature branch)
 
@@ -122,6 +174,7 @@ pytest
 From `frontend/`:
 
 ```sh
+npm test
 npm run lint
 npm run typecheck
 npm run build
@@ -285,3 +338,24 @@ Review fixes and their RED/GREEN validation evidence are recorded in
 [the 2026-10-04 database review log](verification/2026-10-04-database-review-fixes.md).
 Database PR integration, native PostgreSQL 17 migration/Seed validation and local
 instance safety notes are in [the local database validation record](verification/2026-10-04-database-local-integration.md).
+
+## 可选真实浏览器验收
+
+[commerce-browser-acceptance.cjs](../scripts/commerce-browser-acceptance.cjs)通过页面和真实API
+执行两店下单、两次付款、三包裹（含分批发货）、模拟送达与两单确认收货。
+仅在**新建隔离schema、完成迁移和商城Seed**的演示环境运行；脚本不负责清库/重置，
+也不适用于已有订单/库存变化的演示库。失败会关闭自己创建的浏览器并只打印安全步骤。
+
+需要可用的Playwright模块与浏览器，这是可选验收工具，不增加生产运行依赖。
+设置以下环境变量后，从仓库根目录运行 `node scripts/commerce-browser-acceptance.cjs`：
+
+| 变量 | 用途 |
+| --- | --- |
+| COMMERCE_UI_URL | 前端地址，默认http://localhost:5173 |
+| COMMERCE_PASSWORD_FILE | 必需：仅本机可读的演示密码文件路径，内容与Seed一致 |
+| COMMERCE_SCREENSHOT_DIR | 输出截图目录，默认/tmp/fde-commerce-browser-evidence |
+| CHROME_EXECUTABLE | 可选：已安装Chrome可执行文件；不设置则使用Playwright自带浏览器 |
+| PLAYWRIGHT_MODULE | 可选：已安装Playwright模块路径；不设置则require('playwright') |
+
+前端/API时钟需正常同步；模拟物流时间不能早于出库或晚于服务端当前时间。
+脚本等待具体HTTP成功和队列变化，不把等待若干秒当作付款/物流成功证据。

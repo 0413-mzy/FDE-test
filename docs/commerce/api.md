@@ -1,6 +1,7 @@
 # API契约：commerce-v1
 
-**设计状态，端点尚不存在。** 命名空间 `/api/commerce/v1`（下表省略此前缀）；
+**第三步实现其中购买与履约端点，消息/售后/退款端点仍是设计。**
+完整实现清单见 [第三步切片](step-3-implementation.md)。命名空间 `/api/commerce/v1`（下表省略此前缀）；
 旧 `/api/v1/auth`、Inquiry等接口继续按旧契约，不复用新Bearer或业务对象。
 详细状态/数量规则见 [lifecycle](lifecycle.md)，对象访问见 [permissions](permissions.md)。
 
@@ -75,10 +76,12 @@ Inventory.version。任何订单关联状态/地址/尝试创建、包裹/事件
   MembershipView `{shop_id,shop_name,role:OWNER|STAFF,shop_status:ACTIVE|SUSPENDED}`，只列active成员关系。
 - **SKUView**：`{id,sku_code,options:object<string,string>,unit_price_minor,currency:"CNY",price_version,
   active:bool,available:int}`。匿名不返回reserved、流水或购买者。
+  商家本店 **MerchantSKUView** 额外返回`version:int`，用于SKU编辑的expected_version；
+  公共SKUView不含此内部编辑版本。
 - **ProductView**：`{id,shop_id,shop_name,title,description,status,version,skus:SKUView[]}`；公共仅PUBLISHED
-  且店铺ACTIVE、只列active SKU；商家本店可看所有SKU。
+  且店铺ACTIVE、只列active SKU；商家本店MerchantProductView使用MerchantSKUView，可看所有SKU。
 - **InventoryView**：`{sku_id,on_hand,reserved,available,version}`，仅OWNER。
-- **CartView**：`{id,version,lines:CartLineView[]}`；每行`{sku_id,shop_id,quantity,seen_price_version,
+- **CartView**：`{id,version,lines:CartLineView[]}`；每行`{sku_id,shop_id,product_title,shop_name,options:object<string,string>,quantity,seen_price_version,
   seen_price_minor,current_price_version,current_price_minor,currency,available,purchasable:bool}`；
   商品停售仍显示旧选择与purchasable=false，不悄悄删除。总价由checkout按已确认价计算。
 - **OrderLineView**：`{id,sku_id,title,options,unit_price_minor,quantity,shipped_qty,

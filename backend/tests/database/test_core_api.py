@@ -5,6 +5,7 @@ from uuid import uuid4
 
 import pytest
 from alembic import command
+from alembic.script import ScriptDirectory
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select, text, update
 from sqlalchemy.exc import OperationalError
@@ -88,7 +89,7 @@ def test_main_database_upgrade_preserves_live_session_and_inquiry_permissions(ac
 
     with Session(engine) as session:
         assert session.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "0002_nonblank_constraints"
+            ScriptDirectory.from_config(migrations).get_current_head()
         )
         after = session.get(AuthSession, session_id)
         assert after.token_digest == digest and after.expires_at == expires_at

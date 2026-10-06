@@ -10,11 +10,13 @@
 - Current direction: a multi-merchant physical-goods business simulation with
   customer and merchant interfaces backed by shared persistent business records.
   Payment and carrier integrations are simulated initially; no real money moves.
-- The user authorized the next step on 2026-10-06. The current task is Step 2:
-  domain relationships, permissions, state/transaction rules, planned API contracts
-  and acceptance scenarios in `docs/commerce/README.md` (`commerce-v1`).
-  This is contract documentation, not commerce schema/API/UI/AI implementation.
-  Step 1 positioning is already delivered as draft PR #2; do not start Step 3 here.
+- On 2026-10-06 the user explicitly requested Step 3. The current task implements
+  identity/catalog/inventory, Cart/Checkout/Order with simulated payment, and
+  shipment/tracking/receipt, connected to customer/merchant/demo UI. Additive
+  PostgreSQL migrations, explicit demo seed and relevant tests are authorized.
+  `docs/commerce/README.md` (`commerce-v1`) governs the behavior. Step 4 messages,
+  after-sales/refunds, AI, real payments/carriers and main merge are not in scope.
+  Prior Step 1/2 documentation is delivered in dependent draft PRs #2/#3.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.
   Product scope describes the destination; it does not imply a feature is implemented
   or grant permission to skip the currently requested step.
@@ -22,8 +24,8 @@
 ## Existing implementation and compatibility
 
 - Existing code is the order-support foundation: sessions, Inquiry permissions,
-  canonical Providers, snapshots, Evidence/CaseContext and recovery. The frontend
-  is a static shell. These are not a completed commerce platform.
+  canonical Providers, snapshots, Evidence/CaseContext and recovery. Step 3 adds a
+  separate commerce namespace and customer/merchant/demo UI. Support contracts remain separate.
 - `docs/contracts/` and `docs/external-system-contract.md` govern the existing
   support module only. New commerce contracts live separately in `docs/commerce/`.
   Its Agent/Supervisor/Admin roles, external-order references
