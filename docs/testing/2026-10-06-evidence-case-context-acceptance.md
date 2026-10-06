@@ -49,7 +49,7 @@ order/parcel/warehouse_note 源年龄 86400 秒；shipment/shipment_event 21600 
 
 ## 4. 状态、幂等和事务出口
 
-- 开始 resolve 短事务：授权、版本/状态、幂等检查，写 RUNNING，占用 Inquiry，
+- 开始 resolve 短事务：授权、幂等重放/冲突检查、再检查新操作的状态/版本，写 RUNNING，占用 Inquiry，
   清当前 Context/Draft、递增 lock_version，再结束事务执行 HTTP。
 - 结束短事务：重查当前授权/占用与关联，保存 SourceFetch、不可变 Context/安全 Audit，
   写 SUCCEEDED/PARTIAL/FAILED 并释放占用，再递增 lock_version。

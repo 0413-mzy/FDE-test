@@ -26,7 +26,8 @@ Provider coverage into explicitly pending Stage 4 acceptance requirements.
   provenance, authorization, versioning and failure exit criteria.
 - [x] Link handoff documents from README; validate links and diff whitespace.
 - [x] Stop the disposable PostgreSQL instance and record remaining limitations.
-- [ ] Commit/push a `codex/` documentation branch and open a PR to main; do not merge.
+- [x] Commit/push a `codex/` documentation branch and open a PR to main; do not merge.
+  Published as [PR #7](https://github.com/Mark-UM/FDE-test/pull/7).
 
 ## Boundaries
 
