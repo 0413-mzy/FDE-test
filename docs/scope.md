@@ -1,69 +1,41 @@
-# Scope freeze
+# 范围与授权边界
 
-## Current feature branch: Core MVP Stage 4
+日期：2026-10-06。产品方向以 [主计划](plans/01_core_plan.md) 为准。
+旧项目“禁止完整电商平台”和“只做订单咨询”的范围不再约束新平台建设。
 
-The 2026-10-06 user delegation authorizes Evidence/CaseContext on merged Stage 3.
-In scope: canonical collection, per-source outcomes, freshness/unknown/missing/conflict
-rules, immutable Context and source history, authorized resolve/run/context/order APIs,
-two short transactions around HTTP, idempotency and explicit interrupted-run recovery.
-No AI, draft/approval/send, retry/cache, frontend behavior or Sandbox expansion.
-See [Stage 4 implementation](contracts/stage-4-implementation.md).
-The following earlier-phase sections retain their historical scope only.
+## 平台目标范围（尚未实现）
 
-## Historical delivery: Product Phase 1 — External Integration Foundation
+- 多商家、实体商品、用户端与商家端、平台自有持久化业务记录。
+- 商品/SKU、库存、购物车、下单与模拟付款、订单处理、发货与模拟物流。
+- 用户查询物流、双方消息、确认收货、取消与退款/退货等售后。
+- 权限隔离、状态校验、幂等与并发、审计、可复现演示数据及异常场景。
 
-Phase 0 foundation remains. This explicitly authorized Phase 1 supersedes the
-original roadmap's database/seed phase ordering. In scope: canonical typed snapshots,
-SystemClock/FixedClock, four Provider protocols, explicit external errors, HTTPX
-Sandbox client and adapters, real HTTP integration tests and supporting documentation.
+模拟支付、取消、地址修改与退款可以作为人工业务功能设计；不沿用旧客服模块的
+全局禁止。但具体前态、权限、金额/库存影响须在下一步冻结，不能直接开放接口。
 
-Out of this phase: persistent domain models, migrations, Product seed data,
-authentication/authorization flows, Evidence Engine, CaseContext, AI/LLM calls,
-drafting, UI changes, RAG, retries, caching, aggregation, conflict resolution,
-freshness policy, Sandbox implementation or real logistics/channel integrations.
-Simulated reply dispatch is tested only at the Provider boundary; no Product
-approval or send endpoint is exposed.
+## 当前任务：第一步重设计
 
-The user authorized Core MVP Stage 1 on 2026-10-03. This delivery is the
-[documentation contract package](contracts/README.md), prepared for two-person review;
-it selects future interfaces and rules without implementing them. Database/API/Evidence/AI
-remain the separately authorized implementation stages in the [execution plan](plans/04_core_mvp_next_stage_plan.md).
+本次修改 README、AGENTS、产品主计划、架构、范围、路线、文档导航及执行记录。
+保留启动说明、既有代码/测试/迁移和历史证据。清理活动文档的旧产品约束。
+本次不添加商品/订单等表、用户/商家 API、界面、模拟支付逻辑或 AI。
+不删除数据，不修改既有角色或已冻结接口，不部署或合并 main。
 
-## Future Core V1 in scope
+## 首个功能交付目标
 
-The user's 2026-10-04 next-stage request authorizes Stage 3 as a dependent candidate:
-backend login/session/logout, current identity checks, permission-filtered Inquiry
-list/detail, safe errors/audits and explicit CORS. It depends on Stage 2 database
-PR #3, which is now merged with database fixes into main. The 2026-10-06 request
-continues PR #5 on that baseline. The subsequent request authorizes self-review and
-merge through PR #5 with passing checks; independent developer approval is not claimed.
-The order route checks access
-and reports missing binding/Context; it does not fetch or disclose fresh facts.
-No Stage 4 Evidence/Context computation, AI, draft/review workflow, frontend login,
-retry/cache or Sandbox implementation belongs to this slice.
+在业务规则冻结后交付“用户选购与模拟付款 → 商家处理并发货 → 用户查看订单/物流”。
+同时具备双端页面、共享后端、持久化、权限与失败提示。消息与售后另作后续闭环。
+当前仅定义目标，尚未声称实现。
 
-- Order-status support consultation for a small/cross-border ecommerce team.
-- Authorized order, all-parcel/logistics and warehouse information retrieval.
-- Evidence-based explanation with sources, timestamps and explicit uncertainty.
-- Structured analysis and reply drafts with deterministic validation.
-- Human review/edit/approval and idempotent mock sending.
-- Auditability, basic metrics, and tests of failures, missing/conflicting/stale data.
+## 初版不覆盖
 
-## Explicitly out of Core V1
+真实支付/清算、真实承运商与外部消息投递、实际经营上线、多币种/税费/报关、复杂促销、
+数字商品、订阅交易、完整 ERP/CRM、通用 Agent/SaaS 平台以及 AI 自动执行业务。
+这些需要独立需求与设计，不因“尽量覆盖业务”自动纳入第一版。
 
-- Refund execution, cancellation execution, address modification, payment or
-  compensation execution. Requests are routed to manual processes, not executed.
-- CRM, ERP, inventory forecasting, marketing or a complete ecommerce platform.
-- Multi-tenant SaaS, general Agent platforms, generic customer-service chatbots,
-  or autonomous customer service.
-- Real logistics/carrier and customer-channel integrations in the baseline release.
+## 已有能力范围
 
-## Separate external environment
-
-DemoCommerce Sandbox supplies simulated external facts, support messages and
-controllable failures over HTTP. It contains no AI and is not this product's
-database or a second ecommerce product. Its roadmap is separate from product
-phases. Its S0-S1 HTTP service now exists independently and is consumed here.
-
-Any proposed feature must directly improve the defined order-support workflow
-and be authorized for the current phase. Otherwise defer it.
+会话、Inquiry 权限、外部 Providers、Evidence/CaseContext、历史读取与恢复是旧客服域。
+前端仍是静态页面，既有 Seed 是客服角色/咨询数据，不是用户、店铺或商品 Seed。
+[既有契约](contracts/README.md)保持兼容模块的规则；平台新规则优先依据新主计划。
+[Sandbox](plans/03_ecommerce_environment_plan.md)作为可选外部集成环境保留。
+历史验证仅证明对应日期/版本，不作为新平台验收。

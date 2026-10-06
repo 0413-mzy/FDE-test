@@ -1,200 +1,43 @@
-# 当前交付状态与下一阶段计划
+# 电商平台路线与阶段出口
 
-## 2026-10-06 最新授权与特性分支
+日期：2026-10-06。此路线取代旧客服 Stage 1–5 的主线；文件名保留以兼容文档链接。
+当前授权：用户批准“先开始第一步”。产品方向见 [主计划](01_core_plan.md)。
 
-用户要求“下一步，你全权负责，做完之后告诉我你做的是什么”。基于已合并 Stage 3
-`8469971`，本次交付 Stage 4 Evidence/CaseContext：来源编排、可追溯 Evidence、质量规则、
-版本／幂等／两段事务、授权历史与当前订单读取、人工中断恢复。
-分支 `codex/core-evidence-context`；验收见
-[本次记录](../verification/2026-10-06-stage-4-validation.md)。
-本次准备可审查 PR，不自动合并 main，不推进 Stage 5；静态工作台 PR #4 和就绪文档
-PR #7 保持各自交付。以下 Stage 3 执行步骤是历史记录，不作为重复开发任务。
-
-同步日期：2026-10-06（Asia/Shanghai）。本文件是执行顺序与任务拆分，产品边界仍以
-[01_core_plan.md](01_core_plan.md) 为准。契约 PR #2、数据库 PR #3 和修复 PR #6
-已合并 main；Stage 3 PR #5 已整合最新 main、改 base 并重跑验证。
-用户随后授权“自行审查并合并”：自审通过后按最新成功 CI 合并现有 PR #5，
-不声称独立开发者批准。Stage 4+ 未授权，合并结果以 PR #5 为准。
-
-2026-10-03 授权历史：用户要求“自动执行并推进计划”。开始提交契约 PR，并在明确依赖该 PR 的
-候选分支执行 Stage 2 数据库/Seed 与静态工作台。允许先准备依赖 PR，不把未合并契约称为
-稳定 main 基线；人工 Review/合并出口保留，不自动合并。进度见 [执行日志](05_core_mvp_execution_log.md)。
-
-## 1. 已确认基线
-
-| 项目 | 当前证据 | 状态 |
-| --- | --- | --- |
-| Product Phase 0 | 仓库骨架、健康接口、前端外壳、CI | 已实现 |
-| Product Phase 1：外部集成基础 | `2bfab022f0f7796aabfaa1eaf51978130419d575`；canonical snapshots、Clock、四个协议、HTTP adapters | 已实现；本次整合回归仍含 13 个真实 HTTP 测试 |
-| Stage 3 合并基线 | [PR #5](https://github.com/Mark-UM/FDE-test/pull/5)；整合源 main 为 `58aac36` | 本 PR 合入后包含 Stage 3；具体合并提交以 PR 记录为准 |
-| Core MVP 契约 | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2) | 已合并 main；后续阶段按契约验收 |
-| Product 数据库 | [PR #3](https://github.com/Mark-UM/FDE-test/pull/3)、[PR #6](https://github.com/Mark-UM/FDE-test/pull/6) | 已合并；0001 保持不变，0002 收紧七项空白约束 |
-| 外部 Sandbox S0–S1 | 独立仓库已提交版本：`4131f1c4be7af6a6981e15379214d238228e8fa2` | 本次按该版本运行独立真实 HTTP 测试 |
-| 历史远端 CI | [Product checks](https://github.com/Mark-UM/FDE-test/actions/runs/35831745007)：backend、frontend、compose 成功 | 当时验证 main `33857e2`；本次 Stage 3 新 CI 见最新验证记录 |
-| main 保护 | 本次 branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
-| 本机验证环境 | Docker 29.8.1；独立 PostgreSQL 17.11 容器；Product Uvicorn 真实 HTTP | Stage 3 本地验证已通过；完整 Compose 构建/联启仍待验证 |
-
-本 PR 合入后的 Product API 包含 `/health` 和 Stage 3 的六个身份/咨询入口。
-Stage 2 数据库/Seed 已合并；静态工作台 PR #4 仍是候选且只展示虚构预计算数据。
-Stage 3 已实现后端身份授权与咨询读取，
-Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
-仍需后续模拟发送、幂等、审计和指标，不能把 MVP 验收表当作整个 Core V1 已完成。
-
-最新证据见 [Stage 3 main 整合验证](../verification/2026-10-06-stage-3-main-integration.md)。
-2026-10-03 的远端 CI 保留为历史观察；本次重新只读核对保护配置，未修改治理设置。
-
-## 2. 阶段编号与依赖
-
-原始 Core 路线图的 Phase 1 是数据库/Seed，但已授权执行的 Product Phase 1 是外部集成。
-后续使用协作方案的 **Stage** 编号，避免将同名阶段误认为已完成。
-
-| 交付 Stage | 本次状态 | 对应原始路线图 | 下一步 |
+| 步骤 | 产出 | 出口 | 当前状态 |
 | --- | --- | --- | --- |
-| Stage 0：正式基线 | main 合并与 CI 已完成；保护和容器运行未完成 | Phase 0、已授权的集成 Phase 1 | 补齐治理/运行验证，保留未完成项 |
-| Stage 1：Core MVP 契约 | PR #2 已合并 | 支撑原 Phase 1、2、4、5、6 | 后续实现沿用冻结契约 |
-| Stage 2：数据库 / 工作台外壳 | 数据库及修复已合并；工作台 PR #4 独立待审 | 原 Phase 1、Phase 7 外壳 | 工作台另行同步基线并 Review |
-| Stage 3：身份授权与咨询 API | [PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 已整合 main；测试与自审通过，用户授权合并 | auth/Inquiry 读取；order 无 Context 返回 409 | 按最新成功 CI 合并；停止在本阶段 |
-| Stage 4：Evidence / CaseContext | 未开始 | 原 Phase 4 | 授权/API 与来源契约就绪后开始 |
-| Stage 5：AI 草稿 / Validation / Review | 未开始 | 原 Phase 5、6、人工审核部分 | 只接收已授权、可追踪的 CaseContext |
-| Stage 6：工作台 / MVP 端到端验收 | 未开始 | 原 Phase 7、10 的最小子集 | 正常及失败路径都通过，人工修改后重新校验 |
+| 1 定位与约束 | README、开发约束、产品计划、架构、范围、路线 | 无活动范围冲突；区分现状/目标；保留兼容资料 | 本次交付 |
+| 2 领域与规则 | 用户/店铺权限、领域关系、状态图、接口契约和场景矩阵 | 正常/拒绝/重复/并发场景都有明确预期 | 未开始 |
+| 3 购买与履约 | 商品与库存、购物车、订单/模拟支付、发货/物流；双端页面 | 不同浏览器会话完成购买发货闭环；刷新保持数据；无跨店/跨用户泄露 | 未开始 |
+| 4 消息与售后 | 订单/店铺会话、双方消息、取消/退款/退货及页面 | 双方可读写授权记录；状态及金额/库存变化正确 | 未开始 |
+| 5 场景完善 | 拆包、缺货、失败/重复/并发、物流延迟等演示与回归 | 场景矩阵逐项给出执行证据及未覆盖项 | 未开始 |
+| 6 AI机会评估 | 实际操作基线、痛点样本、选定任务与评估方案 | 先证明具体收益再立项；没有收益也可不加AI | 未开始 |
 
-已有 Provider 与错误模型复用，不重建泛化 connector 框架。Sandbox 暂停扩展，源码/数据库
-不并入 Product；不因为其无 API Key 就认为 Product 已具备用户授权。
+## 下一步：规则冻结，不先堆页面
 
-## 3. Stage 1 历史目标与边界（已交付）
+按以下顺序确定业务：
 
-**Stage 1 目标：形成两名开发者可以独立实现、互相测试的 Core MVP 契约包。**
-交付是文档、接口示例和场景定义，不是 SQLAlchemy 模型、业务 API、AI 调用或 UI 实现。
-具体决定已写入 [契约索引](../contracts/README.md)及六份文档；只有双方 Review 并合并后
-才成为后续实现依据。本次文档检查不替代两人审查。
+1. 身份与权限：客户、店铺成员、演示操作者；对象归属与角色变化。
+2. 商品/SKU与库存：上架、价格、数量、预留/扣减/释放及购买快照。
+3. 购物车与订单：跨店购买如何拆分、金额/币种、地址、幂等与事务边界。
+4. 模拟支付、发货与包裹：各自状态及允许操作、失败/重复/并发的处理。
+5. 消息与售后：参与者、订单关联、取消/退货/退款的前态、金额与库存影响。
+6. 双端验收：用两名客户和两家店铺检查正常流程与越权；明确每步界面显示与数据变化。
 
-执行分支：继续 `docs/core-mvp-contracts`，PR base 为 `main`。main 已含完整 Phase 1，
-无需再创建基线合并 PR。用户后续授权允许 Stage 2 候选先从契约分支创建；契约合并后
-须 rebase 最新 main 并重跑 CI，不能省略人工审查。
+第二步只在用户继续该步骤时执行，不从本次定位更新直接开始数据库或 UI 实现。
+不需要沿旧 Stage 5 实现 AI，也不要求新商城先构建客服 Inquiry。
 
-## 4. 六项契约交付与验收（冻结依据，非待开发任务）
+## 功能阶段的统一验收
 
-### T1：事实与业务数据所有权
+- 页面真实调用后端；服务端状态持久化；刷新与重新登录后仍能读取。
+- 多账号/店铺隔离；恶意 ID、失效会话和权限变化均由后端阻断。
+- 非法状态、重复请求和关键并发有可重复验证，不能超卖或重复付款/退款。
+- 模拟来源有明确提示；物流延迟不等于交易退款，消息文本不授予操作权限。
+- 使用真实 PostgreSQL验证事务/迁移，使用真实HTTP验证双端/接口关联。
+- 数据 Seed/重置明确限定演示环境，不影响已有数据库和历史记录。
+- 每阶段提交代码、相关测试、启动/演示方法、已知缺口和 GitHub PR 状态。
 
-建议交付 `docs/contracts/core-data.md`。数据负责人主笔，应用负责人审查。
+## 既有工作的处理
 
-- 先固定事实路径：优先复用现有 HTTP Providers；Product 保存本次处理所依据的快照与
-  版本，Product Seed 只生成测试用户、咨询归属和工作流状态。若选择本地 facts fixture，
-  必须通过同一 Provider 协议产生 canonical snapshots，不能让业务层绕开 Provider。
-- 区分外部事实与 Product 工作流实体，不为演示复制完整订单/商城数据库。
-- 定义 User/Role、Inquiry、取数记录/快照、Evidence、ContextVersion、DraftRevision、
-  ReviewDecision、Audit/Integration 记录的最小字段、主外键、唯一性与 UTC 时间规则。
-  此列表是候选概念，不代表每项必须单独成表；只引入能支撑 MVP 的实体。
-- 明确外部 ID 与内部 ID 的映射，nullable 与缺失的区别；保留原 status、来源和源更新时间，
-  Product 版本/抓取时间不覆盖源事实。订单数据不赋予权限。
-- SQLAlchemy 2、Alembic、PostgreSQL 为后续实现目标；测试至少验证 PostgreSQL 迁移路径，
-  SQLite 不能替代 PostgreSQL 的唯一性、并发或迁移验收。
-
-验收：每个候选字段有拥有者与用途；每条关系/唯一性约束可写出正反例；双方确认事实路径，
-后续数据库实现能支持业务查询且不直接访问 Sandbox SQLite。
-
-### T2：Inquiry / Context / Draft / Review 生命周期
-
-建议交付 `docs/contracts/core-lifecycle.md`。应用负责人主笔，数据负责人提供异常样本。
-
-- 定义状态、合法转移、前置条件、操作者和失败后的状态，避免一次 HTTP 失败把咨询伪标为完成。
-- 新取数生成新 Context 版本；草稿绑定确切 Context 与 Evidence 版本。
-- 人工编辑产生新 revision 并重新执行 Validation；失效、失败或旧版本草稿不能沿用批准。
-- 批准绑定最终文本、版本、操作者和时间，重复批准的幂等规则明确。
-- MVP 的“已批准”与 Core V1 的“已模拟发送/已完成”不同；不复用 `SENT` 代表人工批准。
-
-验收：有状态转换表和正常、失败、编辑后重验、旧版本批准、重复点击五类例子。
-
-### T3：身份授权、API 与错误契约
-
-建议交付 `docs/contracts/core-api.md`。应用负责人主笔，数据负责人审查越权测试。
-
-- 固定最小登录/session 或 token 方案、密码存储、失效行为和测试用户配置；不设计企业 IAM。
-- 固定 Agent 的 Inquiry 归属与订单关联授权。Supervisor 范围若进入 MVP，需显式团队边界；
-  Admin 角色不能默认为所有业务订单的访问许可。明确每个入口的授权检查顺序。
-- 定义登录/me、咨询读取、授权订单读取、resolve-context、草稿生成/编辑、批准等最小操作的
-  请求/响应样例；只定义契约，不新增 routes。批准可先返回模拟工作流结果，不暴露发送操作。
-- 定义 401、403、业务 not-found、source-not-found、timeout、unavailable、invalid-response、
-  conflict、validation-failed 的区别。保留 request ID，禁止泄露源 payload/密钥。
-- 查询无权或未知实体时的防枚举策略一致；前端 order ID、source facts 和声称的授权不可信。
-
-验收：Agent A 访问 Agent B、修改 order ID、无订单 Inquiry、未登录、伪造授权有明确拒绝示例；
-只有后端允许的范围可进入 Provider 调用/CaseContext。
-
-### T4：Evidence / CaseContext 与数据质量契约
-
-建议交付 `docs/contracts/evidence-case-context.md`。应用负责人主笔，数据负责人验证质量。
-
-- Evidence 带稳定 ID、来源记录、快照版本、取值定位、源/抓取/发生时间，引用可精确回溯。
-- 事实、来源原文、计划、未知、缺失、冲突分开。仓库自由文本的确定性处理仅保留可证明的
-  来源信息，不凭字符串模式把一段计划自动提升为已发生事实。
-- 固定各来源的查询结果与每个包裹 outcome：成功数据、成功空数组、记录不存在、无 tracking、
-  timeout、unavailable、invalid response。一个包裹失败不丢弃其他包裹，也不产生物流异常结论。
-- 源时间 null 表示 UNKNOWN；新 fetch 不证明最新业务状态。选择明确、可配置的 freshness
-  规则与测试边界，发生时间不替代源更新时间；本阶段不实现缓存或重试。
-- 统一 CaseContext 的最小授权范围、来源版本、缺失/冲突/风险字段。冲突保留双方来源，
-  不自行决定仓库或物流一定正确。Unknown status 不归一化成成功/已交付。
-
-验收：完整 JSON 样例覆盖正常、多包裹、旧数据、源失败、未知更新时间和冲突；同输入/Clock
-产生确定结果；所有引用可定位；没有用未知信息补出承诺。
-
-### T5：结构化 AI 输出与确定性 Validation / Review 契约
-
-建议交付 `docs/contracts/analysis-review.md`。AI 负责人主笔，应用负责人审查安全门与调用顺序。
-
-- 固定 intent、known_facts、plans_or_expectations、uncertainties、conflicts、missing_information、
-  risk_flags、requires_human_review、reply_draft 及 Evidence 引用规则。
-- AI 输入只来自授权 Context 版本；权限、事实、freshness 和动作由程序决定。
-- 规定 schema/引用/旧数据/高风险/无依据确定性检查的失败结果和可恢复路径。
-- 明确生成后与人工编辑后的 Validation 都是批准前置条件；高风险执行始终不可用。
-- 定义 Fake LLM 失败样本与真实模型 eval 方式；不提前调用模型或增加 SDK。
-
-验收：无效 ID、把计划当事实、忽视旧数据、退款完成声明、提示注入原文等失败样例均有明确
-expected result；结构化结果不能自行获得发送/业务写入权限。
-
-### T6：测试矩阵、实现交接与验收证据
-
-建议交付 `docs/contracts/core-mvp-acceptance.md`。数据/测试负责人主笔，双方 Review。
-
-- 将业务场景与来源场景编号分开，例如 `CORE-*` 与 `SANDBOX-Sxx`，不混用旧计划编号。
-- 复用 S02 正常、S04 多包裹、S06 计划/未揽收、S07 旧数据、S08 504、S09 503、
-  S10 shipment 404、S11 冲突、S12 未知订单；S01 的 200 + [] 用于成功空结果。
-- 越权、恶意自由文本、无 tracking、部分包裹失败、未知状态、错误 AI、编辑后绕过批准等
-  Sandbox 未提供的场景用 Product 层测试 fixture/Fake Provider；不能称作真实 Sandbox 覆盖。
-- 集成测试固定 Clock 为 `2026-09-20T06:00:00Z`，使用独立临时 Sandbox；不 reset 共享服务。
-- 每项写明入口、输入、预期结果、拒绝点、证据和负责人；用可验证结果代替“页面能打开”。
-
-验收：六份契约相互一致、有成功和失败示例、无未决实现问题；两人完成审查后在 PR 中逐项
-记录验收。代码/lint/build 检查保持通过；没有夹带业务实现。
-
-## 5. 执行顺序与进入下一阶段的条件
-
-1. 继续 `codex/core-auth-inquiries` / PR #5，合入 main 的已审数据库修复，不重复开发。
-2. 验证升级 0002 后既有会话、授权列表/详情、退出、过期和越权拒绝仍然正确。
-3. 重跑 PostgreSQL、独立 Sandbox HTTP、Ruff、前端 lint/type/build 和 Compose config；
-   同步 PR #5 base 为 main，并确认新基线 CI。
-4. 按用户后续明确授权完成 Stage 3 自审并通过 PR #5 合并；自审记录与 CI 可追溯，
-   不代签两名开发者的独立批准。本 PR 合并后这些 API 才是 main 的业务能力。
-5. main 保护与完整 Compose build/start 仍是独立未完成出口。本次 PG 容器与 Product
-   HTTP 验证不替代完整部署验收。
-6. 下一次明确授权后再规划 Stage 4 Evidence/CaseContext；当前不取事实、不接 AI。
-
-Stage 2 最小退出条件：空 PostgreSQL 可 migration、重复 Seed 不增殖、关系约束/数据版本可测；
-前端外壳 lint/type/build 通过并展示 Loading/Empty/Error。业务授权/API 放 Stage 3；
-Evidence 放 Stage 4；AI 放 Stage 5。此顺序是计划，后续实现需单独授权。
-
-## 6. 已形成的决策与待审出口
-
-- T1：现有 Sandbox HTTP + Product 不可变 canonical 快照；业务 Seed 不复制外部订单主库。
-- T3：8 小时不透明 bearer session；Agent 自己分配、Supervisor 同 team、Admin 无业务读权；
-  未知/无权 Inquiry 统一 403，订单访问必须先通过 Inquiry 授权。
-- T4：fetch 30 分钟，源年龄订单/包裹/备注 24 小时、物流/事件 6 小时；null UNKNOWN；
-  单包裹/仓库失败为局部 outcome，必需来源失败阻止 Context。
-- T2/T5：新 run 使旧版本失效；编辑新 revision 重验；批准时重算时效并原子绑定文本/版本，
-  同 key 同请求返回同 Approval；不产生发送/高风险执行。
-
-这些决定已有明确契约和正反例，无需后续实现者猜测。六个完整 Product Context 示例与
-30 项验收矩阵见 [契约包](../contracts/README.md)，本次机械检查见
-[Stage 1 验证记录](../verification/2026-10-03-stage-1-contract-validation.md)。
-契约与数据库已合并；Stage 3 已完成自审并获用户明确合并授权。
-工作台 PR #4、main 保护及完整 Compose 运行验收仍未完成。不自动推进 Stage 4。
+主分支基线 Stage 3 和当前分支继承的 Stage 4 属于客服基础；保留实现与测试。
+其 [契约](../contracts/README.md)、[Stage 4验证](../verification/2026-10-06-stage-4-validation.md)
+和恢复工具继续供兼容模块使用。不要用历史 316 项测试替代新平台场景验收。

@@ -1,3 +1,5 @@
+> 兼容模块设计：此文件只约束已经交付的客服 Stage 4。它不限制新平台的用户/商家交互；当前方向见 [产品主计划](../../plans/01_core_plan.md)。
+
 # Stage 4 Evidence / CaseContext design
 
 User authorization: take responsibility for the next stage and report the completed work.
