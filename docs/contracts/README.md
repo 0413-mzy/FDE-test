@@ -1,4 +1,4 @@
-> 定位更新（2026-10-06）：本目录是**既有客服模块的兼容契约**，不再定义整个项目的产品范围。Agent/Supervisor/Admin、Inquiry、Evidence与旧Core V1行动限制只适用于对应模块。新平台以 [主计划](../plans/01_core_plan.md) 和 [架构](../architecture.md) 为准；客户/商家业务契约尚未编写。下文的阶段/审核状态保留当时记录，不作为当前平台路线。
+> 定位更新（2026-10-06）：本目录是**既有客服模块的兼容契约**，不再定义整个项目的产品范围。Agent/Supervisor/Admin、Inquiry、Evidence与旧Core V1行动限制只适用于对应模块。新平台以 [主计划](../plans/01_core_plan.md) 和 [架构](../architecture.md) 为准；客户/商家业务契约见 [commerce-v1](../commerce/README.md)，其端点与表尚未实现。下文的阶段/审核状态保留当时记录，不作为当前平台路线。
 
 # Core MVP 契约包 v1
 

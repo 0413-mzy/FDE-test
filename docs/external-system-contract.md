@@ -1,4 +1,4 @@
-> 定位更新（2026-10-06）：此契约继续约束既有客服模块的外部 Providers，不定义新商城的数据所有权或业务 API。新平台自有交易数据的职责见 [架构](architecture.md)，新领域契约在下一步编写。
+> 定位更新（2026-10-06）：此契约继续约束既有客服模块的外部 Providers，不定义新商城的数据所有权或业务 API。新平台自有交易数据的职责见 [架构](architecture.md)，新领域契约见 [commerce-v1](commerce/README.md)，尚未实现。
 
 # Minimum external-system contract — canonical v1
 
