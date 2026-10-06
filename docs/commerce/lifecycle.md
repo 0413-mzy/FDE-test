@@ -34,7 +34,8 @@ Checkout锁Cart及相关业务记录，验证全部行的可售性、价格、�
 下单/付款/取消涉及所有行，全事务成功；StockMovement与业务结果同提交。
 最后一件并发购买仅一方成功，不能把检查与写入拆成无锁两步。下单先结算涉及SKU的
 已到期未付订单（释放该订单全部预留），再检查库存；不只释放其中一行。
-到期使用now≥payment_deadline。读取不写库，读视图返回payment_expired与expires_at；
+到期使用now≥payment_deadline。读取不写库，读视图返回payment_expired与payment_deadline；
+payment_expired仅当status=PENDING_PAYMENT且now≥payment_deadline为true（已付/已取消为false）。
 显式demo过期结算和购买/支付/取消写入会结算到期记录。没有承诺后台定时器已实现。
 支付尝试PENDING不延长库存期限；到期未付即释放并使PENDING尝试FAILED/ORDER_EXPIRED。
 

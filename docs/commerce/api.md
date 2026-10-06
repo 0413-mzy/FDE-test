@@ -23,7 +23,8 @@
 
 除登录/退出外，每个写端点要求一个1..200字符可见ASCII（!至~，无空格/控制字符）的`Idempotency-Key`。作用域
 (actor_id, operation, key)，operation含端点操作和聚合ID；规范化body（含expected_version）
-摘要相同才是同一请求。成功结果/资源ID与领域变更同事务提交。
+摘要相同才是同一请求。成功响应快照/资源ID与领域变更同事务提交（IdempotencyRecord.response_payload）。
+业务快照仅在授权数据库保留，不放入普通日志；登录令牌不进入该记录。
 
 先验证当前身份/对象权，再查重放；已成功的相同body即使版本已增长也返回原成功结果
 （200和`Idempotent-Replay: true`；DELETE重放仍204），不重复发货/扣库存/发送消息。

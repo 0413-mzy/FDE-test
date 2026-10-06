@@ -84,7 +84,7 @@ region/city(1..100)、postal_code(1..20)、address_line(1..300)，均trim后非�
 | AfterSaleLine | case_id、order_line_id、quantity、unit_price_minor_snapshot | 仅一类未发/已送达数量；不能超过对应可退款数量；金额服务器计算 |
 | ReturnShipment | case_id、tracking_number、state IN_TRANSIT/RECEIVED、restock | 每退货Case最多1个；商家确认全部申请数量收货，再选择是否回库 |
 | BusinessAudit | actor_id、action、target_id、request_id、safe_metadata、created_at | 包含允许/拒绝与失败；无密码、令牌、地址或消息原文 |
-| IdempotencyRecord | actor_id、operation、key、request_hash、resource_ids、response_status | 成功事务同提交；绑定原结果；所有权/会话失效不可通过重放绕过 |
+| IdempotencyRecord | actor_id、operation、key、request_hash、resource_ids、response_status、response_payload | 成功事务同提交；绑定原结果；所有权/会话失效不可通过重放绕过 |
 
 Shipment状态和Order财务/履约状态彼此独立。退货包裹不是出库Shipment，不改写原配送时间线。
 退款对历史发货量不作减法：退款未发量和退款已发量分别累计。活动售后锁住申请数量；
