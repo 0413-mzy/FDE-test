@@ -121,8 +121,10 @@ No Evidence Engine, CaseContext resolver, LLM integration or connected support
 workbench is present. Stage 2 static UI remains a separate candidate. No Product send API is added;
 SandboxMessageProvider only verifies the simulated external boundary and does not
 decide approval. Authorization and approval are required before future exposure.
-On the Stage 2 database candidate branch, persistence dependencies, twelve workflow
-tables, a frozen migration and demo Seed CLI are implemented. Stage 3 now uses these
+Stage 2 database PR #3 and fixes PR #6 are merged into main as of 2026-10-06:
+persistence dependencies, twelve workflow tables, frozen migration 0001,
+incremental nonblank-constraint migration 0002 and demo Seed CLI are implemented.
+The Stage 3 candidate now uses these
 records for sessions and authorized Inquiry reads without startup connections or
 workflow mutations. Six historical tables reject UPDATE/DELETE with PostgreSQL
 triggers; future Context/draft version relationships remain later service work.

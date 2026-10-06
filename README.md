@@ -15,10 +15,10 @@ persistence. There is no Evidence Engine, CaseContext resolver, AI, retry or cac
 The static workbench remains a separate candidate in PR #4; this branch's frontend
 is the foundation shell.
 
-This candidate branch adds **Stage 2 Product persistence**: SQLAlchemy records,
-an explicit Alembic migration and a development/test Seed CLI. Database connections
+Main now includes **Stage 2 Product persistence**: SQLAlchemy records,
+Alembic migrations and a development/test Seed CLI. Database connections
 are created lazily for business requests; startup and /health remain independent.
-Stage 3 depends on database PR #3 and remains pending developer review.
+Stage 3 is integrated with the merged database fixes and remains pending developer review in PR #5.
 
 ## Core V1 target
 
@@ -68,16 +68,16 @@ See the complete responsibilities, branch names, commands, dependencies, PR rule
 and Definition of Done in
 [the two-person Core MVP workflow](docs/superpowers/specs/2026-09-22-core-mvp-two-person-workflow-design.md).
 
-As of 2026-10-03, Phase 1 is merged into `main`; the collaboration documents remain
-on `docs/core-mvp-contracts`. **Stage 1: Core MVP contracts** are now prepared as a
-documentation package, pending the two developers' review and merge. Read the
-[contract index and decisions](docs/contracts/README.md), then the six linked contracts.
-Stage 2 candidates are [database PR #3](https://github.com/Mark-UM/FDE-test/pull/3)
-and [workbench PR #4](https://github.com/Mark-UM/FDE-test/pull/4), with passing checks.
-The user's 2026-10-04 request authorizes Stage 3 as a dependent candidate on PR #3.
+As of 2026-10-06, contracts PR #2, database PR #3 and database fixes PR #6 are merged
+into `main` (`58aac36`). Read the [contract index and decisions](docs/contracts/README.md).
+The static [workbench PR #4](https://github.com/Mark-UM/FDE-test/pull/4) remains a separate draft.
+The user's request to finish the pictured Stage 3 steps continues
+[PR #5](https://github.com/Mark-UM/FDE-test/pull/5) on the latest main database baseline.
+Its integration results are recorded in
+[Stage 3 main integration](docs/verification/2026-10-06-stage-3-main-integration.md).
 See [current delivery status and the six next-stage tasks](docs/plans/04_core_mvp_next_stage_plan.md).
-Main protection, developer review/merge and container startup verification remain
-outstanding. Candidate preparation does not replace those gates.
+Stage 3 developer review/merge, main protection and full Compose build/start verification remain
+outstanding. Local PostgreSQL container and Product HTTP validation do not replace those gates.
 
 ## Repository
 

@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
+from alembic import command
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select, text, update
 from sqlalchemy.exc import OperationalError
@@ -71,6 +72,43 @@ def sign_in(client, password, username="agent.a"):
     )
     assert response.status_code == 200, response.text
     return response, {"Authorization": "Bearer " + response.json()["token"]}
+
+
+def test_main_database_upgrade_preserves_live_session_and_inquiry_permissions(access_app, database):
+    client, _, engine, password, ids = access_app
+    _, migrations, _ = database
+    command.downgrade(migrations, "0001_core_mvp")
+    login, headers = sign_in(client, password)
+    with Session(engine) as session:
+        digest = token_digest(login.json()["token"])
+        before = session.scalar(select(AuthSession).where(AuthSession.token_digest == digest))
+        session_id, expires_at = before.id, before.expires_at
+
+    command.upgrade(migrations, "head")
+
+    with Session(engine) as session:
+        assert session.scalar(text("SELECT version_num FROM alembic_version")) == (
+            "0002_nonblank_constraints"
+        )
+        after = session.get(AuthSession, session_id)
+        assert after.token_digest == digest and after.expires_at == expires_at
+    assert client.get("/api/v1/auth/me", headers=headers).json() == login.json()["user"]
+    listing = client.get("/api/v1/inquiries", headers=headers)
+    assert listing.status_code == 200 and listing.json()["total"] == 10
+    assert {item["id"] for item in listing.json()["items"]} == {
+        str(value) for key, value in ids.items() if int(key[-3:]) <= 10
+    }
+    own = f"/api/v1/inquiries/{ids['INQ-DEMO-002']}"
+    assert client.get(own, headers=headers).status_code == 200
+    for external_id in ("INQ-DEMO-011", "INQ-DEMO-012"):
+        assert (
+            client.get(f"/api/v1/inquiries/{ids[external_id]}", headers=headers).status_code == 403
+        )
+    order = client.get(own + "/order", headers=headers)
+    assert order.status_code == 409 and order.json()["error"]["code"] == "CONTEXT_REQUIRED"
+    assert client.post("/api/v1/auth/logout", headers=headers).status_code == 204
+    assert client.get("/api/v1/auth/me", headers=headers).status_code == 401
+    sign_in(client, password)
 
 
 def test_login_stores_only_digest_and_safe_audit_with_fixed_expiry(access_app, caplog):

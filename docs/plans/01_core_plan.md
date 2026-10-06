@@ -1,5 +1,10 @@
 # 电商订单咨询处理助手：初步实现项目规划（Core V1）
 
+> 2026-10-06 更新：契约 PR #2、数据库 PR #3 和修复 PR #6 已合并到 main `58aac36`。
+> 用户要求完成图片中的 Stage 3 下一步：继续现有 PR #5，整合最新 main、改 base 并重跑检查。
+> Stage 3 仍是待审候选；Stage 4+ 和 main 合并未授权。下方日期段落保留历史状态。
+> 最新进度与验证见 [执行日志](05_core_mvp_execution_log.md)。
+
 > 2026-10-04 更新：Stage 2 数据库/Seed 与静态工作台候选 PR 已交付并通过技术检查，
 > 尚未 Review/合并。用户明确要求继续下一阶段，授权 Stage 3 身份会话与咨询读取 API
 > 的依赖候选；不授权 Stage 4+ 或自动合并 main。最新状态见 [执行日志](05_core_mvp_execution_log.md)。

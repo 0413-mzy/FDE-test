@@ -24,7 +24,8 @@ remain the separately authorized implementation stages in the [execution plan](p
 The user's 2026-10-04 next-stage request authorizes Stage 3 as a dependent candidate:
 backend login/session/logout, current identity checks, permission-filtered Inquiry
 list/detail, safe errors/audits and explicit CORS. It depends on Stage 2 database
-PR #3 while all review/merge gates remain visible. The order route checks access
+PR #3, which is now merged with database fixes into main. The 2026-10-06 request
+continues PR #5 on that baseline; Stage 3 review/merge gates remain visible. The order route checks access
 and reports missing binding/Context; it does not fetch or disclose fresh facts.
 No Stage 4 Evidence/Context computation, AI, draft/review workflow, frontend login,
 retry/cache or Sandbox implementation belongs to this slice.

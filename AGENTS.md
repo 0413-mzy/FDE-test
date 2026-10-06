@@ -31,6 +31,10 @@ a CRM, ERP, or a complete ecommerce platform. Avoid unrelated refactors.
   logout and permission-scoped Inquiry list/detail, plus an authorized order-read
   placeholder that returns CONTEXT_REQUIRED without fetching facts. No Stage 4+
   implementation or main merge is authorized. Keep the pending review gates visible.
+- On 2026-10-06 the user requested completion of the pictured Stage 3 next steps.
+  Contract PR #2, database PR #3 and fixes PR #6 are now merged into main. Continue
+  existing PR #5, integrate latest main, retarget it to main and rerun validation.
+  Stage 3 review remains pending; do not implement Stage 4+ or merge main.
 
 ## Non-negotiable boundaries
 

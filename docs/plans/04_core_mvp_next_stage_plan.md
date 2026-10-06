@@ -1,10 +1,11 @@
 # 当前交付状态与下一阶段计划
 
-同步日期：2026-10-03（Asia/Shanghai）。本文件是执行顺序与任务拆分，产品边界仍以
-[01_core_plan.md](01_core_plan.md) 为准。用户随后授权开始下一阶段；当前已交付 Stage 1
-契约文档包，待两名开发者 Review/合并。
+同步日期：2026-10-06（Asia/Shanghai）。本文件是执行顺序与任务拆分，产品边界仍以
+[01_core_plan.md](01_core_plan.md) 为准。契约 PR #2、数据库 PR #3 和修复 PR #6
+已合并 main；Stage 3 继续现有 Draft PR #5，整合最新 main、改 base 并重跑验证。
+Stage 3 人工 Review/合并仍待完成；Stage 4+ 未授权。
 
-后续授权更新：用户要求“自动执行并推进计划”。开始提交契约 PR，并在明确依赖该 PR 的
+2026-10-03 授权历史：用户要求“自动执行并推进计划”。开始提交契约 PR，并在明确依赖该 PR 的
 候选分支执行 Stage 2 数据库/Seed 与静态工作台。允许先准备依赖 PR，不把未合并契约称为
 稳定 main 基线；人工 Review/合并出口保留，不自动合并。进度见 [执行日志](05_core_mvp_execution_log.md)。
 
@@ -13,20 +14,22 @@
 | 项目 | 当前证据 | 状态 |
 | --- | --- | --- |
 | Product Phase 0 | 仓库骨架、健康接口、前端外壳、CI | 已实现 |
-| Product Phase 1：外部集成基础 | `2bfab022f0f7796aabfaa1eaf51978130419d575`；canonical snapshots、Clock、四个协议、HTTP adapters | 已实现；本次 70 tests passed，含 13 个真实 HTTP 测试 |
-| 正式 main 基线 | `33857e2ac42472c690d583fc50e670d994f6a436`，PR #1 已合并 | 已包含 Phase 1；不是占位 README |
-| 最新协作文档 | `docs/core-mvp-contracts`：`cc2f262`，[PR #2](https://github.com/Mark-UM/FDE-test/pull/2) | 契约已提交，CI 通过；待 Review/合并 |
-| 外部 Sandbox S0–S1 | 独立仓库 main：`4131f1c4be7af6a6981e15379214d238228e8fa2` | 已提交；本次 fetch 后无新提交，工作区干净 |
-| 远端 CI | [Product checks](https://github.com/Mark-UM/FDE-test/actions/runs/35831745007)：backend、frontend、compose 成功 | 验证的是上面的 main SHA；不包含真实 HTTP 集成测试 |
+| Product Phase 1：外部集成基础 | `2bfab022f0f7796aabfaa1eaf51978130419d575`；canonical snapshots、Clock、四个协议、HTTP adapters | 已实现；本次整合回归仍含 13 个真实 HTTP 测试 |
+| 正式 main 基线 | `58aac3645f9d831ebd6df30a78b849761de4a3ff` | 已包含 Phase 1、契约、Stage 2 数据库和增量修复 |
+| Core MVP 契约 | [PR #2](https://github.com/Mark-UM/FDE-test/pull/2) | 已合并 main；后续阶段按契约验收 |
+| Product 数据库 | [PR #3](https://github.com/Mark-UM/FDE-test/pull/3)、[PR #6](https://github.com/Mark-UM/FDE-test/pull/6) | 已合并；0001 保持不变，0002 收紧七项空白约束 |
+| 外部 Sandbox S0–S1 | 独立仓库已提交版本：`4131f1c4be7af6a6981e15379214d238228e8fa2` | 本次按该版本运行独立真实 HTTP 测试 |
+| 历史远端 CI | [Product checks](https://github.com/Mark-UM/FDE-test/actions/runs/35831745007)：backend、frontend、compose 成功 | 当时验证 main `33857e2`；本次 Stage 3 新 CI 见最新验证记录 |
 | main 保护 | branch protection API 返回 404，effective rules API 返回 `[]` | 待配置：PR review、必需 checks、禁止绕过直接 push |
-| 容器运行 | 本机没有 Docker 命令；本次未构建/联启容器 | 待具备 Docker 的环境验证；不能用 compose config 代替 |
+| 本机验证环境 | Docker 29.8.1；独立 PostgreSQL 17.11 容器；Product Uvicorn 真实 HTTP | Stage 3 本地验证已通过；完整 Compose 构建/联启仍待验证 |
 
-main 的 Product API 仍只有 `/health`。Stage 2 数据库/Seed 与静态工作台候选已准备；数据库有独立
-PostgreSQL CI，工作台只展示虚构预计算数据。Stage 3 依赖候选已实现后端身份授权与咨询读取，
+main 的 Product API 仍只有 `/health`。Stage 2 数据库/Seed 已合并；静态工作台 PR #4 仍是
+候选且只展示虚构预计算数据。Stage 3 候选已实现后端身份授权与咨询读取，
 Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人协作方案是 Core V1 的 MVP 子集，结束于人工批准；完整 Core V1
 仍需后续模拟发送、幂等、审计和指标，不能把 MVP 验收表当作整个 Core V1 已完成。
 
-详细证据见 [本次验证记录](../verification/2026-10-03-repository-sync-validation.md)。
+最新证据见 [Stage 3 main 整合验证](../verification/2026-10-06-stage-3-main-integration.md)。
+2026-10-03 的远端 CI 与分支保护查询保留为历史观察，不代表本次重新验收治理设置。
 
 ## 2. 阶段编号与依赖
 
@@ -36,9 +39,9 @@ Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人
 | 交付 Stage | 本次状态 | 对应原始路线图 | 下一步 |
 | --- | --- | --- | --- |
 | Stage 0：正式基线 | main 合并与 CI 已完成；保护和容器运行未完成 | Phase 0、已授权的集成 Phase 1 | 补齐治理/运行验证，保留未完成项 |
-| Stage 1：Core MVP 契约 | PR #2 已提交，CI 通过；待两人 Review/合并 | 支撑原 Phase 1、2、4、5、6 | Review 后合并作为稳定依据 |
-| Stage 2：数据库 / 工作台外壳 | 两条依赖契约的候选已实现；具体验证见执行日志 | 原 Phase 1、Phase 7 外壳 | Review 后 rebase main、改 base、重跑 CI 并合并 |
-| Stage 3：身份授权与咨询 API | 2026-10-04 单独授权；[Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 候选及真 PG CI 已通过，待 Review | auth/Inquiry 读取；order 无 Context 返回 409 | 依赖审查/合并后，单独授权 Stage 4 |
+| Stage 1：Core MVP 契约 | PR #2 已合并 | 支撑原 Phase 1、2、4、5、6 | 后续实现沿用冻结契约 |
+| Stage 2：数据库 / 工作台外壳 | 数据库及修复已合并；工作台 PR #4 独立待审 | 原 Phase 1、Phase 7 外壳 | 工作台另行同步基线并 Review |
+| Stage 3：身份授权与咨询 API | [Draft PR #5](https://github.com/Mark-UM/FDE-test/pull/5) 已整合 main；本地 91 真 PG + 116 后端测试通过 | auth/Inquiry 读取；order 无 Context 返回 409 | 改 base 为 main，CI 通过后交人工 Review；停止在本阶段 |
 | Stage 4：Evidence / CaseContext | 未开始 | 原 Phase 4 | 授权/API 与来源契约就绪后开始 |
 | Stage 5：AI 草稿 / Validation / Review | 未开始 | 原 Phase 5、6、人工审核部分 | 只接收已授权、可追踪的 CaseContext |
 | Stage 6：工作台 / MVP 端到端验收 | 未开始 | 原 Phase 7、10 的最小子集 | 正常及失败路径都通过，人工修改后重新校验 |
@@ -46,7 +49,7 @@ Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人
 已有 Provider 与错误模型复用，不重建泛化 connector 框架。Sandbox 暂停扩展，源码/数据库
 不并入 Product；不因为其无 API Key 就认为 Product 已具备用户授权。
 
-## 3. 下一阶段目标与边界
+## 3. Stage 1 历史目标与边界（已交付）
 
 **Stage 1 目标：形成两名开发者可以独立实现、互相测试的 Core MVP 契约包。**
 交付是文档、接口示例和场景定义，不是 SQLAlchemy 模型、业务 API、AI 调用或 UI 实现。
@@ -57,7 +60,7 @@ Evidence/CaseContext 运行计算、AI、人工审核工作流未实现。两人
 无需再创建基线合并 PR。用户后续授权允许 Stage 2 候选先从契约分支创建；契约合并后
 须 rebase 最新 main 并重跑 CI，不能省略人工审查。
 
-## 4. 六项契约交付与验收
+## 4. 六项契约交付与验收（冻结依据，非待开发任务）
 
 ### T1：事实与业务数据所有权
 
@@ -154,15 +157,14 @@ expected result；结构化结果不能自行获得发送/业务写入权限。
 
 ## 5. 执行顺序与进入下一阶段的条件
 
-1. 补 main 分支保护；在可用 Docker 环境记录容器构建/启动验证。契约写作可先进行，
-   但 Stage 0 的未完成项保持可见，不宣称基线治理全部完成。
-2. 双方先审 T1/T2/T3：事实路径、实体/状态、授权与 API 一致，作为 T4/T5 的前置输入。
-3. 基于以上契约完成 T4，再审 T5；T6 随契约同步补齐，不先依赖一个不存在的 Context。
-4. 两人确认并将契约 PR 合并 main。当前同步不创建 PR、不 push、不自动合并。
-5. 数据负责人从更新的 main 创建 `codex/core-database`；应用负责人创建
-   `codex/core-workbench-shell`。分工可以并行，但前端只依赖冻结的契约/静态 fixture，
-   不把未合并数据库分支视作稳定依赖。
-6. Stage 2 后再创建 `codex/order-inquiry-api` 与配套场景测试任务；订单快照读取依赖 Stage 4。
+1. 继续 `codex/core-auth-inquiries` / PR #5，合入 main 的已审数据库修复，不重复开发。
+2. 验证升级 0002 后既有会话、授权列表/详情、退出、过期和越权拒绝仍然正确。
+3. 重跑 PostgreSQL、独立 Sandbox HTTP、Ruff、前端 lint/type/build 和 Compose config；
+   同步 PR #5 base 为 main，并确认新基线 CI。
+4. 人工审查 Stage 3 API/权限与异常场景。仅人工 Review/合并完成后才是 main 的业务能力。
+5. main 保护与完整 Compose build/start 仍是独立未完成出口。本次 PG 容器与 Product
+   HTTP 验证不替代完整部署验收。
+6. 下一次明确授权后再规划 Stage 4 Evidence/CaseContext；当前不取事实、不接 AI。
 
 Stage 2 最小退出条件：空 PostgreSQL 可 migration、重复 Seed 不增殖、关系约束/数据版本可测；
 前端外壳 lint/type/build 通过并展示 Loading/Empty/Error。业务授权/API 放 Stage 3；
@@ -181,4 +183,5 @@ Evidence 放 Stage 4；AI 放 Stage 5。此顺序是计划，后续实现需单�
 这些决定已有明确契约和正反例，无需后续实现者猜测。六个完整 Product Context 示例与
 30 项验收矩阵见 [契约包](../contracts/README.md)，本次机械检查见
 [Stage 1 验证记录](../verification/2026-10-03-stage-1-contract-validation.md)。
-人工 Review、PR 合并、main 保护及容器运行仍未完成；不自动推进 Stage 2。
+契约与数据库已合并；Stage 3 人工 Review/合并、工作台 PR #4、main 保护及完整 Compose
+运行验收仍未完成。不自动推进 Stage 4。

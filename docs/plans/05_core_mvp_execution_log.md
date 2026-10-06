@@ -5,6 +5,19 @@
 
 ## 当前执行范围
 
+2026-10-06 用户要求检查并完成图片中的下一步：继续 PR #5 的 Stage 3，不重复开发。
+远端 main 已包含契约 PR #2、数据库 PR #3 与修复 PR #6，SHA 为 `58aac36`。
+本次已整合该 main，并新增数据库升级后既有会话/咨询权限的回归测试；同步 PR #5
+base 为 main 后重跑 CI。Stage 3 仍待人工 Review/合并，不开始 Stage 4。
+
+本地结果：91 项真实 PostgreSQL（57 数据库 + 34 API/事务），116 项后端回归（含
+13 独立 Sandbox HTTP）全部通过；Ruff、前端 lint/type/build、Compose config 通过。
+实际启动 Product Uvicorn + 隔离 PostgreSQL 17.11，五类账号范围 10/1/1/11/0，
+详情、403/401、CONTEXT_REQUIRED 与退出撤销通过，重复 Seed 成功。
+完整证据见 [Stage 3 main 整合验证](../verification/2026-10-06-stage-3-main-integration.md)。
+
+## 2026-10-03 至 2026-10-04 执行历史
+
 2026-10-04 用户明确授权“继续我的下一阶段”：新增 Stage 3 依赖候选
 `codex/core-auth-inquiries` → `codex/core-database`，只交付后端身份会话与咨询读取。
 不将第二阶段 PR 未合并误写为已在 main，不自动合并；Stage 4+ 未授权。
@@ -19,14 +32,14 @@
 Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/批准行为不混入 Stage 2。
 两条 Stage 2 PR 合并目标先为契约分支，契约合并后须 rebase main、改 PR base 并重跑 CI。
 
-## 基线与验证环境
+## 历史基线与验证环境
 
 - origin/main 仍为 `33857e2`；远端已 fetch，无新业务提交；GitHub CLI 登录有效。
 - 本机无 Docker、PostgreSQL executable/service；localhost:5432 无连接。
 - 数据库验收在独立 CI PostgreSQL 服务执行，不以 SQLite/mock 或跳过结果替代。
 - Stage 1 文档检查先运行；发现 AGENTS 中重复的 Stage 1 段落已去重。
 
-## 状态
+## 历史状态（后续合并及本机环境变化见上方更新）
 
 | 交付 | 状态 | 证据 |
 | --- | --- | --- |
@@ -39,7 +52,7 @@ Stage 3 的认证/业务 API、Stage 4 Evidence 计算、Stage 5 AI/Validation/�
 
 每项完成后更新此日志与其验证记录。已提交历史验证文件保留原任务的观察范围。
 
-## 下一步与阶段出口
+## 当时的下一步与阶段出口
 
 数据库候选本地 66 个单元 + 13 个真实 Sandbox HTTP 测试通过；26 个数据库测试在 CI
 PostgreSQL 17 服务运行并全部通过。本机无 PostgreSQL，不将离线 SQL 生成视为数据库验收。
