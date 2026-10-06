@@ -3,6 +3,7 @@ services:
     build: ./backend
     environment:
       APP_ENV: ${APP_ENV:-development}
+      CORS_ALLOWED_ORIGINS: '${CORS_ALLOWED_ORIGINS:-[]}'
       DATABASE_URL: ${DATABASE_URL:?Copy .env.example to .env and configure DATABASE_URL}
       SANDBOX_BASE_URL: ${SANDBOX_BASE_URL:-http://host.docker.internal:9000}
       SANDBOX_TIMEOUT_SECONDS: ${SANDBOX_TIMEOUT_SECONDS:-5}

@@ -1,9 +1,10 @@
 # Core MVP 契约包 v1
 
-日期：2026-10-03。状态：**Stage 1 文档交付，待两名开发者 Review 与合并**。
-以下决定已经写成可实现、可验收的契约；尚未取得人工审查结论，不能据此声称业务功能已实现。
+初次交付：2026-10-03。2026-10-06 状态：**Stage 1 契约 PR #2 已合并 main**。
+以下决定是实现与验收依据；契约合并不表示后续业务功能全部实现，机器检查不代替人工审查记录。
 产品范围以 [Core 计划](../plans/01_core_plan.md) 为准，执行顺序见
-[Stage 计划](../plans/04_core_mvp_next_stage_plan.md)。当前运行时仍是 Product Phase 1。
+[Stage 计划](../plans/04_core_mvp_next_stage_plan.md)。Stage 3 API 在本 PR 交付并通过自审，
+用户已授权其合入 main；其他契约描述的后续运行行为尚未实现。
 
 ## 阅读顺序与责任
 

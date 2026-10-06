@@ -3,19 +3,16 @@
 import os
 from uuid import UUID, uuid5
 
-from argon2 import PasswordHasher
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.clock import Clock, SystemClock
 from app.core.config import Settings
+from app.core.security import PASSWORD_HASHER
 from app.db.connection import product_engine
 from app.db.models import Inquiry, Team, User
 
 DEMO_NAMESPACE = UUID("6fc0832a-1175-4cc5-8f5a-f83b7724d397")
-PASSWORD_HASHER = PasswordHasher(
-    memory_cost=65536, time_cost=3, parallelism=1, salt_len=16, hash_len=32
-)
 
 
 def validate_seed_config(app_env: str, password: str | None) -> str:

@@ -1,5 +1,19 @@
 # 电商订单咨询处理助手：初步实现项目规划（Core V1）
 
+> 2026-10-06 后续授权：用户要求“自行审查并合并”。Stage 3 自审未发现合并阻断问题，
+> 按成功 CI 通过 PR #5 合入 main；合并结果以 [PR #5](https://github.com/Mark-UM/FDE-test/pull/5)
+> 为准。不声称两名开发者独立批准，不开始 Stage 4+。见 [自审记录](../verification/2026-10-06-stage-3-self-review.md)。
+> 下方同日早先“禁止合并”的状态已被本次明确授权取代，保留为历史记录。
+
+> 2026-10-06 更新：契约 PR #2、数据库 PR #3 和修复 PR #6 已合并到 main `58aac36`。
+> 用户要求完成图片中的 Stage 3 下一步：继续现有 PR #5，整合最新 main、改 base 并重跑检查。
+> Stage 3 仍是待审候选；Stage 4+ 和 main 合并未授权。下方日期段落保留历史状态。
+> 最新进度与验证见 [执行日志](05_core_mvp_execution_log.md)。
+
+> 2026-10-04 更新：Stage 2 数据库/Seed 与静态工作台候选 PR 已交付并通过技术检查，
+> 尚未 Review/合并。用户明确要求继续下一阶段，授权 Stage 3 身份会话与咨询读取 API
+> 的依赖候选；不授权 Stage 4+ 或自动合并 main。最新状态见 [执行日志](05_core_mvp_execution_log.md)。
+
 > 2026-10-03 执行状态同步：产品范围与黄金流程继续以本文件为准；实际已完成 Phase 0
 > 和经单独授权的 Product Phase 1「外部集成基础」。原文下方的 Phase 1 数据库/Seed
 > 尚未实现。当前两人协作按 Stage 编号执行；用户已授权 Stage 1「Core MVP 契约冻结」，

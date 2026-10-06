@@ -21,6 +21,17 @@ remain the separately authorized implementation stages in the [execution plan](p
 
 ## Future Core V1 in scope
 
+The user's 2026-10-04 next-stage request authorizes Stage 3 as a dependent candidate:
+backend login/session/logout, current identity checks, permission-filtered Inquiry
+list/detail, safe errors/audits and explicit CORS. It depends on Stage 2 database
+PR #3, which is now merged with database fixes into main. The 2026-10-06 request
+continues PR #5 on that baseline. The subsequent request authorizes self-review and
+merge through PR #5 with passing checks; independent developer approval is not claimed.
+The order route checks access
+and reports missing binding/Context; it does not fetch or disclose fresh facts.
+No Stage 4 Evidence/Context computation, AI, draft/review workflow, frontend login,
+retry/cache or Sandbox implementation belongs to this slice.
+
 - Order-status support consultation for a small/cross-border ecommerce team.
 - Authorized order, all-parcel/logistics and warehouse information retrieval.
 - Evidence-based explanation with sources, timestamps and explicit uncertainty.
