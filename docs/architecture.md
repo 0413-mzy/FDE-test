@@ -1,144 +1,72 @@
-# Architecture — Core MVP Stage 4 feature branch
+# 架构方向：双端共享业务平台
 
-Current stable main is Stage 3 (`8469971`). This authorized Stage 4 branch adds
-`context/collector.py` → `context/builder.py` → immutable Product ContextVersion.
-`services/resolution.py` reserves a run in one short transaction, performs Provider
-HTTP outside that transaction, then reauthorizes and atomically saves results in a
-second transaction. Source failures, missing facts and stale/unknown/conflicting
-evidence remain distinct. Historical reads do not fetch or rewrite source times.
-Manual recovery targets only a verified interrupted run. See the
-[executable slice](contracts/stage-4-implementation.md) and
-[runbook](runbooks/stage-4-interrupted-resolution.md).
-AI/Validation/review/send remain future stages. Earlier phase descriptions below
-record the foundation and its boundaries; they do not override this authorized slice.
+日期：2026-10-06。此文定义目标架构；本次为文档重设计，没有新增运行模块。
+产品范围见 [主计划](plans/01_core_plan.md)，阶段见 [路线](plans/04_core_mvp_next_stage_plan.md)。
 
-The product authority is [the Core plan](plans/01_core_plan.md). The
-[environment plan](plans/03_ecommerce_environment_plan.md) describes an external
-test system only. The canonical pipeline below is still a future target. The
-explicitly authorized Product Phase 1 adds external integration only, overriding
-the old roadmap's Phase 1 database/seed ordering without changing product scope.
+## 目标结构
 
-Planning synchronized on 2026-10-03: Phase 1 is already in main. Core MVP Stage 1
-now delivers [six contracts](contracts/README.md), prepared for human review before database/API/Evidence/AI work.
-See [the current execution plan](plans/04_core_mvp_next_stage_plan.md) for dependency
-order, responsibilities and acceptance gates; no new business modules are implemented
-by that planning update.
-
-## Canonical future pipeline
+先采用模块化单体：现有 React/TypeScript 前端承载用户与商家视图，FastAPI 后端提供
+各自授权的 API，PostgreSQL 保存平台事实。保留现有语言和基础设施，暂不拆微服务。
 
 ```text
-Inquiry
-→ Permission (authentication and order/inquiry authorization)
-→ Providers (order, all parcels/logistics, warehouse notes)
-→ Normalization
-→ Evidence
-→ CaseContext
-→ LLM structured analysis
-→ Validation
-→ Human Review
-→ MessageProvider
-→ Audit / Metrics
+用户端                         商家端
+商品 / 购物车 / 订单             商品 / 库存 / 订单处理
+物流 / 消息 / 售后               发货 / 消息 / 售后
+           └──── 平台 HTTP API ────┘
+                    │
+        身份与对象权限 / 业务服务 / 事务
+                    │
+          平台 PostgreSQL 业务记录
+                    │
+       模拟支付 / 模拟物流的明确适配边界
+
+可选客服模块：授权业务事实 → Evidence / CaseContext → 未来独立评估 AI
 ```
 
-## Responsibility boundaries
+## 职责与数据所有权
 
-| Component | Owns | Boundary |
+| 模块（目标） | 职责 | 数据/权限边界 |
 | --- | --- | --- |
-| UI | Interaction, source/freshness display, draft editing and review | No external business-system calls or authorization decisions |
-| Backend | Identity, authorization, orchestration, deterministic rules, freshness and actions | Check access before retrieving/disclosing facts or forming CaseContext |
-| Providers | External-system boundaries and transport/error mapping | Return normalized facts with provenance; no implicit policy authority |
-| Normalization | Source-field mapping, identifiers, timestamps, complete parcel association | Missing or unknown values remain explicit; do not invent facts |
-| Evidence | Traceable facts with source system, record identity and timestamps | Separate facts, plans, uncertainty, conflicts and missing data |
-| CaseContext | Minimum authorized evidence for one inquiry | The only business context supplied to AI |
-| AI | Interpretation, summarization and wording | No database writes, permissions, freshness decisions or action execution |
-| Validation | Schema, evidence references, freshness, risk and unsupported-claim checks | Prevent unsupported or unsafe outputs from flowing forward; fail to human handling |
-| Human Review | Final approval of the actual reply text in Core V1 | Edits remain subject to deterministic validation; approval is not permission for high-risk actions |
-| MessageProvider | Idempotent dispatch after backend-approved human review | Core V1 uses MockMessageProvider; no real channel send |
-| Audit / Metrics | Sources, changes, approvals, send outcome, failures and processing time | Record failed paths as well as success; avoid sensitive payloads in ordinary logs |
+| 用户与店铺身份 | 会话、客户身份、店铺成员及操作权限 | 后端检查；UI切换不授权 |
+| 商品与库存 | 商品/SKU、价格、上架与可售库存 | 店铺隔离；服务端金额与库存事实 |
+| 购物车与交易 | 购买请求、订单、支付结果与状态 | 客户所有权；按店铺划分履约责任 |
+| 履约与物流 | 发货、包裹关联与物流事件 | 商家仅操作本店；模拟事件来源明确 |
+| 消息 | 客户与店铺会话及订单关联 | 参与者权限；不是通用聊天系统 |
+| 售后 | 取消、退款、退货的人工规则与记录 | 订单/商品/金额关联；校验前态 |
+| 演示适配与审计 | 模拟支付/物流、操作与错误记录 | 演示操作者不等于任意业务管理员 |
 
-**Program owns facts. AI owns interpretation and wording.** Prompts are not
-security controls. Warehouse notes and customer messages remain untrusted text,
-even when they contain instructions. High-risk actions are not executable in Core V1.
+领域关系、库存预留/释放、跨店结算、状态图和 API 在第二步冻结；此表不是数据库契约。
+新平台拥有订单等记录，不再把全部电商事实放在外部 Sandbox 中。
 
-## External systems and data ownership
+## 现有实现与复用方式
 
-OrderProvider, LogisticsProvider, WarehouseProvider and MessageProvider now exist
-as narrow async protocols. LLMProvider does not exist in this phase. Future product
-services must depend on protocols rather than Sandbox payloads. Product PostgreSQL will hold workflow
-state; Sandbox SQLite will hold external simulated commerce state. Product code
-must not query or share Sandbox database tables.
+- `backend/app/core/`：配置、密码/令牌原语和 Clock 可复用；新权限需单独设计。
+- `backend/app/db/` 与 `migrations/`：保留原客服表、约束和 Seed；商城表走新增迁移。
+- `api/core.py`、`services/core_access.py`：旧会话/Inquiry API 继续按原角色授权。
+- `context/`、`services/resolution.py`、`api/resolution.py`：保留候选 Stage 4 的
+  Provider collection、不可变上下文、幂等及恢复，不作为购物/发货的必经路径。
+- `integrations/sandbox/`：独立 Sandbox HTTP 集成仍可验证旧模块和故障场景。
+- `frontend/`：目前只有静态壳；后续用户/商家视图调用本平台后端。
 
-The original Core baseline is Mock Providers. This phase explicitly adds HTTPX
-Sandbox adapters for the implemented S0-S1 service. Its raw schemas and routes
-are authoritative for transport; [the canonical contract](external-system-contract.md)
-governs returned Product models. Sandbox implementation stays in a separate repository.
+复用基础不表示现有鉴权已支持客户/商家。新权限不复用“客服获分配 Inquiry 即有订单权限”
+作为客户/商家数据访问规则。保留旧冻结模型，避免为商城复用而改变既有字段语义。
 
-```text
-DemoCommerce HTTP JSON
-→ SandboxClient (timeout, request ID, status mapping, raw schema validation)
-→ Sandbox Provider adapter (explicit names, identity checks, source provenance)
-→ canonical Product snapshot
-```
+## 外部系统边界
 
-`app/integrations/models.py` has no HTTP routes or raw Sandbox names. Raw Pydantic
-schemas stay inside `integrations/sandbox/`; they never become Product return types.
-OrderProvider owns order and parcel discovery. LogisticsProvider accepts one canonical
-parcel and reads shipment/events from that source only. It cannot silently discard a
-failed parcel. WarehouseProvider and MessageProvider operate independently. No
-cross-provider collector, evidence creation or conflict resolution is implemented.
+平台领域服务可以读取并写入自身 PostgreSQL；不需要把自身订单伪装成外部系统。
+外部支付/承运商必须通过窄适配器调用，初版采用模拟实现。客户端不直接写数据库或
+调用外部承运商。Product 与旧 Sandbox 不共享数据库；旧 HTTP 事实仍按
+[既有外部契约](external-system-contract.md)处理。
 
-The client assigns an injected Clock's UTC time after each successful HTTP response.
-Snapshots preserve nullable source updates; events keep their own fetch timestamp
-and event ID provenance. Support inquiries/receipts follow their existing canonical
-contract; receipt `sent_at` is source-owned and is never replaced by the Product clock.
-SystemClock serves runtime use; FixedClock pins tests to the Sandbox seed reference.
+商城消息需要平台自己的会话与消息持久化，不等于旧 SandboxMessageProvider 的模拟回复。
+实时推送不是第一版前提，先验证双方可发送、读取与刷新同步；具体交互方案在功能设计中确定。
 
-ExternalNotFound, ExternalTimeout, ExternalUnavailable, ExternalInvalidResponse,
-ExternalConflict and ExternalRejected retain service, operation, request ID, HTTP
-status and source error code. They do not expose raw payload text. HTTP failures
-remain failures even if their error body is malformed. Redirects are not followed,
-environment proxies are disabled, and no retries or caching are implemented.
+## 可靠性原则
 
-Fetching an old record now does not make its business facts current. Application
-code will determine freshness from original timestamps and explicit cache/failure
-metadata; a cache read must retain its original `fetched_at`. Unknown source update
-times remain unknown. Source failure, empty results and partial results are distinct;
-a logistics timeout is not proof of a parcel exception. All parcels must be accounted
-for before an order-wide statement is made. Runtime freshness behavior is deferred;
-the [Stage 1 contract](contracts/evidence-case-context.md) selects versioned default thresholds.
-Retries remain outside the Core MVP implementation slice.
+后端验证对象所有权、状态、价格与库存；业务事务原子提交，关键写入需要幂等和并发保护。
+订单保存购买时的商品/价格/地址快照；后续商品或个人资料变更不重写历史事实。
+支付、发货、物流、售后状态分开建模，不能让一项状态代表全部业务结果。
+具体状态及一致性机制由第二步选择并验收，本次没有实现这些承诺。
 
-## Runtime foundation today
-
-The user authorized Stage 3 on 2026-10-04 and self-review/merge on 2026-10-06. This delivery
-implements login/me/logout and permission-scoped Inquiry list/detail through
-`api/core.py` and `services/core_access.py`. Connections are lazy, sessions store
-only token digests, and reads lock current User → AuthSession → Inquiry in the
-same transaction. Failed login and access denial retain safe audit records; SQL
-or input text never reaches public errors. Authentication precedes manual closed
-request validation. Explicit CORS origins gate browser access. The order route
-returns binding/Context precondition errors and performs no Provider calls.
-See [the frozen implementation slice](contracts/stage-3-implementation.md).
-
-- FastAPI + Pydantic v2 exposes a deterministic, dependency-independent `/health`.
-- Pydantic Settings reads root `.env` and process variables (`APP_ENV`, `DATABASE_URL`,
-  `SANDBOX_BASE_URL`, `SANDBOX_TIMEOUT_SECONDS`).
-  The URL is masked in representations and is not used to connect in Phase 0.
-- React + TypeScript + Vite renders only a static title/status page.
-- Development Compose provides backend, frontend and PostgreSQL. Backend startup
-  waits for the PostgreSQL container health check, but `/health` never queries it.
-- Pytest, Ruff, ESLint, TypeScript, Vite build and Compose config validation form CI.
-
-No Evidence Engine, CaseContext resolver, LLM integration or connected support
-workbench is present. Stage 2 static UI remains a separate candidate. No Product send API is added;
-SandboxMessageProvider only verifies the simulated external boundary and does not
-decide approval. Authorization and approval are required before future exposure.
-Stage 2 database PR #3 and fixes PR #6 are merged into main as of 2026-10-06:
-persistence dependencies, twelve workflow tables, frozen migration 0001,
-incremental nonblank-constraint migration 0002 and demo Seed CLI are implemented.
-Stage 3 now uses these
-records for sessions and authorized Inquiry reads without startup connections or
-workflow mutations. Six historical tables reject UPDATE/DELETE with PostgreSQL
-triggers; future Context/draft version relationships remain later service work.
-`postgresql+psycopg` remains
-the explicit connection convention.
+未来 AI 仅通过授权视图读事实，不能定义身份、绕过规则或自行执行付款/退款/发货/消息。
+AI 将作为平台可选能力，先完成非 AI 的人工闭环和度量。

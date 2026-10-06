@@ -1,3 +1,5 @@
+> 定位更新（2026-10-06）：此契约继续约束既有客服模块的外部 Providers，不定义新商城的数据所有权或业务 API。新平台自有交易数据的职责见 [架构](architecture.md)，新领域契约在下一步编写。
+
 # Minimum external-system contract — canonical v1
 
 This freezes the canonical information needed by the product. Product Phase 1
