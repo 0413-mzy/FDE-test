@@ -13,6 +13,7 @@ from sqlalchemy import func, inspect, select, text, update
 from sqlalchemy.exc import IntegrityError, StatementError
 from sqlalchemy.orm import Session
 
+from app.commerce.models import Base as CommerceBase
 from app.core.clock import FixedClock
 from app.db.models import (
     APPEND_ONLY_TABLES,
@@ -62,7 +63,12 @@ def test_migration_roundtrip_and_orm_schema_match(database):
     engine, config, _ = database
     with engine.connect() as connection:
         assert set(Base.metadata.tables) <= set(inspect(connection).get_table_names())
-        assert compare_metadata(MigrationContext.configure(connection), Base.metadata) == []
+        assert (
+            compare_metadata(
+                MigrationContext.configure(connection), [Base.metadata, CommerceBase.metadata]
+            )
+            == []
+        )
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
             ScriptDirectory.from_config(config).get_current_head()
         )

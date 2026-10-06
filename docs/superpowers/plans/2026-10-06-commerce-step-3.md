@@ -12,11 +12,11 @@ ownership, TDD and ordered spec/quality reviews. Root owns integration, docs and
 Files: backend/app/commerce/*, migrations/versions/0003_commerce.py, migrations/env.py,
 app/main.py, tests/database/test_commerce*.py and tests/test_commerce*.py.
 
-- [ ] Failing real-PG migration/seed/identity/catalog tests, then additive implementation.
-- [ ] Closed auth/catalog/SKU/inventory/Cart API from docs/commerce/api.md.
-- [ ] Failing two-shop checkout/payment/cancel/expiry/last-unit concurrency tests, then services.
-- [ ] Failing partial-shipment/tracking/receipt and ownership/replay tests, then services.
-- [ ] Enforce current auth, expected versions, original replay payload, stock/amount conservation,
+- [x] Failing real-PG migration/seed/identity/catalog tests, then additive implementation.
+- [x] Closed auth/catalog/SKU/inventory/Cart API from docs/commerce/api.md.
+- [x] Failing two-shop checkout/payment/cancel/expiry/last-unit concurrency tests, then services.
+- [x] Failing partial-shipment/tracking/receipt and ownership/replay tests, then services.
+- [x] Enforce current auth, expected versions, original replay payload, stock/amount conservation,
       15-minute expiry and whole-checkout atomicity; PG and Ruff pass with old APIs unchanged.
 
 Seed names: customer.a/customer.b, owner.a/owner.b, staff.a, demo, dual.a. A/B/L/Z SKU
@@ -27,21 +27,21 @@ until Step 4; no message/refund routes or tables. No edits to frozen 0001/0002 m
 
 Files: frontend/* only. API from frozen docs/commerce/api.md; no mock fallback.
 
-- [ ] Failing Node built-in client/state tests for error/keys/session handling.
-- [ ] Typed client, in-memory Bearer, new-action keys versus safe retry, no localStorage facts.
-- [ ] Chinese catalog/customer, merchant owner/staff and narrow demo-console views.
-- [ ] Wire Cart/address/checkout/payment; product/SKU/inventory; partial shipment/tracking/expiry/receipt.
-- [ ] CNY from minor units, simulation badges, times, loading/empty/error/access states,
+- [x] Failing Node built-in client/state tests for error/keys/session handling.
+- [x] Typed client, in-memory Bearer, new-action keys versus safe retry, no localStorage facts.
+- [x] Chinese catalog/customer, merchant owner/staff and narrow demo-console views.
+- [x] Wire Cart/address/checkout/payment; product/SKU/inventory; partial shipment/tracking/expiry/receipt.
+- [x] CNY from minor units, simulation badges, times, loading/empty/error/access states,
       keyboard-accessible responsive forms; lint/typecheck/build/client tests pass.
 
 ## Root integration/review/delivery
 
-- [ ] Isolated PostgreSQL and baseline; combined real HTTP tests authored independently.
-- [ ] Actual Product/Vite/browser workflows across customer, merchant and demo roles.
-- [ ] Two-shop purchase, payments, partial shipment, tracking/receipt; screenshots and stock checks.
-- [ ] Full backend/PG and independent Sandbox HTTP regression, frontend checks, Compose CI.
-- [ ] Spec review and fixes first, then quality/security review and fixes.
-- [ ] Update README/development/API implementation inventory/acceptance evidence honestly.
+- [x] Isolated PostgreSQL and baseline; combined real HTTP tests authored independently.
+- [x] Actual Product/Vite/browser workflows across customer, merchant and demo roles.
+- [x] Two-shop purchase, payments, partial shipment, tracking/receipt; screenshots and stock checks.
+- [x] Full backend/PG and independent Sandbox HTTP regression, frontend checks, Compose CI.
+- [x] Spec review and fixes first, then quality/security review and fixes.
+- [x] Update README/development/API implementation inventory/acceptance evidence honestly.
 - [ ] Commit/push/attach draft PR based on Step 2, inspect CI; no main merge or Step 4.
 
 Behavior cycle: write test → observe RED → implement smallest behavior → GREEN → refactor.

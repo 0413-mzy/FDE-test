@@ -95,6 +95,8 @@ Shipment状态和Order财务/履约状态彼此独立。退货包裹不是出库
 平台PostgreSQL拥有上述记录，按领域新增表与迁移。现有users/teams/inquiries及Provider
 快照保持旧语义。新会话不接受旧Bearer；旧会话不接受CommerceBearer。共享Argon2id、
 Clock、HTTP基础设施，不共享隐式权限或Seed角色。
-Product/Order不硬删除；购物车行可删除；消息、事件、支付、库存流水和审计只追加。
+Product/Order不硬删除；购物车行可删除；消息、事件、库存流水和审计只追加。
+支付/退款Attempt创建后不删除、不任意重写，仅允许规则约束的PENDING→SUCCEEDED/FAILED
+终态转换并保存完成事实；终态不能反转。这里的“追加支付记录”不禁止合法终态转换。
 Seed包含全虚构客户/店铺/商品，必须显式development/test且不覆盖现有数据。
 数据库FK/唯一/CHECK约束和服务端事务共同验证同Order/Shop归属；仅有UUID外键不够。

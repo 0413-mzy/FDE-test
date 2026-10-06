@@ -24,8 +24,8 @@
 ## Existing implementation and compatibility
 
 - Existing code is the order-support foundation: sessions, Inquiry permissions,
-  canonical Providers, snapshots, Evidence/CaseContext and recovery. The frontend
-  is a static shell. These are not a completed commerce platform.
+  canonical Providers, snapshots, Evidence/CaseContext and recovery. Step 3 adds a
+  separate commerce namespace and customer/merchant/demo UI. Support contracts remain separate.
 - `docs/contracts/` and `docs/external-system-contract.md` govern the existing
   support module only. New commerce contracts live separately in `docs/commerce/`.
   Its Agent/Supervisor/Admin roles, external-order references

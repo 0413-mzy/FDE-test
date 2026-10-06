@@ -14,6 +14,8 @@ from app.api.core import router as core_router
 from app.api.errors import ApiError
 from app.api.health import router as health_router
 from app.api.resolution import router as resolution_router
+from app.commerce.router import demo_router
+from app.commerce.router import router as commerce_router
 from app.context.collector import ProviderBundle
 from app.core.clock import SystemClock
 from app.core.config import Settings
@@ -51,9 +53,7 @@ def create_app(
             if engine is not None:
                 engine.dispose()
 
-    application = FastAPI(
-        title="Ecommerce Order Support Assistant", version="0.0.1", lifespan=lifespan
-    )
+    application = FastAPI(title="Commerce Platform", version="0.0.1", lifespan=lifespan)
     application.state.settings = settings
     application.state.clock = clock or SystemClock()
     application.state.session_factory = session_factory or default_sessions
@@ -72,9 +72,9 @@ def create_app(
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_allowed_origins,
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Authorization", "Content-Type", "X-Request-Id", "Idempotency-Key"],
-        expose_headers=["X-Request-Id", "Location"],
+        expose_headers=["X-Request-Id", "Location", "Idempotent-Replay"],
         allow_credentials=False,
     )
 
@@ -84,6 +84,20 @@ def create_app(
 
     @application.exception_handler(HTTPException)
     async def http_error(request: Request, error: HTTPException):
+        if request.url.path.startswith("/api/commerce/v1"):
+            from app.commerce.errors import CommerceError
+
+            request_id = getattr(request.state, "request_id", str(uuid4()))
+            response = JSONResponse(
+                CommerceError(
+                    error.status_code,
+                    "NOT_FOUND" if error.status_code == 404 else "INVALID_REQUEST",
+                ).payload(request_id),
+                status_code=error.status_code,
+            )
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["X-Request-Id"] = request_id
+            return response
         if request.url.path.startswith("/api/v1"):
             code = "RESOURCE_NOT_FOUND" if error.status_code == 404 else "INVALID_REQUEST"
             return await api_error(request, ApiError(error.status_code, code))
@@ -110,6 +124,9 @@ def create_app(
         return response
 
     application.include_router(health_router)
+    application.include_router(commerce_router)
+    if settings.app_env in {"development", "test"}:
+        application.include_router(demo_router)
     application.include_router(core_router)
     application.include_router(resolution_router)
 
@@ -119,6 +136,10 @@ def create_app(
                 title=application.title, version=application.version, routes=application.routes
             )
             schema.setdefault("components", {}).setdefault("securitySchemes", {})["BearerAuth"] = {
+                "type": "http",
+                "scheme": "bearer",
+            }
+            schema["components"]["securitySchemes"]["CommerceBearer"] = {
                 "type": "http",
                 "scheme": "bearer",
             }
