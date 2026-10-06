@@ -58,7 +58,9 @@ origin in `CORS_ALLOWED_ORIGINS`; alternate ports are not automatically trusted.
 
 ## 商城迁移、账号与双端演示
 
-以下命令在 backend 目录执行，使用显式 DATABASE_URL 连接你的开发 PostgreSQL：
+以下命令在 backend 目录执行，使用显式 DATABASE_URL 连接你的开发 PostgreSQL。
+迁移/商城Seed读取进程环境：仅复制根目录.env不会把值导入shell；运行CLI前需显式设置
+DATABASE_URL、APP_ENV和DEMO_SEED_PASSWORD（不要把值提交Git）：
 
 ```sh
 python -m alembic upgrade head

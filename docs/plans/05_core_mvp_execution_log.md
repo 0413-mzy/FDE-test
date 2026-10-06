@@ -10,6 +10,7 @@
 实现计划见[第三步计划](../superpowers/plans/2026-10-06-commerce-step-3.md)，
 并发取舍与范围见[切片](../commerce/step-3-implementation.md)，
 实际测试/浏览器/审查与CI见[验证记录](../verification/2026-10-06-commerce-step-3.md)。
+实现da82e61已发布[Draft PR #4](https://github.com/0413-mzy/FDE-test/pull/4)，依赖第二步PR #3。
 下列第二步“端点均不存在”是当时状态，不能替代第三步记录。
 
 ## 2026-10-06：第二步领域与规则

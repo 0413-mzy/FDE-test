@@ -105,4 +105,12 @@ HTTPS、登录滥用防护、生产部署/真实支付评审尚未完成；容�
 
 ## GitHub发布记录
 
-待本次提交后填入Draft PR与准确head CI。依赖第二步PR #3，不合并main。
+实现提交：`da82e61217d75337f4d597ae6c1433df44a7414b`。已发布并附加到本任务的
+[Draft PR #4](https://github.com/0413-mzy/FDE-test/pull/4)，base为codex/commerce-domain-contracts，
+依赖[第二步PR #3](https://github.com/0413-mzy/FDE-test/pull/3)，不合并main。
+[实现提交CI](https://github.com/0413-mzy/FDE-test/actions/runs/37476818231)包含backend、frontend、
+database、compose；文档追记会产生新head，最终状态以PR当前head检查为准，不用历史CI冒充。
+仓库简介已同步到“购买与履约候选实现见Draft PR #4”，未把候选分支说成main。
+
+本次商城API、Vite和临时PostgreSQL保留运行供本机查看；独立Sandbox验收后已停止。
+这不是系统服务或生产部署，重启/换环境按development重新配置自己的开发库。

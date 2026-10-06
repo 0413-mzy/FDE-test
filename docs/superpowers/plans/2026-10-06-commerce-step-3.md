@@ -42,7 +42,7 @@ Files: frontend/* only. API from frozen docs/commerce/api.md; no mock fallback.
 - [x] Full backend/PG and independent Sandbox HTTP regression, frontend checks, Compose CI.
 - [x] Spec review and fixes first, then quality/security review and fixes.
 - [x] Update README/development/API implementation inventory/acceptance evidence honestly.
-- [ ] Commit/push/attach draft PR based on Step 2, inspect CI; no main merge or Step 4.
+- [x] Commit/push/attach draft PR based on Step 2, inspect CI; no main merge or Step 4.
 
 Behavior cycle: write test → observe RED → implement smallest behavior → GREEN → refactor.
 Example integration contract:
