@@ -28,5 +28,9 @@ Compose config。database job `111165226471` 日志确认执行数量和时间�
 PG 测试覆盖迁移 up/down/up、ORM/schema 一致性、幂等 Seed 与 Argon2id、外键/版本/幂等
 约束、失败与空结果、六表 append-only、Approval 唯一性、乐观锁、原来源时间保留。
 
+2026-10-04 审查澄清：上述乐观锁测试仅证明同事务内旧版本写入被拒绝，未证明两个独立
+事务并发；跨行同 Inquiry/team 的语义检查留给 Stage 3–5 服务测试。原结果是历史基线，
+不覆盖新增空白字符回归。后续修复见 [审查修复记录](2026-10-04-database-review-fixes.md)。
+
 数据库候选的技术检查已通过；两名开发者 Review 和 main 合并仍未完成。
 容器 build/start 仍未验证，不能以 Compose config 代替运行验收。
