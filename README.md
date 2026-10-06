@@ -83,6 +83,16 @@ Main protection and full Compose build/start verification remain outstanding.
 Local PostgreSQL container and Product HTTP validation do not replace those gates.
 Stage 4+ remains outside this delivery and requires a separate task.
 
+The 2026-10-06 data-owner acceptance/readiness handoff contains:
+
+- [Stage 3 independent acceptance](docs/verification/2026-10-06-stage-3-independent-acceptance.md)
+  (AI review and independently rerun existing tests, not two-human sign-off).
+- [Stage 4 source coverage and test gaps](docs/testing/2026-10-06-stage-4-scenario-coverage.md).
+- [Evidence/CaseContext quality acceptance criteria](docs/testing/2026-10-06-evidence-case-context-acceptance.md).
+
+These records prepare the next application delivery; they add no resolver, AI,
+workflow API or deployment certification.
+
 ## Repository
 
 ```text
