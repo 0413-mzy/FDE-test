@@ -10,9 +10,11 @@
 - Current direction: a multi-merchant physical-goods business simulation with
   customer and merchant interfaces backed by shared persistent business records.
   Payment and carrier integrations are simulated initially; no real money moves.
-- The current task is redesign Step 1 only: positioning, development boundaries,
-  architecture and roadmap documentation. Do not implement the commerce schema,
-  customer/merchant APIs, UI or AI as part of this documentation delivery.
+- The user authorized the next step on 2026-10-06. The current task is Step 2:
+  domain relationships, permissions, state/transaction rules, planned API contracts
+  and acceptance scenarios in `docs/commerce/README.md` (`commerce-v1`).
+  This is contract documentation, not commerce schema/API/UI/AI implementation.
+  Step 1 positioning is already delivered as draft PR #2; do not start Step 3 here.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.
   Product scope describes the destination; it does not imply a feature is implemented
   or grant permission to skip the currently requested step.
@@ -23,7 +25,8 @@
   canonical Providers, snapshots, Evidence/CaseContext and recovery. The frontend
   is a static shell. These are not a completed commerce platform.
 - `docs/contracts/` and `docs/external-system-contract.md` govern the existing
-  support module only. Its Agent/Supervisor/Admin roles, external-order references
+  support module only. New commerce contracts live separately in `docs/commerce/`.
+  Its Agent/Supervisor/Admin roles, external-order references
   and frozen `core-mvp-v1` types must not silently become customer/merchant contracts.
 - Keep existing migrations, tests and historical verification. New business tables
   require additive migrations and their own explicit permission rules; never rewrite
