@@ -1,4 +1,16 @@
-# Architecture — Product Phase 1 integration foundation
+# Architecture — Core MVP Stage 4 feature branch
+
+Current stable main is Stage 3 (`8469971`). This authorized Stage 4 branch adds
+`context/collector.py` → `context/builder.py` → immutable Product ContextVersion.
+`services/resolution.py` reserves a run in one short transaction, performs Provider
+HTTP outside that transaction, then reauthorizes and atomically saves results in a
+second transaction. Source failures, missing facts and stale/unknown/conflicting
+evidence remain distinct. Historical reads do not fetch or rewrite source times.
+Manual recovery targets only a verified interrupted run. See the
+[executable slice](contracts/stage-4-implementation.md) and
+[runbook](runbooks/stage-4-interrupted-resolution.md).
+AI/Validation/review/send remain future stages. Earlier phase descriptions below
+record the foundation and its boundaries; they do not override this authorized slice.
 
 The product authority is [the Core plan](plans/01_core_plan.md). The
 [environment plan](plans/03_ecommerce_environment_plan.md) describes an external

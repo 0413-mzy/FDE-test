@@ -37,6 +37,14 @@ reservation, and respond with the current safe authorization/conflict error.
 Unexpected errors roll back the completion transaction and leave RUNNING/BUSY for
 explicit recovery. No return value can expose facts without final authorization.
 
+After successful identity/Inquiry authorization, a rejected resolve request appends
+the existing RESOLVE_FAILED Audit event with inquiry_id, actor_id, request_id,
+record_id null and safe_metadata `{error_code, rejected: true}`. This records a
+request rejection, not a newly created FAILED run; no key/body/customer text is
+copied. Unknown/forbidden Inquiry keeps the existing nondisclosing ACCESS_DENIED
+event. Missing/invalid bearer is rejected before database access. Exact operation
+replay relies on the original operation Audit rather than fabricating another attempt.
+
 The Provider bundle contains existing order/logistics/warehouse/message protocols.
 MessageProvider is used only for get_inquiry, never send_reply. Warehouse notes
 are fetched once per order. Success SourceFetch.fetched_at is the canonical parent
@@ -55,6 +63,7 @@ that the originating worker stopped; recovery cannot cancel live HTTP.
 ## Boundaries
 
 No migrations, AI, drafting, approval, escalation API, sending, cache, retry or
-frontend behavior. CORS adds only Idempotency-Key for the existing trusted origins.
+frontend behavior. CORS allows Idempotency-Key and exposes the run Location header
+for the existing trusted origins.
 The Stage 3 route inventory test will recognize Stage 4 routes and continue rejecting
 later-stage endpoints. Existing Stage 3 zero-Provider-call regression remains valid.

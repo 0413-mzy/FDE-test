@@ -1,5 +1,13 @@
 # Core MVP 自动执行日志
 
+## 2026-10-06 Stage 4 委托
+
+用户明确授权下一步由 Codex 全权负责。同步干净 main 至 `8469971` 后建立
+`codex/core-evidence-context`，按冻结契约实现 Evidence/CaseContext。
+交付与实际验收见 [Stage 4 验证记录](../verification/2026-10-06-stage-4-validation.md)，
+设计与可执行边界见 [实现切片](../contracts/stage-4-implementation.md)。
+旧记录保留原观察范围；不把旧“未授权 Stage 4”描述用于否定本次明确委托。
+
 日期：2026-10-03。授权：用户要求“自动执行并推进计划”。产品边界以
 [Core 计划](01_core_plan.md)为准，契约以 [Stage 1 包](../contracts/README.md)为输入。
 

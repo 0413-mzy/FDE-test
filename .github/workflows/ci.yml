@@ -72,7 +72,8 @@ jobs:
           cache: pip
           cache-dependency-path: backend/pyproject.toml
       - run: python -m pip install -e ".[dev]"
-      - run: pytest tests/database -q
+      # The independent Sandbox is opt-in and validated separately through real HTTP.
+      - run: pytest tests/database -m "not integration" -q
 
   compose:
     runs-on: ubuntu-latest

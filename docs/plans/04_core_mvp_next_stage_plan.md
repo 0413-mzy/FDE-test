@@ -1,5 +1,15 @@
 # 当前交付状态与下一阶段计划
 
+## 2026-10-06 最新授权与特性分支
+
+用户要求“下一步，你全权负责，做完之后告诉我你做的是什么”。基于已合并 Stage 3
+`8469971`，本次交付 Stage 4 Evidence/CaseContext：来源编排、可追溯 Evidence、质量规则、
+版本／幂等／两段事务、授权历史与当前订单读取、人工中断恢复。
+分支 `codex/core-evidence-context`；验收见
+[本次记录](../verification/2026-10-06-stage-4-validation.md)。
+本次准备可审查 PR，不自动合并 main，不推进 Stage 5；静态工作台 PR #4 和就绪文档
+PR #7 保持各自交付。以下 Stage 3 执行步骤是历史记录，不作为重复开发任务。
+
 同步日期：2026-10-06（Asia/Shanghai）。本文件是执行顺序与任务拆分，产品边界仍以
 [01_core_plan.md](01_core_plan.md) 为准。契约 PR #2、数据库 PR #3 和修复 PR #6
 已合并 main；Stage 3 PR #5 已整合最新 main、改 base 并重跑验证。

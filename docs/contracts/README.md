@@ -6,6 +6,10 @@
 [Stage 计划](../plans/04_core_mvp_next_stage_plan.md)。Stage 3 API 在本 PR 交付并通过自审，
 用户已授权其合入 main；其他契约描述的后续运行行为尚未实现。
 
+2026-10-06 后续授权：Stage 3 已合并 main (`8469971`)；当前特性分支交付
+[Stage 4 可执行切片](stage-4-implementation.md)，保持本包规则不变。
+AI／草稿校验／批准仍待后续实现；当前分支不代表 Stage 4 已合并主分支。
+
 ## 阅读顺序与责任
 
 | 契约 | 主笔责任 | 审查责任 | 解决的问题 |

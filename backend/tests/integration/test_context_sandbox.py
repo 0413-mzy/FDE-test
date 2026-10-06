@@ -64,9 +64,15 @@ async def test_real_source_outcomes_and_traceable_quality(providers, number, sta
     assert collection.run_state == state and collection.error_code is None
     assert outcome in {fetch.outcome for fetch in collection.fetches}
     context = build_context(
-        context_id=uuid4(), inquiry_id=uuid4(), run_id=uuid4(), version=1,
-        team_id=uuid4(), assigned_agent_id=uuid4(), external_order_id=order_id,
-        fetches=collection.fetches, now=T0,
+        context_id=uuid4(),
+        inquiry_id=uuid4(),
+        run_id=uuid4(),
+        version=1,
+        team_id=uuid4(),
+        assigned_agent_id=uuid4(),
+        external_order_id=order_id,
+        fetches=collection.fetches,
+        now=T0,
     )
     assert context.quality == "DEGRADED" and flag in context.risk_flags
     payloads = {str(fetch.id): fetch.payload for fetch in collection.fetches}

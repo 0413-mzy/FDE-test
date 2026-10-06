@@ -1,6 +1,25 @@
 """Public errors contain fixed messages and safe field paths only."""
 
 MESSAGES = {
+    **{
+        code: "请求无法完成，请查看咨询状态。"
+        for code in (
+            "VERSION_CONFLICT",
+            "STATE_CONFLICT",
+            "BUSY",
+            "IDEMPOTENCY_CONFLICT",
+            "SOURCE_NOT_FOUND",
+            "SOURCE_TIMEOUT",
+            "SOURCE_UNAVAILABLE",
+            "SOURCE_INVALID_RESPONSE",
+            "SOURCE_BINDING_MISMATCH",
+            "SOURCE_REJECTED",
+            "SOURCE_CONFLICT",
+            "AUTHORIZATION_CHANGED",
+            "BINDING_CHANGED",
+            "OPERATION_INTERRUPTED",
+        )
+    },
     "AUTHENTICATION_FAILED": "用户名或密码无效。",
     "UNAUTHENTICATED": "请重新登录。",
     "FORBIDDEN": "无权访问此咨询。",

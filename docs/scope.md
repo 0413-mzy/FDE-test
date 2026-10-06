@@ -1,6 +1,16 @@
 # Scope freeze
 
-## Current delivery: Product Phase 1 — External Integration Foundation
+## Current feature branch: Core MVP Stage 4
+
+The 2026-10-06 user delegation authorizes Evidence/CaseContext on merged Stage 3.
+In scope: canonical collection, per-source outcomes, freshness/unknown/missing/conflict
+rules, immutable Context and source history, authorized resolve/run/context/order APIs,
+two short transactions around HTTP, idempotency and explicit interrupted-run recovery.
+No AI, draft/approval/send, retry/cache, frontend behavior or Sandbox expansion.
+See [Stage 4 implementation](contracts/stage-4-implementation.md).
+The following earlier-phase sections retain their historical scope only.
+
+## Historical delivery: Product Phase 1 — External Integration Foundation
 
 Phase 0 foundation remains. This explicitly authorized Phase 1 supersedes the
 original roadmap's database/seed phase ordering. In scope: canonical typed snapshots,
