@@ -61,9 +61,13 @@ and default HTTP Sandbox adapters: scenarios 2/4/11 succeeded, 8/9 were partial,
 passed. Its isolated schema and Product process were cleaned after execution.
 No credentials or customer data were saved in repository files.
 
-The fork has no registered GitHub workflow at the time of local validation;
-remote checks will be inspected after feature-branch publication. Local Docker
-is unavailable. Compose configuration remains pending remote CI validation.
+Feature branch published to `0413-mzy/FDE-test`; draft
+[PR #1](https://github.com/0413-mzy/FDE-test/pull/1) created and attached to the chat.
+[CI for implementation commit 18da35c](https://github.com/0413-mzy/FDE-test/actions/runs/37463063888)
+has passed backend, frontend and Compose configuration jobs; database job is still
+running at this document update. CI excludes optional independent Sandbox tests;
+those were executed locally through real HTTP above. Local Docker is unavailable.
+The temporary Sandbox and PostgreSQL processes were stopped after validation.
 
 ## Scope and remaining gates
 
