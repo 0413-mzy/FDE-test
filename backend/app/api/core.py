@@ -135,9 +135,6 @@ async def inquiry(request: Request):
     responses={409: {"description": "CONTEXT_REQUIRED (Stage 4 reads the current snapshot)"}},
 )
 async def order(request: Request):
-    return await invoke(
-        request,
-        lambda service, header, body, query: service.read_inquiry(
-            header, request.path_params["id"], body, query, order=True
-        ),
-    )
+    from app.api.resolution import read
+
+    return await read(request, order=True)

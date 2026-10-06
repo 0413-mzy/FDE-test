@@ -42,6 +42,14 @@ a CRM, ERP, or a complete ecommerce platform. Avoid unrelated refactors.
 
 ## Non-negotiable boundaries
 
+- On 2026-10-06 the user authorized full responsibility for the next stage.
+  The current task implements Stage 4 Evidence/CaseContext on top of merged Stage 3.
+  This supersedes the historical phase prohibitions above only for Stage 4:
+  canonical Provider collection, deterministic evidence/quality, persisted runs,
+  authorized context/order/history APIs, and targeted manual interrupted-run recovery.
+  Frozen core-mvp-v1 contracts remain authoritative. No Stage 5 AI/drafting/review,
+  sending, cache/retry or frontend behavior is authorized by this delivery.
+
 - Program owns facts; AI owns interpretation and wording.
 - Evidence First: important claims must trace to source facts and timestamps.
 - Keep facts, plans, uncertainty, conflicts, and missing information distinct.

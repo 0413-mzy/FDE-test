@@ -49,7 +49,7 @@ def test_unauthenticated_requests_precede_schema_validation_and_database(path, h
     assert response.json()["error"]["request_id"] == response.headers["x-request-id"]
 
 
-def test_health_and_openapi_do_not_connect_and_only_stage_3_routes_exist():
+def test_health_and_openapi_do_not_connect_and_only_authorized_stage_4_routes_exist():
     application = create_app(Settings(_env_file=None), session_factory=no_database)
     with TestClient(application) as client:
         assert client.get("/health").json()["status"] == "ok"
@@ -63,6 +63,9 @@ def test_health_and_openapi_do_not_connect_and_only_stage_3_routes_exist():
         "/api/v1/inquiries",
         "/api/v1/inquiries/{id}",
         "/api/v1/inquiries/{id}/order",
+        "/api/v1/inquiries/{id}/resolve-context",
+        "/api/v1/inquiries/{id}/runs/{run_id}",
+        "/api/v1/inquiries/{id}/contexts/{context_id}",
     }
     assert schema["components"]["securitySchemes"]["BearerAuth"]["scheme"] == "bearer"
     assert schema["paths"]["/api/v1/auth/me"]["get"]["security"] == [{"BearerAuth": []}]
@@ -111,7 +114,9 @@ def test_explicit_cors_preflight_and_unknown_origin_never_reach_database():
             headers={
                 "Origin": "http://localhost:5173",
                 "Access-Control-Request-Method": "POST",
-                "Access-Control-Request-Headers": "authorization,content-type,x-request-id",
+                "Access-Control-Request-Headers": (
+                    "authorization,content-type,x-request-id,idempotency-key"
+                ),
             },
         )
         denied = client.post(
@@ -127,6 +132,7 @@ def test_explicit_cors_preflight_and_unknown_origin_never_reach_database():
             },
         )
     assert allowed.status_code == 200
+    assert "idempotency-key" in allowed.headers["access-control-allow-headers"].lower()
     assert allowed.headers["access-control-allow-origin"] == "http://localhost:5173"
     assert "access-control-allow-credentials" not in allowed.headers
     for response in (denied, preflight):

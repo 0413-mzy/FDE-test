@@ -5,13 +5,20 @@ order?” by manually collecting facts from order systems, logistics systems, an
 warehouse notes. This product will bring those facts together into traceable
 evidence and help an agent prepare a careful reply.
 
-**Current delivery: Core MVP Stage 3 — Sessions and authorized Inquiry APIs.**
+**Current branch delivery: Core MVP Stage 4 — Evidence and CaseContext.**
+Stable main baseline is Stage 3 (`8469971`). This feature branch adds authorized
+source resolution, immutable snapshots/Context history, deterministic evidence and
+quality rules, and targeted interrupted-run recovery. See the
+[Stage 4 slice](docs/contracts/stage-4-implementation.md),
+[validation record](docs/verification/2026-10-06-stage-4-validation.md), and
+[manual recovery runbook](docs/runbooks/stage-4-interrupted-resolution.md).
 Canonical snapshots, clocks, four Provider protocols and DemoCommerce HTTP adapters
 are implemented and tested against the independent S0-S1 service. This explicitly
 authorized phase supersedes the original roadmap's Phase 1 database/seed ordering.
-This delivery implements Stage 3 alongside the dependency-independent `GET /health`:
+Stage 3 remains available alongside the dependency-independent `GET /health`:
 backend authentication and permission-scoped Inquiry reads using Stage 2 Product
-persistence. There is no Evidence Engine, CaseContext resolver, AI, retry or cache.
+persistence. Stage 4 uses existing Providers; there is no AI, drafting, approval,
+send endpoint, retry or cache.
 The static workbench remains a separate candidate in PR #4; this branch's frontend
 is the foundation shell.
 
@@ -69,8 +76,8 @@ See the complete responsibilities, branch names, commands, dependencies, PR rule
 and Definition of Done in
 [the two-person Core MVP workflow](docs/superpowers/specs/2026-09-22-core-mvp-two-person-workflow-design.md).
 
-As of 2026-10-06, contracts PR #2, database PR #3 and database fixes PR #6 are merged
-into `main` (`58aac36`). Read the [contract index and decisions](docs/contracts/README.md).
+As of 2026-10-06, contracts PR #2, database PR #3, database fixes PR #6 and Stage 3
+PR #5 are merged into `main` (`8469971`). Read the [contract index and decisions](docs/contracts/README.md).
 The static [workbench PR #4](https://github.com/Mark-UM/FDE-test/pull/4) remains a separate draft.
 The user's subsequent request authorizes self-review and merge of
 [PR #5](https://github.com/Mark-UM/FDE-test/pull/5) on the latest main database baseline.
@@ -81,7 +88,8 @@ Its integration results are recorded in
 See [current delivery status and Stage 3 exit criteria](docs/plans/04_core_mvp_next_stage_plan.md).
 Main protection and full Compose build/start verification remain outstanding.
 Local PostgreSQL container and Product HTTP validation do not replace those gates.
-Stage 4+ remains outside this delivery and requires a separate task.
+The user's subsequent delegation authorizes this Stage 4 feature branch.
+Stage 5+ remains outside this delivery and requires a separate task.
 
 ## Repository
 
@@ -92,6 +100,9 @@ backend/                    FastAPI, environment settings, tests, Dockerfile
   app/core/clock.py         SystemClock and deterministic FixedClock
   app/api/core.py           Stage 3 session and Inquiry HTTP endpoints
   app/services/core_access.py  Current identity/ownership and transactional reads
+  app/context/             Canonical collection, closed Context, deterministic evidence/quality
+  app/services/resolution.py  Reservation/completion, history and current order transactions
+  app/api/resolution.py     Stage 4 HTTP orchestration outside database transactions
   tests/integration/        Real HTTP tests (opt in with --sandbox-url)
 frontend/                   React + TypeScript + Vite shell, Dockerfile
 docs/
@@ -161,7 +172,7 @@ npm run dev
 Host CLI ports are explicit arguments; `BACKEND_PORT` and `FRONTEND_PORT` in `.env`
 control Compose port publishing. The frontend currently makes no API calls.
 
-## Stage 3 backend API candidate
+## Backend APIs (Stage 3 baseline + Stage 4 feature branch)
 
 Migrate and seed the Product PostgreSQL database using the explicit commands below
 before using business endpoints. No database is required for /health. Test identities
@@ -175,7 +186,24 @@ explicit development/test `DEMO_SEED_PASSWORD`, never a repository default.
 | `POST /api/v1/auth/logout` | Revoke current session; empty 204 |
 | `GET /api/v1/inquiries?limit=20&offset=0` | Authorized summaries; stable newest-first pagination |
 | `GET /api/v1/inquiries/{id}` | Agent's assigned Inquiry or Supervisor's same-team Inquiry |
-| `GET /api/v1/inquiries/{id}/order` | Authorized placeholder: 422 if unbound, otherwise 409 CONTEXT_REQUIRED |
+| `POST /api/v1/inquiries/{id}/resolve-context` | Closed expected_lock_version + Idempotency-Key; collect, persist and build Context |
+| `GET /api/v1/inquiries/{id}/runs/{run_id}` | Authorized run status, error, version and busy state |
+| `GET /api/v1/inquiries/{id}/contexts/{context_id}` | Authorized immutable Context/history, with is_current |
+| `GET /api/v1/inquiries/{id}/order` | Current Context's stored canonical order, original timestamps and reevaluated freshness; no source call |
+
+To resolve, submit `{"expected_lock_version": 1}` with the current Inquiry version,
+Bearer authorization and a unique nonblank `Idempotency-Key` header. A new usable
+Context returns 201; exact completed replay returns 200 without more source calls.
+RUNNING replay returns 202 and Location. Required source failure saves FAILED and
+returns its safe source error with run_id. Optional shipment/warehouse failures save
+PARTIAL and a DEGRADED Context; they do not invent a business exception or empty success.
+
+New resolution clears current Context/Draft before HTTP and never restores them
+after failure. Old Contexts remain authorized history. The final transaction checks
+the current session, permission and bindings again before publishing any facts.
+Context quality is its creation-time result; `/order` reevaluates freshness from
+the original times using that Context's stored policy. No current Context returns
+409 CONTEXT_REQUIRED; missing order binding returns 422 ORDER_REFERENCE_MISSING.
 
 Admin has no business access and receives an empty list. Unknown and forbidden Inquiry
 UUIDs both return the same 403. Request validation follows identity/ownership checks;
@@ -231,6 +259,10 @@ must run separately as described below, and skipped tests do not prove integrati
 process liveness, not database connectivity or external-system readiness.
 
 ### Latest validation status
+
+Stage 4 results and evidence are maintained in the
+[current verification record](docs/verification/2026-10-06-stage-4-validation.md).
+The records below describe historical revisions, not a substitute for this branch's checks.
 
 Stage 3 candidate on 2026-10-04: **116 local tests passed**, including all 13 real
 Sandbox HTTP tests; **59 real PostgreSQL tests passed** in CI (26 persistence + 33
@@ -301,7 +333,8 @@ statuses or malformed payloads; supplemental unit tests cover those conditions.
 
 No support workflow or send endpoint is exposed. Provider send is a low-level
 integration operation; authorization/approval will be implemented before exposure.
-There is no automatic retry, cache, partial-result aggregator or freshness policy.
+There is no automatic retry or cache. Stage 4 collects explicit per-source/per-parcel
+outcomes and applies the frozen freshness policy without filling gaps from old runs.
 If events fail after shipment retrieval, the operation raises the typed failure,
 rather than returning an apparently complete shipment. A parcel without tracking
 cannot be queried yet and produces a local ValueError without HTTP.
@@ -313,7 +346,7 @@ React Router and TanStack Query are deferred until there are workflows to route
 or fetch. Frontend dependencies are locked in `package-lock.json`; Python uses
 bounded dependency ranges and does not yet have a full transitive lock.
 
-## Product database and demo Seed (Stage 2 candidate)
+## Product database and demo Seed (merged Stage 2)
 
 Use Product PostgreSQL only. Migrations read the process `DATABASE_URL`, using
 `postgresql+psycopg`; for a host CLI use localhost instead of Compose's `postgres`

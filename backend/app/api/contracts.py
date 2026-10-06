@@ -69,3 +69,16 @@ class InquiryList(ClosedModel):
     limit: int
     offset: int
     total: int
+
+
+class ResolveInput(ClosedModel):
+    expected_lock_version: int = Field(gt=0)
+
+
+class ResolveView(ClosedModel):
+    run_id: UUID
+    state: Literal["RUNNING", "SUCCEEDED", "PARTIAL", "FAILED"]
+    context_id: UUID | None
+    context_version: int | None
+    quality: Literal["COMPLETE", "DEGRADED"] | None
+    lock_version: int
