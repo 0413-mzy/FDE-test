@@ -77,3 +77,19 @@ docker-compose.yml   开发环境配置；不是生产部署
 
 原客服范围已退出项目主线。既有代码、接口、迁移与验证记录保留；未来平台能力必须
 通过新增业务规则、真实持久化和双端交互交付，不能用页面占位或假状态代替。
+
+## 第五步：可复现本机演示
+
+用户已授权场景完善，部署以后考虑。新增统一入口自动创建独立schema、迁移和虚构账号，
+启动自己的API/前端，执行购买、五种售后和异常恢复；不会清空现有订单。
+先安装backend开发依赖和frontend的npm依赖，显式配置APP_ENV与隔离TEST_DATABASE_URL。
+
+```sh
+python scripts/commerce-demo.py --scenario interactive
+python scripts/commerce-demo.py --scenario all
+```
+
+interactive输出本地网址及仅本机可读的随机密码文件，CtrlC停止自己的服务并保留数据。
+交付见[Draft PR #6](https://github.com/0413-mzy/FDE-test/pull/6)与[第五步验收](docs/verification/2026-10-07-commerce-step-5.md)。
+all还需Playwright和Chrome，详见[开发说明](docs/development.md#第五步统一演示入口)。
+覆盖清单区分通过和细项缺口；本步不部署、不合并main、不加AI。

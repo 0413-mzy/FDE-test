@@ -2,7 +2,7 @@ import { money, time } from './helpers';
 import { useQuery } from './useQuery';
 import { useState } from 'react';
 import { CommerceClient, uncertain } from './client';
-import type { Cart, Page, Product, SKU, Order } from './types';
+import type { Address, Cart, Page, Product, SKU, Order } from './types';
 import { AddressForm, ErrorBox, Status, Pagination } from './ui';
 import { ContactShop } from './Messages';
 import { OrderDetail } from './Orders';
@@ -108,6 +108,7 @@ export function CartPage({ client, onOrders }: {
     client: CommerceClient;
     onOrders: () => void;
 }) {
+    const [addressDraft, setAddressDraft] = useState<Address>();
     const query = useQuery<Cart>(client, '/customer/cart'), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false);
     async function mutate(path: string, method: string, body: unknown) { setBusy(true); setError(undefined); try {
         await client.request(path, method, body);
@@ -136,7 +137,7 @@ export function CartPage({ client, onOrders }: {
             {money(cart.lines.reduce((n, l) => n + l.current_price_minor * l.quantity, 0))}</strong>
             </h2>
             <p>运费 / 税费 ¥0.00 · 最终金额由服务器校验。</p>
-            <AddressForm disabled={busy} onSave={async (address) => { setBusy(true); setError(undefined); try {
+            <AddressForm initial={addressDraft} onDraftChange={setAddressDraft} disabled={busy} onSave={async (address) => { setBusy(true); setError(undefined); try {
                     await client.request('/customer/checkouts', 'POST', { expected_version: cart.version, address });
                     onOrders();
                 }

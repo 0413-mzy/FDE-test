@@ -42,7 +42,7 @@ export function OrderDetail({ client, path, merchant, owner = false, onChange }:
     <h2>{o.shop_name ?? `店铺 ${o.shop_id.slice(0,8)}`} · 订单详情 <Status value={o.status}/>
     </h2>
     </div>
-    <button className="subtle" onClick={q.refresh}>刷新详情</button>
+    <button className="subtle" onClick={() => { q.refresh(); onChange(); }}>刷新详情</button>
     </div>
     <ErrorBox error={error ?? q.error}/>
     <div className="detail-facts">

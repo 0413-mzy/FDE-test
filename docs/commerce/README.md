@@ -3,7 +3,8 @@
 版本：commerce-v1。日期：2026-10-06。用户授权开始第二步。
 **状态：完整领域契约已交付；第三步购买履约和第四步消息售后已新增代码。**
 实际范围见 [第三步实现](step-3-implementation.md)与[第四步实现](step-4-implementation.md)，
-当前证据见[第四步验证](../verification/2026-10-07-commerce-step-4.md)。
+第五步提供[场景映射](step-5-coverage.json)与[scripts/commerce-demo.py](../../scripts/commerce-demo.py)统一入口。
+第四步证据见[第四步验证](../verification/2026-10-07-commerce-step-4.md)。
 它定义新电商平台，不改变旧客服 `core-mvp-v1` 的字段/权限。
 
 | 文档 | 决定 |

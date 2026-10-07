@@ -14,11 +14,12 @@ export function ErrorBox({ error }: {
             {Object.keys(error.details).length > 0 && <small>
             {JSON.stringify(error.details)}</small>}</>}{error instanceof ApiError && ['VERSION_CONFLICT', 'PRICE_CHANGED', 'ORDER_EXPIRED'].includes(error.code) && <p>请刷新当前记录，核实最新状态或价格后再次明确提交。</p>}</div>;
 }
-export function AddressForm({ initial, onSave, button = '使用地址下单', disabled = false }: {
+export function AddressForm({ initial, onSave, button = '使用地址下单', disabled = false, onDraftChange }: {
     initial?: Address;
     onSave: (a: Address) => void;
     button?: string;
     disabled?: boolean;
+    onDraftChange?: (a: Address) => void;
 }) {
     const [a, setA] = useState<Address>(initial ?? { recipient_name: '', phone: '', country_code: 'CN', region: '', city: '', postal_code: '', address_line: '' });
     const fields: [
@@ -29,7 +30,7 @@ export function AddressForm({ initial, onSave, button = '使用地址下单', di
     <h3>收货地址 · 中国</h3>
     <div className="field-grid">
         {fields.map(([key, name]) => <label key={key}>
-        {name}<input required value={a[key]} maxLength={key === 'address_line' ? 300 : key === 'phone' ? 32 : key === 'postal_code' ? 20 : 100} onChange={e => setA({ ...a, [key]: e.target.value })}/>
+        {name}<input required value={a[key]} maxLength={key === 'address_line' ? 300 : key === 'phone' ? 32 : key === 'postal_code' ? 20 : 100} onChange={e => { const next = { ...a, [key]: e.target.value }; setA(next); onDraftChange?.(next); }}/>
         </label>)}</div>
     <button disabled={disabled}>
     {button}</button>
