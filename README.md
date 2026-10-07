@@ -6,6 +6,7 @@
 
 > 2026-10-07：第五步场景验收已交付为 [Draft PR #6](https://github.com/0413-mzy/FDE-test/pull/6)。
 > [Draft PR #7](https://github.com/0413-mzy/FDE-test/pull/7)新增用户注册/恢复、账户资料/地址簿、商家入驻与独立人工审核，采用受保护的本地模拟邮件。
+> [Draft PR #8](https://github.com/0413-mzy/FDE-test/pull/8)补齐业务行变更历史与本机数据库查询，使用增量0006，保留原有数据。
 > 规则见 [入驻契约](docs/commerce/onboarding.md)和[验证记录](docs/verification/2026-10-07-commerce-onboarding.md)。支付、物流、退款和邮件均为模拟；不部署或合并 main。
 
 ## 目标体验
@@ -34,6 +35,7 @@
 | 网页与后端业务交互 | 已接入 commerce-v1 API | 无前端假业务数据 |
 | 消息、退款与退货 | 第四步新增实现 | 双方纯文本消息、OWNER审核、模拟退款及回库 |
 | 注册、账户与商家入驻 | 扩展实现；见入驻验证记录 | 邮箱验证、密码恢复、地址簿、申请与审核开店 |
+| 业务行变更历史 | 增量0006扩展候选 | 29张业务表的前后值、操作者、来源与时间；原有数据建立当前基线 |
 | AI 回复、推荐、自动化 | 尚未实现 | 在人工业务闭环之后评估 |
 
 已有 Stage 4 的 316 项测试记录只证明客服基础的对应实现，不能证明新平台已完成。
@@ -57,6 +59,7 @@
 - [目标架构与已有模块](docs/architecture.md)：数据所有权和模块关系。
 - [阶段路线与验收](docs/plans/04_core_mvp_next_stage_plan.md)：每步的可验证产出。
 - [决策与执行记录](docs/plans/05_core_mvp_execution_log.md)：本次变更及历史。
+- [数据库查看与变更历史](docs/database.md)：本机只读查询、SQL 与增量0006的历史范围。
 - [当前代码启动与验证](docs/development.md)：迁移、商城 Seed、双端启动与演示流程。
 - [既有客服契约](docs/contracts/README.md)：兼容参考，不是新平台产品范围。
 - [外部 Sandbox 的定位](docs/plans/03_ecommerce_environment_plan.md)：可选集成环境。

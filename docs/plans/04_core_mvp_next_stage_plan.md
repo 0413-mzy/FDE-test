@@ -61,3 +61,7 @@
 地址历史快照、审核权限与并发使用真实PostgreSQL验证。
 见[契约](../commerce/onboarding.md)、[计划](../superpowers/plans/2026-10-07-commerce-onboarding.md)。
 候选交付为[Draft PR #7](https://github.com/0413-mzy/FDE-test/pull/7)，依赖第五步PR #6；不自动合并main、部署或开始AI。
+
+## 2026-10-07 追加：业务历史与查询
+
+用户在入驻扩展之后授权补齐业务变更历史。0006新增29张业务表的事务内前后快照、删除历史、操作者/来源/原因/实际记录时间和升级基线；原有业务记录保持。仅本机开发查询，无新增历史HTTP权限、AI或部署。实际范围见[数据库说明](../database.md)与[本轮验收](../verification/2026-10-07-commerce-history.md)。

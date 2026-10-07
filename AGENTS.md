@@ -28,6 +28,11 @@
   selected local simulated email on 2026-10-07; real email is deferred until deployment.
   An additive 0005 migration, protected local mailbox and narrow independent reviewer
   seed/UI are authorized; preserve existing accounts, orders and inventory.
+  On 2026-10-07 the user authorized supplementing business record history and local
+  database inspection: additive 0006, transaction-atomic before/after snapshots,
+  actor/request/source/reason/time and profile/address versions. Preserve all
+  existing records; initialize honest current-state baselines, never invent past
+  values or copy passwords/tokens/codes. Developer inspection remains local.
   AI, real payments/carriers, public deployment and main merge remain outside this task.
   Prior Step 1/2 documentation is delivered in dependent draft PRs #2/#3.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.

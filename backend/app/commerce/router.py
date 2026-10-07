@@ -14,6 +14,7 @@ from starlette.responses import JSONResponse, Response
 from app.commerce import after_sales, views
 from app.commerce import inputs as inp
 from app.commerce.errors import CommerceError, fail
+from app.commerce.history import set_context
 from app.commerce.models import (
     AfterSaleCase,
     BusinessAudit,
@@ -442,6 +443,13 @@ def handler(operation, method, path):
                 svc.now = request.app.state.clock.now()
                 if write:
                     payload = body(raw)
+                    if operation in {
+                        "customer.case.create",
+                        "merchant.case.decision",
+                        "merchant.inventory.adjust",
+                        "customer.order.cancel",
+                    } and isinstance(payload, dict):
+                        set_context(db, svc.actor, request, payload.get("reason"))
                     query(request)
                     if operation == "login":
                         result, status = svc.login(payload)

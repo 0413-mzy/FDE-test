@@ -466,3 +466,7 @@ python -m app.commerce.onboarding_seed
 
 入驻真实浏览器脚本为 `scripts/commerce-onboarding-browser-acceptance.cjs`，在原浏览器环境变量
 之外需要 `COMMERCE_MAILBOX_DIR`。该脚本只通过本机文件读取测试账号模拟码，业务写入全部经页面。
+
+## 数据库只读查看与历史
+
+见[本机数据库查询说明](database.md)。`scripts/commerce-db.py` 支持列出表、字段、当前行、按业务表/UUID查询历史、私有CSV导出与默认只读psql。正常迁移命令仍为 `alembic upgrade head`；0006是新增历史对象，不清空已有账户、订单或库存。
