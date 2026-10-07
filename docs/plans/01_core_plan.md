@@ -72,5 +72,7 @@ Sandbox，网页只有基础外壳。这能支持客服辅助实验，却不能�
 
 第一步定位和第二步 [commerce-v1契约](../commerce/README.md)已交付。用户请求第三步，
 本分支新增购买与履约代码及双端界面；范围见[实现切片](../commerce/step-3-implementation.md)，
-结果见[验证记录](../verification/2026-10-06-commerce-step-3.md)。第四步消息/售后仍未开始。
+第三步结果见[验证记录](../verification/2026-10-06-commerce-step-3.md)。第四步消息/售后已交付，
+见[第四步验证](../verification/2026-10-07-commerce-step-4.md)。用户随后授权第五步场景完善，
+部署留到之后，见[第五步设计](../superpowers/specs/2026-10-07-commerce-step-5-design.md)。
 见 [路线与阶段出口](04_core_mvp_next_stage_plan.md) 和 [范围](../scope.md)。

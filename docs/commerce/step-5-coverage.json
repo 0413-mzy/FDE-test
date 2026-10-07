@@ -1,0 +1,860 @@
+{
+  "schema_version": 1,
+  "contract": "commerce-v1",
+  "acceptance_source": "docs/commerce/acceptance.md",
+  "node_root": "backend",
+  "semantics": "Step5 execution mapping: all named PostgreSQL nodes passed in70-test run; required browsers use7 isolated scenarios. This covers commerce-v1 contract, not all real commerce businesses or every fault/operation cross-product.",
+  "scenario_count": 54,
+  "scenarios": [
+    {
+      "id": "C01",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_owner_product_sku_inventory_and_nested_ownership",
+        "tests/database/test_commerce.py::test_cart_delete_original_replay_and_catalog_controls"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "C02",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_split_payment_partial_ship_deliver_receipt"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "purchase"
+      ]
+    },
+    {
+      "id": "C03",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_split_payment_partial_ship_deliver_receipt"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "purchase"
+      ]
+    },
+    {
+      "id": "C04",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_tracking_recovery_time_and_terminal_guards",
+        "tests/database/test_commerce.py::test_address_revision_and_shipping_prestate"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": [
+        "return-no-restock"
+      ]
+    },
+    {
+      "id": "C05",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_split_payment_partial_ship_deliver_receipt"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "purchase"
+      ]
+    },
+    {
+      "id": "C06",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_price_confirmation_inventory_guard_and_order_snapshot"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "exceptions"
+      ]
+    },
+    {
+      "id": "C07",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_commerce_persistent_purchase"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": [
+        "purchase",
+        "exceptions"
+      ]
+    },
+    {
+      "id": "C08",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_payment_failure_retry_snapshot_and_event_replay"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "C09",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_shop_payment_results_are_independent"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "C10",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_pay_cancel_and_ship_concurrency_preserve_inventory",
+        "tests/database/test_commerce_step5_permissions.py::test_unpaid_two_unit_cancel_and_paid_cancel_preserve_stock"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "C11",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_address_revision_and_shipping_prestate"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "C12",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_messages_and_partial_refund"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "partial-return"
+      ]
+    },
+    {
+      "id": "C13",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_messages_and_partial_refund"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "partial-return"
+      ]
+    },
+    {
+      "id": "C14",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step5.py::test_suspended_shop_existing_messages_and_refund_completion"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "full-refund"
+      ]
+    },
+    {
+      "id": "C15",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_concurrent_case_requests_and_atomic_audit_failure"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": [
+        "shipped-partial-refund"
+      ]
+    },
+    {
+      "id": "C16",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_return_boundary_failure_retry_stock_and_events"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "partial-return"
+      ]
+    },
+    {
+      "id": "C17",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_completed_partial_return_nonrestock_preserves_fulfillment_history"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "return-no-restock"
+      ]
+    },
+    {
+      "id": "C18",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_overlapping_decisions_cannot_reopen_rejected_case",
+        "tests/database/test_commerce_step4.py::test_active_case_invalid_quantity_strict_body_and_exact_historical_replay"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "reject-withdraw"
+      ]
+    },
+    {
+      "id": "C19",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_return_boundary_failure_retry_stock_and_events"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": [
+        "partial-return"
+      ]
+    },
+    {
+      "id": "P01",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_permissions_before_validation_and_replay",
+        "tests/database/test_commerce_step5_permissions.py::test_unauthenticated_and_foreign_namespace_token_cannot_read_cart_or_orders",
+        "tests/database/test_commerce_step5_permissions.py::test_valid_support_session_does_not_grant_commerce_access"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P02",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_permissions_before_validation_and_replay",
+        "tests/database/test_commerce_step5_permissions.py::test_foreign_order_read_payment_cancel_and_shop_scope"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P03",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_permissions_before_validation_and_replay",
+        "tests/database/test_commerce_step4.py::test_ownership_staff_suspended_and_auth_before_body",
+        "tests/database/test_commerce_step5_permissions.py::test_staff_price_and_demo_order_message_capabilities_denied"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P04",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_owner_product_sku_inventory_and_nested_ownership"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P05",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_membership_revocation_precedes_shipment_replay",
+        "tests/database/test_commerce_step4.py::test_ownership_staff_suspended_and_auth_before_body",
+        "tests/database/test_commerce_step5.py::test_account_deactivation_blocks_original_message_replay_and_reads"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P06",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_combined_capabilities_suspended_new_purchase_existing_fulfillment"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P07",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_combined_capabilities_suspended_new_purchase_existing_fulfillment",
+        "tests/database/test_commerce_step5.py::test_suspended_shop_existing_messages_and_refund_completion"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P08",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_atomic_stock_price_and_closed_inputs",
+        "tests/database/test_commerce.py::test_body_stream_limit_follows_authorization_before_parse_and_locks"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": [],
+      "http_evidence": "commerce-demo.py::http_boundaries (all scenarios)"
+    },
+    {
+      "id": "P09",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_atomic_stock_price_and_closed_inputs",
+        "tests/database/test_commerce.py::test_price_confirmation_inventory_guard_and_order_snapshot"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P10",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_price_confirmation_inventory_guard_and_order_snapshot"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P11",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_address_revision_and_shipping_prestate",
+        "tests/database/test_commerce.py::test_split_payment_partial_ship_deliver_receipt",
+        "tests/database/test_commerce_step5_permissions.py::test_unpaid_two_unit_cancel_and_paid_cancel_preserve_stock"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P12",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_shipment_rejects_excess_and_foreign_lines_then_replays_original"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P13",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_active_case_invalid_quantity_strict_body_and_exact_historical_replay",
+        "tests/database/test_commerce_step4.py::test_active_case_nested_ownership_and_order_conversation_binding",
+        "tests/database/test_commerce_step5.py::test_mixed_shipped_unshipped_quantity_case_is_atomic",
+        "tests/database/test_commerce_step5_permissions.py::test_multiline_mixed_shipped_and_unshipped_case_is_atomic"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P14",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_return_boundary_failure_retry_stock_and_events",
+        "tests/database/test_commerce_step4.py::test_return_all_parcels_window_and_registered_return_restrictions"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P15",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_completed_partial_return_nonrestock_preserves_fulfillment_history",
+        "tests/database/test_commerce_step4.py::test_active_case_nested_ownership_and_order_conversation_binding"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P16",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_return_all_parcels_window_and_registered_return_restrictions"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P17",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_active_case_nested_ownership_and_order_conversation_binding",
+        "tests/database/test_commerce_step4.py::test_ownership_staff_suspended_and_auth_before_body"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P18",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_ownership_staff_suspended_and_auth_before_body"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http",
+        "browser_required"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": [
+        "partial-return"
+      ]
+    },
+    {
+      "id": "P19",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_production_no_demo_routes_and_closed_unknown_errors",
+        "tests/database/test_commerce.py::test_permissions_before_validation_and_replay",
+        "tests/database/test_commerce_step5_permissions.py::test_production_explicit_refund_callback_not_registered"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "P20",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_authority_revoked_while_waiting_is_refreshed_before_write",
+        "tests/database/test_commerce_step4.py::test_case_creation_overlaps_shipping_without_quantity_drift"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R01",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_same_checkout_key_concurrency_original_snapshot",
+        "tests/database/test_commerce.py::test_shipment_rejects_excess_and_foreign_lines_then_replays_original",
+        "tests/database/test_commerce.py::test_payment_failure_retry_snapshot_and_event_replay"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R02",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_payment_failure_retry_snapshot_and_event_replay",
+        "tests/database/test_commerce_step4.py::test_return_boundary_failure_retry_stock_and_events",
+        "tests/database/test_commerce_step5.py::test_finished_case_replays_original_decision_and_rejects_changed_body",
+        "tests/database/test_commerce_step5_permissions.py::test_refund_event_changed_result_conflicts_and_preserves_completed_order"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R03",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_last_item_real_concurrent_connections"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R04",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_same_checkout_key_concurrency_original_snapshot"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R05",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_pay_cancel_and_ship_concurrency_preserve_inventory",
+        "tests/database/test_commerce.py::test_two_distinct_success_callbacks_consume_inventory_once"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R06",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_payment_expiry_exact_boundary[899-200]",
+        "tests/database/test_commerce.py::test_payment_expiry_exact_boundary[900-410]",
+        "tests/database/test_commerce.py::test_payment_expiry_exact_boundary[901-410]"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R07",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_checkout_expiry_releases_entire_old_multiline_order"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R08",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_atomic_stock_price_and_closed_inputs",
+        "tests/database/test_commerce.py::test_mutation_failure_rolls_back_every_aggregate"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R09",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_pay_cancel_and_ship_concurrency_preserve_inventory"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R10",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_tracking_recovery_time_and_terminal_guards"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R11",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_case_creation_overlaps_shipping_without_quantity_drift"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R12",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step4.py::test_return_boundary_failure_retry_stock_and_events",
+        "tests/database/test_commerce_step5.py::test_distinct_refund_successes_forced_overlap_separate_connections"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R13",
+      "pytest_nodes": [
+        "tests/database/test_commerce_step5.py::test_finished_case_replays_original_decision_and_rejects_changed_body"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    },
+    {
+      "id": "R14",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_mutation_failure_rolls_back_every_aggregate",
+        "tests/database/test_commerce.py::test_audit_failure_rolls_back_payment_shipment_tracking[demo.payment]",
+        "tests/database/test_commerce.py::test_audit_failure_rolls_back_payment_shipment_tracking[merchant.ship]",
+        "tests/database/test_commerce.py::test_audit_failure_rolls_back_payment_shipment_tracking[demo.tracking]",
+        "tests/database/test_commerce_step4.py::test_refund_success_rolls_back_every_business_record_then_retries[inventory]",
+        "tests/database/test_commerce_step4.py::test_refund_success_rolls_back_every_business_record_then_retries[order]",
+        "tests/database/test_commerce_step4.py::test_refund_success_rolls_back_every_business_record_then_retries[attempt]",
+        "tests/database/test_commerce_step4.py::test_refund_success_rolls_back_every_business_record_then_retries[event]",
+        "tests/database/test_commerce_step4.py::test_refund_success_rolls_back_every_business_record_then_retries[audit]"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "partial",
+      "gaps": [],
+      "browser_scenarios": [],
+      "coverage_limits": [
+        "Refunds inject inventory/order/attempt/event/audit faults; other aggregates inject audit faults. No claim of every fault \u00d7 every operation cross-product."
+      ]
+    },
+    {
+      "id": "R15",
+      "pytest_nodes": [
+        "tests/database/test_commerce.py::test_expiry_inventory_adjustment_real_concurrency"
+      ],
+      "layers": [
+        "real_postgresql",
+        "in_process_http"
+      ],
+      "execution_status": "PASSED",
+      "coverage": "mapped",
+      "gaps": [],
+      "browser_scenarios": []
+    }
+  ],
+  "verification_record": "docs/verification/2026-10-07-commerce-step-5.md"
+}

@@ -1,0 +1,78 @@
+{
+  "source_commit": "457470a47c9be58583e1e19849912eb615a5517c",
+  "source_dirty": true,
+  "source_tree_sha256": "c5e7b4df36a34015ca1226509fd8bc3aa974f5823ca0e5c5ce40bfa79bb0851c",
+  "status": "PASSED",
+  "results": [
+    {
+      "scenario": "purchase",
+      "schema": "commerce_demo_cc81a8e99d8246098e20f67c6b1dfd8e",
+      "status": "PASSED",
+      "restart_orders": 2,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    },
+    {
+      "scenario": "partial-return",
+      "schema": "commerce_demo_a2e886b7135c4044ba234cee024fca43",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    },
+    {
+      "scenario": "full-refund",
+      "schema": "commerce_demo_d69ddad2874b45d896d1c9106b02d692",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    },
+    {
+      "scenario": "shipped-partial-refund",
+      "schema": "commerce_demo_89d5326eefe547909da68f3e01f488c8",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    },
+    {
+      "scenario": "return-no-restock",
+      "schema": "commerce_demo_65f383a1d19e4a2599cbf7084602b74e",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    },
+    {
+      "scenario": "reject-withdraw",
+      "schema": "commerce_demo_779525469c2446f58d6dfb4272582dde",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    },
+    {
+      "scenario": "exceptions",
+      "schema": "commerce_demo_8f7811ac377d42ee9e653196dfdaff15",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ]
+    }
+  ]
+}

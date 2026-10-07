@@ -390,3 +390,40 @@ instance safety notes are in [the local database validation record](verification
 
 各场景均验证通用/订单会话、纯文本消息、STAFF只读售后、重新登录持久化及移动端宽度。
 脚本通过页面写入，仅使用额外授权GET核实订单和库存，不直接读库或重置schema。
+
+## 第五步统一演示入口
+
+安装backend开发依赖（运行Python需要SQLAlchemy/Alembic/uvicorn），frontend先npm ci。
+显式设置APP_ENV=development或test，TEST_DATABASE_URL指向允许创建schema的隔离PostgreSQL。
+运行器拒绝production、缺失URL、非psycopg和自带search_path/options的URL。
+不要使用生产数据库；TEST_DATABASE_URL不通过命令行参数提供。
+
+从仓库根目录运行：
+
+```sh
+python scripts/commerce-demo.py --scenario interactive
+# 需要Playwright模块及浏览器；变量说明沿用上面的浏览器配置表。
+python scripts/commerce-demo.py --scenario all --evidence-dir /tmp/commerce-evidence
+python scripts/commerce-demo.py --scenario exceptions
+```
+
+每次创建commerce_demo_<uuid>，执行现有迁移/商城Seed；不drop、truncate、重置任何schema。
+密码随机生成，0600临时文件、0700目录；只打印文件路径。interactive所有Seed账号使用此密码，
+用户customer.a/b、商家owner.a/b、员工staff.a、模拟操作demo、组合角色dual.a。
+DEMO仍需人工明确提交付款/退款结果，待处理不会自动成功。
+
+场景purchase复用第三步；partial-return、full-refund、shipped-partial-refund、return-no-restock、
+reject-withdraw复用第四步；exceptions验证改价冲突恢复、地址保留、旧价格快照、付款失败重试和
+物流异常恢复。all按顺序执行七个场景，每个另建schema，不能互相消耗库存。
+脚本退出只停止自己启动的API/Vite/浏览器；schema保留，可供调查，不修改当前5179演示库。
+
+浏览器完成后，运行器授权GET客户全部订单，停止并重新启动自己的API，再GET比较完整订单与售后
+记录；同时用真实HTTP验证401和重复JSON/query拒绝。不会把TestClient当socketHTTP证据。
+results.json记录场景、重启数量、源码HEAD/dirty标识/源码树SHA256；失败和自动运行被中断明确记录，
+返回非零。源码树hash包括tracked与非ignored新文件，用于识别未提交验收，不输出凭证。
+日志和连接元数据只在受保护临时目录，不能提交Git或作为公开演示资料。
+
+运行器安全回归：`python -m unittest discover -s scripts/tests`。
+业务回归：backend目录的`pytest tests/database/test_commerce*.py -q`（要求TEST_DATABASE_URL，跳过不算验收）。
+[54项映射](commerce/step-5-coverage.json)已关联本次实际节点结果；
+[第五步验收](verification/2026-10-07-commerce-step-5.md)保存执行命令、覆盖范围和限制。
