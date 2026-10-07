@@ -694,3 +694,6 @@ footer .brand{
 header nav { min-width:0; flex-wrap:wrap; }
 @media(max-width:1050px) { header nav {flex-wrap:nowrap;} }
 @media(max-width:650px) { .filters {align-items:stretch;} .filters > label {width:100%; min-width:0; flex:initial;} }
+
+.public-demo-banner { margin: 1rem 0; padding: 1rem 1.5rem; border: 2px solid #ad672b; background: #fff5e5; color: #56351c; }
+.public-demo-banner p { margin-bottom: 0; }

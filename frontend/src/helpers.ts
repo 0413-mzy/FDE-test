@@ -14,3 +14,8 @@ export function refundableQuantity(order: Pick<Order, 'shipments'>, line: OrderL
     if (!Number.isFinite(delivered) || now > delivered + 14 * 24 * 60 * 60 * 1000) return 0;
     return Math.max(0, line.shipped_qty - line.refunded_shipped_qty);
 }
+
+export type DemoInfo = { enabled: boolean; accounts: string[]; password: string | null };
+export function demoPolicy(info?: DemoInfo) {
+    return { publicDemo: info?.enabled === true, allowAccountWrites: info?.enabled === false };
+}

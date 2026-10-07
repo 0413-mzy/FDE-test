@@ -17,6 +17,7 @@ from app.api.resolution import router as resolution_router
 from app.commerce.catalog_router import router as catalog_router
 from app.commerce.onboarding_router import router as onboarding_router
 from app.commerce.platform_router import router as platform_router
+from app.commerce.public_demo import install_public_demo
 from app.commerce.router import demo_router
 from app.commerce.router import router as commerce_router
 from app.context.collector import ProviderBundle
@@ -131,10 +132,12 @@ def create_app(
     application.include_router(onboarding_router)
     application.include_router(catalog_router)
     application.include_router(platform_router)
-    if settings.app_env in {"development", "test"}:
+    if settings.app_env in {"development", "test"} or settings.commerce_public_demo:
         application.include_router(demo_router)
-    application.include_router(core_router)
-    application.include_router(resolution_router)
+    if not settings.commerce_public_demo:
+        application.include_router(core_router)
+        application.include_router(resolution_router)
+    install_public_demo(application, settings)
 
     def openapi():
         if application.openapi_schema is None:
