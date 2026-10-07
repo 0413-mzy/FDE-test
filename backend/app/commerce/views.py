@@ -98,7 +98,15 @@ def product(db, row, merchant=False):
 
 def purchasable(db, s):
     p = db.get(Product, s.product_id)
-    return s.active and p.status == "PUBLISHED" and db.get(Shop, p.shop_id).status == "ACTIVE"
+    from app.commerce.catalog_models import ProductExperience
+
+    info = db.scalar(select(ProductExperience).where(ProductExperience.product_id == p.id))
+    return (
+        s.active
+        and p.status == "PUBLISHED"
+        and db.get(Shop, p.shop_id).status == "ACTIVE"
+        and not (info and info.moderation_hidden)
+    )
 
 
 def cart(db, row):

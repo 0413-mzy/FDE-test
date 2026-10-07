@@ -1,3 +1,4 @@
+import { ProductExperience } from './Shopping';
 import { money } from './helpers';
 import { useQuery } from './useQuery';
 import { useState } from 'react';
@@ -99,6 +100,7 @@ function ProductEditor({ client, path, inventoryBase, onChange }: {
     <button type="button" className="subtle" onClick={q.refresh}>刷新详情</button>
     </div>
     </form>
+    <ProductExperience client={client} path={path} onChange={()=>{q.refresh();onChange();}}/>
         {p.skus.map(s => <SkuEditor key={`${s.id}-${s.version}`} sku={s} client={client} path={`${path}/skus/${s.id}/edit`} inventoryPath={`${inventoryBase}/${s.id}`} onChange={() => { q.refresh(); onChange(); }}/>)}<details>
     <summary>＋ 添加款式</summary>
     <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); action('/skus', { expected_version: p.version, sku_code: f.get('code'), options: { 款式: String(f.get('option')) }, unit_price_minor: Number(f.get('price')), initial_stock: Number(f.get('stock')) }); }}>

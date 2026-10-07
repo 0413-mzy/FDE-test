@@ -4,6 +4,7 @@ import os
 
 from alembic import context
 
+from app.commerce import catalog_models, history, onboarding_models, platform_models  # noqa: F401
 from app.commerce.models import Base as CommerceBase
 from app.db.connection import product_engine
 from app.db.models import Base

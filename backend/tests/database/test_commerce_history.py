@@ -140,9 +140,16 @@ def test_api_actor_public_login_and_idempotent_cart(database):
 
 
 def test_baselines_all_triggers_preserve_rows_and_roundtrip(database):
+    import importlib.util
+    from pathlib import Path
+
     from alembic import command
 
-    from app.commerce.history import FIELD_POLICY
+    frozen = Path(__file__).resolve().parents[2] / "migrations/versions/0006_commerce_history.py"
+    spec = importlib.util.spec_from_file_location("frozen_history", frozen)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    FIELD_POLICY = module.FIELD_POLICY
 
     engine, config, _ = database
     command.downgrade(config, "0005_commerce_onboarding")
@@ -155,7 +162,7 @@ def test_baselines_all_triggers_preserve_rows_and_roundtrip(database):
             .all()
             for table in FIELD_POLICY
         }
-    command.upgrade(config, "head")
+    command.upgrade(config, "0006_commerce_history")
     with engine.connect() as conn:
         after = {
             table: conn.execute(text(f"SELECT to_jsonb(t) FROM {table} t ORDER BY id"))

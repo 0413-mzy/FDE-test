@@ -64,6 +64,9 @@ def message_create(svc, row, body, merchant):
 
 
 def create_case(svc, order, body):
+    from app.commerce.platform_service import ensure_unfrozen
+
+    ensure_unfrozen(svc, order.id)
     inp.fields(body, ["expected_version", "type", "reason", "lines"])
     svc.version(order, body)
     kind = body["type"]
@@ -121,6 +124,9 @@ def create_case(svc, order, body):
 
 
 def case_action(svc, order, case, action, body):
+    from app.commerce.platform_service import ensure_unfrozen
+
+    ensure_unfrozen(svc, order.id)
     required = {
         "decision": ["decision", "reason"],
         "return": ["tracking_number"],
@@ -215,6 +221,9 @@ def refund_result(svc, attempt, body):
     def apply():
         case = svc.get(AfterSaleCase, attempt.after_sale_id, True)
         order = svc.get(Order, case.order_id, True)
+        from app.commerce.platform_service import ensure_unfrozen
+
+        ensure_unfrozen(svc, order.id)
         svc.version(attempt, body)
         if (
             attempt.state != "PENDING"

@@ -22,6 +22,14 @@ export class CommerceClient {
     private pending: PendingAction | null = null;
     private listeners = new Set<() => void>();
     constructor(private base: string, private token = '') { }
+    imageUrl(path: string) { return `${this.base}${path}`; }
+    async imageBlob(path: string) {
+        if (this.disposed) throw new Error('会话已切换');
+        const response = await fetch(this.imageUrl(path), {headers: this.token ? {Authorization: `Bearer ${this.token}`} : {}, cache: 'no-store'});
+        if (!response.ok) throw new ApiError('IMAGE_READ_FAILED', '图片暂时无法读取', response.status);
+        if (this.disposed) throw new Error('会话已切换');
+        return response.blob();
+    }
     subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
     getPending = () => this.pending;
     private updatePending(pending: PendingAction | null) {

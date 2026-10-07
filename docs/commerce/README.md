@@ -36,3 +36,5 @@
 
 正常演示付款由客户创建Attempt，再由独立DEMO控制台提交成功/失败；
 控制台是模拟外部事件入口，不是商家或客户的任意状态修改器。
+
+商品体验与平台运营增量规则见[shopping-and-platform.md](shopping-and-platform.md)，独立于冻结的旧客服契约。
