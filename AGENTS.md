@@ -53,6 +53,18 @@
   Product scope describes the destination; it does not imply a feature is implemented
   or grant permission to skip the currently requested step.
 
+## 2026-10-07 approved private data center
+
+The user approved a private, read-only database frontend with optional 15-second
+refresh, current records, search/filters, related records and before/after history.
+Use existing private platform authority; shared visitor accounts gain no access.
+All queries use explicit table/field allowlists, safe history projections and bounded
+pagination. Do not expose authentication material, database credentials or binary
+image payloads. Keep old migrations/business rows unchanged. AI attempts have their
+own attempt lifecycle, not full row-version history. Browser and real PostgreSQL
+acceptance are required; report blocked browser checks honestly. No main merge,
+paid resources or changes to private credentials.
+
 ## Existing implementation and compatibility
 
 - On 2026-10-07 the user approved the narrow AI conversation assistance design and

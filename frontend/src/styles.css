@@ -697,3 +697,20 @@ header nav { min-width:0; flex-wrap:wrap; }
 
 .public-demo-banner { margin: 1rem 0; padding: 1rem 1.5rem; border: 2px solid #ad672b; background: #fff5e5; color: #56351c; }
 .public-demo-banner p { margin-bottom: 0; }
+
+.data-layout { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 24px; margin-top: 24px; }
+.data-layout aside { display: flex; flex-direction: column; gap: 6px; }
+.data-layout aside button { text-align: left; }
+.data-layout aside small { float: right; }
+.data-content { min-width: 0; }
+.data-table { max-width:100%; overflow:auto; }
+.data-center table { border-collapse: collapse; width:100%; }
+.data-center th,.data-center td { border-bottom:1px solid #d8d2c7; padding:10px; text-align:left; vertical-align:top; }
+.data-center pre { white-space:pre-wrap; overflow-wrap:anywhere; max-width:360px; max-height:240px; overflow:auto; font-size:12px; margin:0; }
+.data-center .data-table pre { min-width:100px; }
+.data-filters { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+.data-filters label { min-width:170px; }
+.data-pagination { display:flex; align-items:center; gap:12px; margin-top:20px; }
+.data-center dl>div { display:grid; grid-template-columns:220px minmax(0,1fr); padding:10px; border-bottom:1px solid #d8d2c7; }
+.data-center dd { margin:0; }
+@media(max-width:760px) { .data-layout {grid-template-columns:1fr;} .data-layout aside {max-height:200px;overflow:auto;} .data-center dl>div {grid-template-columns:1fr;} }

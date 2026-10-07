@@ -1,7 +1,7 @@
 # 公开演示部署与恢复
 
 日期：2026-10-07。这是虚构业务演示，支付、物流、退款均模拟，无真实资金流转。
-当前公开服务分支：`codex/commerce-conversation-ai`，继承 `codex/commerce-public-demo-deployment`，不合并 main。
+当前Render追踪分支：`codex/commerce-conversation-ai`，继承 `codex/commerce-public-demo-deployment`，不合并 main。
 云端上线状态与验证见[本次记录](verification/2026-10-07-public-demo.md)。
 
 ## 服务与费用
@@ -109,3 +109,9 @@ DeepSeek调用会产生独立的模型用量，与Render/Neon免费托管费用�
 如果初始化在迁移/seed之间中断，服务会拒绝不完整或不明的非空库。保留库、导出备份，
 诊断事务与账号完整性；修复配置或经单独审查的恢复操作，不强制覆盖既有账号/订单。
 DeepSeek会话摘要与建议回复已接入公开演示；真实邮件、支付及承运商仍未接入。
+
+## 私有数据中心发布
+
+2026-10-07指定提交`08d0edb`已发布，源码在`codex/commerce-data-center`；
+Render追踪分支保持原AI分支，自动部署关闭。后续发布须明确选择已验证提交，
+不要直接部署旧追踪分支的latest。验收见[数据中心验证](verification/2026-10-07-data-center.md)。

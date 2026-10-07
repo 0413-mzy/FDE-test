@@ -517,3 +517,18 @@ python scripts/commerce-ai-evaluation.py --scenario all --output /private/path/e
 测试与正常迁移分别使用自己的schema。模型适配器回归使用独立真实HTTP测试服务，
 不等于DeepSeek真实调用验收；真实调用结果单独记录。模型生成失败或进程重启时，
 已返回的实际token照常保存；尚未返回或丢失的供应商用量保持未知，不伪造零消耗。
+
+## 私有数据中心候选
+
+当前候选新增GET-only接口 `/api/commerce/v1/platform/data`：access、resources、
+resources/{resource}、resources/{resource}/{id}、history。现有私有platform资格控制访问；
+不提升旧账号资格，不改写历史迁移，也不需要新业务表。
+
+本机启动现有前后端后，登录platform账号，点击“数据中心”。密码仍使用本机原平台
+账号的配置，不能将公开演示密码当成云端平台密码。云端沿用私密operator配置。
+当前数据与原商城连接同一后端；修改业务请回到商家/客户页面，数据中心只读。
+
+浏览器验收步骤：查看订单→搜索编号→打开详情→跳转支付/物流/会话/售后→查看历史差异。
+全局历史按操作者owner.a、操作UPDATE筛选；开启自动刷新后修改一条新虚构草稿，
+确认15秒后新值与更新时间出现；切换资源时不应出现旧资源的记录。页面隐藏后应暂停。
+当前验收证据及缺口见[验证记录](verification/2026-10-07-data-center.md)。
