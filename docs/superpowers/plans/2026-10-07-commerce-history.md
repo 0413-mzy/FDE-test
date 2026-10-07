@@ -26,4 +26,5 @@
 - [x] Snapshot all existing business rows in original runtime, additive upgrade0006, compare unchanged; identify baseline separately and keep user's registered accounts/data.
 - [x] Restart original detached API only, keep Vite/schema/mailbox and verify realbrowser/catalog/login and authorized API GETs. Meaningful freshschema change→history→API restart acceptance.
 - [x] Validate links/whitespace, backend/script Ruff, frontend lint/typecheck/build; record exact executed results and externalHTTP scope.
-- [ ] Dependent draftPR on codex/commerce-user-merchant-onboarding, attach artifact, exact HEAD CI; no main merge/public deployment/next business category.
+- [x] Create dependent [Draft PR #8](https://github.com/0413-mzy/FDE-test/pull/8) on codex/commerce-user-merchant-onboarding and attach artifact; no main merge/public deployment/next business category.
+- Delivery gate: verify exact HEAD CI before final response and record its run URLs/results in the PR description. The PR checks carry current status.

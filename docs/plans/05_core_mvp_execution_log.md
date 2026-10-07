@@ -2,7 +2,7 @@
 
 ## 2026-10-07：业务变更历史与本机数据库查看
 
-用户要求将关键变更历史补进数据库。从入驻最终aea9f01建立codex/commerce-history-tracking，新增0006、29张业务表的事务内安全快照与归因、追加历史保护和只读开发查询工具。现有本机数据库已私有备份并升级：46张原数据表逐行不变、134条当前基线、原API/前端恢复。8个隔离浏览器场景与重启通过。
+用户要求将关键变更历史补进数据库。从入驻最终aea9f01建立codex/commerce-history-tracking，新增0006、29张业务表的事务内安全快照与归因、追加历史保护和只读开发查询工具。现有本机数据库已私有备份并升级：46张原数据表逐行不变、134条当前基线、原API/前端恢复。8个隔离浏览器场景与重启通过。实现467980c已发布[Draft PR #8](https://github.com/0413-mzy/FDE-test/pull/8)，依赖入驻PR #7；最终准确HEAD/CI见PR检查。
 [设计](../superpowers/specs/2026-10-07-commerce-history-design.md)、[计划](../superpowers/plans/2026-10-07-commerce-history.md)、[验收](../verification/2026-10-07-commerce-history.md)、[查询说明](../database.md)记录范围、测试与限制。不补造旧值，不公开数据库，不合并main。
 
 ## 2026-10-07：用户与商家入驻扩展

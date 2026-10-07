@@ -13,7 +13,7 @@
 | 检查 | 结果 |
 | --- | --- |
 | 后端完整真实 PostgreSQL：`pytest tests/database -m "not integration" -q` | 213 passed、11 deselected、0 skipped，183.87秒；收集时新增历史测试为10项 |
-| 最终历史专项：`pytest tests/database/test_commerce_history.py -q` | 12 passed，8.89秒；包含全套收集后新增的售价/时间和审核归因两项；当前215项不同数据库测试均有通过证据，不把单次全套写为215 |
+| 最终历史专项：`pytest tests/database/test_commerce_history.py -q` | 12 passed，代理最终8.89秒、主代理提交前复跑8.55秒；包含全套收集后新增的售价/时间和审核归因两项；当前215项不同数据库测试均有通过证据，不把单次全套写为215 |
 | 后端非数据库：`pytest -m "not integration and not database"` | 161 passed、248 deselected，1.69秒 |
 | 后端 Ruff lint/format | 通过 |
 | scripts unittest + Ruff lint/format | 9 passed；格式与lint通过 |
@@ -46,4 +46,4 @@
 
 ## GitHub 交付
 
-此记录描述本轮本机验收。依赖入驻分支的 Draft PR 会在交付时创建并附到聊天；准确提交的GitHub CI状态见该PR检查与描述，不能用上述本机结果替代。不会自动合并主分支。
+本次交付为[Draft PR #8](https://github.com/0413-mzy/FDE-test/pull/8)，依赖入驻分支，已附到聊天。实现提交为 `467980c10360abf3dbbe61bdfbeb303d967895c5`，文档收尾后的准确HEAD以PR为准。此记录描述本轮本机验收；准确提交的GitHub CI状态见该PR检查与描述，不能用上述本机结果替代。不会自动合并主分支。

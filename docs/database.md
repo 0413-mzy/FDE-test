@@ -38,6 +38,8 @@
 ```sql
 \dt commerce_*
 \d commerce_orders
+SELECT id, title, status, updated_at
+FROM commerce_products ORDER BY updated_at DESC LIMIT 20;
 SELECT id, status, total_minor, currency, created_at, updated_at
 FROM commerce_orders ORDER BY created_at DESC LIMIT 20;
 SELECT id, entity_table, entity_id, operation, actor_username,
