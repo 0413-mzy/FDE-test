@@ -60,4 +60,4 @@
 出口为新用户从注册到获批开店、上架及购买的真实浏览器闭环；错误码/限流/会话撤销、
 地址历史快照、审核权限与并发使用真实PostgreSQL验证。
 见[契约](../commerce/onboarding.md)、[计划](../superpowers/plans/2026-10-07-commerce-onboarding.md)。
-本扩展依赖第五步候选，不自动合并main、部署或开始AI。
+候选交付为[Draft PR #7](https://github.com/0413-mzy/FDE-test/pull/7)，依赖第五步PR #6；不自动合并main、部署或开始AI。

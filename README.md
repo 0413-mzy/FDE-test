@@ -5,7 +5,7 @@
 数据关联和状态变化由后端处理并持久化。
 
 > 2026-10-07：第五步场景验收已交付为 [Draft PR #6](https://github.com/0413-mzy/FDE-test/pull/6)。
-> 当前扩展用户注册/恢复、账户资料/地址簿、商家入驻与独立人工审核，采用受保护的本地模拟邮件。
+> [Draft PR #7](https://github.com/0413-mzy/FDE-test/pull/7)新增用户注册/恢复、账户资料/地址簿、商家入驻与独立人工审核，采用受保护的本地模拟邮件。
 > 规则见 [入驻契约](docs/commerce/onboarding.md)和[验证记录](docs/verification/2026-10-07-commerce-onboarding.md)。支付、物流、退款和邮件均为模拟；不部署或合并 main。
 
 ## 目标体验

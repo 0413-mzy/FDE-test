@@ -60,8 +60,16 @@ python -m pytest -m 'not database and not integration' -q
 完全掩盖邮箱存在性。无公网暴露；部署前需重新设计真实投递故障与抗枚举。
 本机未安装Docker，Compose以准确HEAD CI为准；外部Sandbox HTTP集成35项本次未执行，
 该模块未改动，不能把历史通过当本次接受。全数据库命令排除其11项依赖外部HTTP的测试。
-草稿PR依赖第五步PR #6；最终PR和准确HEAD CI状态待补录，不合并main。
+实现6014da4交付[Draft PR #7](https://github.com/0413-mzy/FDE-test/pull/7)，依赖第五步PR #6，仍为OPEN/Draft；不合并main。
+准确HEAD CI状态在交付前通过GitHub逐项核对。
 
 全数据库首次执行201 passed、2 failed、11 deselected（200.80秒）：两个失败均为0005未实现隔离测试
 所需downgrade往返。已补六张新增表的逆序drop，不改变旧迁移；隔离迁移/售后17项重跑通过。
 此回退只用于新测试schema，原用户库只执行upgrade。修复后全量203项全部通过；准确HEAD CI另行记录。
+
+## 实现提交CI
+
+6014da4eda7957db2e91f524fdbbfa4a4e2b5d7e：push与PR的backend、frontend、database、compose全部SUCCESS。
+[PR运行37580067591](https://github.com/0413-mzy/FDE-test/actions/runs/37580067591)与
+[push运行37580043597](https://github.com/0413-mzy/FDE-test/actions/runs/37580043597)均已completed/success。
+此后文档收尾提交仍须核对PR准确HEAD CI，不将此实现提交的检查冒充后续提交结果。
