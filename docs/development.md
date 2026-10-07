@@ -76,7 +76,7 @@ Seed 密码不自动传入容器；在本地 shell 设置后，用
 
 Seed 仅 development/test 运行，重复执行保留已有账号、商品、库存和历史；改密码环境变量
 不会覆盖已有账号。不要把密码、Bearer 或真实客户资料写入 Git/普通日志。商城新增迁移
-0003/0004，与旧客服 0001/0002 共存；旧客服 Seed 不会生成商城数据。
+0003/0004/0005，与旧客服 0001/0002 共存；旧客服 Seed 不会生成商城数据。
 
 所有演示账号使用本次显式配置的密码：
 
@@ -409,12 +409,12 @@ python scripts/commerce-demo.py --scenario exceptions
 
 每次创建commerce_demo_<uuid>，执行现有迁移/商城Seed；不drop、truncate、重置任何schema。
 密码随机生成，0600临时文件、0700目录；只打印文件路径。interactive所有Seed账号使用此密码，
-用户customer.a/b、商家owner.a/b、员工staff.a、模拟操作demo、组合角色dual.a。
+用户customer.a/b、商家owner.a/b、员工staff.a、模拟操作demo、组合角色dual.a，以及独立入驻审核reviewer。
 DEMO仍需人工明确提交付款/退款结果，待处理不会自动成功。
 
 场景purchase复用第三步；partial-return、full-refund、shipped-partial-refund、return-no-restock、
 reject-withdraw复用第四步；exceptions验证改价冲突恢复、地址保留、旧价格快照、付款失败重试和
-物流异常恢复。all按顺序执行七个场景，每个另建schema，不能互相消耗库存。
+物流异常恢复；onboarding验证注册恢复、地址簿、审核开店及新店购买。all按顺序执行八个场景，每个另建schema，不能互相消耗库存。
 脚本退出只停止自己启动的API/Vite/浏览器；schema保留，可供调查，不修改当前5179演示库。
 
 浏览器完成后，运行器授权GET客户全部订单，停止并重新启动自己的API，再GET比较完整订单与售后
@@ -427,3 +427,42 @@ results.json记录场景、重启数量、源码HEAD/dirty标识/源码树SHA256
 业务回归：backend目录的`pytest tests/database/test_commerce*.py -q`（要求TEST_DATABASE_URL，跳过不算验收）。
 [54项映射](commerce/step-5-coverage.json)已关联本次实际节点结果；
 [第五步验收](verification/2026-10-07-commerce-step-5.md)保存执行命令、覆盖范围和限制。
+
+## 本地模拟邮件与入驻
+
+当前采用 `commerce-onboarding-v1`，没有真实邮件服务。统一演示入口自动创建私有模拟邮箱，
+初始化独立 `reviewer`（与虚构演示账号使用同一受保护随机密码文件），`all`现在包含八个场景。
+仅注册新用户时使用自行选择的12..128字符密码；新注册账号不能在邮箱验证前登录。
+
+```sh
+python scripts/commerce-demo.py --scenario interactive
+python scripts/commerce-demo.py --scenario onboarding
+```
+
+interactive 输出 `mailbox_dir` 和 `password_file` 路径。邮箱验证码仅环境操作者可从本机查看：
+
+```sh
+cd backend
+python -m app.commerce.mailbox /absolute/private/mailbox --email new.user@example.com
+```
+
+该CLI明确显示验证码供本机人工验证；不要将输出、邮件文件或密码文件加入Git/普通日志。
+页面不提供匿名邮箱查看器。目录0700、邮件与隐藏HMAC密钥文件0600；需要保留该目录和密钥，
+才能在进程重启后继续安全重放原认证请求。真实部署前应接入真实邮件适配器和生产密钥管理。
+自管开发启动需显式配置 `COMMERCE_MAILBOX_DIR=/absolute/private/mailbox`，只支持development/test。
+缺配置拒绝相关流程503；邮箱交付失败同键保持失败，用新请求重发验证或恢复，不重复创建账号。
+
+自管已有库先 `alembic upgrade head`，再显式初始化审核员：
+
+```sh
+python -m app.commerce.onboarding_seed
+```
+
+它只在development/test且显式DEMO_SEED_PASSWORD时新增reviewer，不覆盖既有账号密码或资格。
+审核员可查看入驻申请并批准/拒绝；客户和DEMO不能审核。批准后申请人在账户中心刷新资格，
+进入新店商品/SKU/库存页面，上架后所有客户通过原购物流程购买。
+用户账户中心提供资料、邮箱绑定、改密码、地址簿及申请历史；重置/修改密码撤销全部旧会话。
+地址簿预填结账地址，用户可继续编辑此次草稿；保存地址簿不会更改既有订单地址快照。
+
+入驻真实浏览器脚本为 `scripts/commerce-onboarding-browser-acceptance.cjs`，在原浏览器环境变量
+之外需要 `COMMERCE_MAILBOX_DIR`。该脚本只通过本机文件读取测试账号模拟码，业务写入全部经页面。

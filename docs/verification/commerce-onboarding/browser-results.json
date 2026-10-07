@@ -1,0 +1,19 @@
+{
+  "source_commit": "f26b371787905778f0d78efb8e8b93339d827e53",
+  "source_dirty": true,
+  "source_tree_sha256": "dd7cced87c0c6ffe58516b06937ec8188c907cf7590c9d4f0c10f77c1470d828",
+  "status": "PASSED",
+  "results": [
+    {
+      "scenario": "onboarding",
+      "schema": "commerce_demo_aa71fd0b1d0f45f5bb13f6a21916c01f",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-evidence/onboarding"
+    }
+  ]
+}

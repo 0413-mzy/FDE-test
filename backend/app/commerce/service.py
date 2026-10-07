@@ -208,8 +208,12 @@ class Commerce:
         if len(keys) != 1 or not re.fullmatch(r"[!-~]{1,200}", keys[0]):
             fail("IDEMPOTENCY_KEY_REQUIRED" if not keys else "INVALID_REQUEST", 400)
         key = keys[0]
-        body = normalize(body)
-        request_hash = digest(body)
+        body = body if operation.startswith("onboarding:") else normalize(body)
+        request_hash = (
+            self.onboarding_fingerprint(body)
+            if operation.startswith("onboarding:")
+            else digest(body)
+        )
         old = self.db.scalar(
             select(IdempotencyRecord).filter_by(
                 actor_id=self.actor.id, operation=operation, key=key
@@ -220,7 +224,15 @@ class Commerce:
                 fail("IDEMPOTENCY_CONFLICT")
             return (
                 old.response_payload,
-                204 if old.response_status == 204 else 410 if old.response_status == 410 else 200,
+                old.response_status
+                if operation.startswith("onboarding:")
+                else (
+                    204
+                    if old.response_status == 204
+                    else 410
+                    if old.response_status == 410
+                    else 200
+                ),
                 True,
             )
         payload, status = action()
@@ -300,7 +312,9 @@ class Commerce:
     def login(self, body):
         inp.fields(body, ["username", "password"])
         username = inp.string(body["username"], 1, 80)
-        password = inp.string(body["password"], 12, 128)
+        password = body["password"]
+        if not isinstance(password, str) or not 12 <= len(password) <= 128:
+            fail("INVALID_REQUEST", 400)
         if not re.fullmatch(r"[a-z0-9_.-]{1,80}", username):
             fail("INVALID_REQUEST", 400)
         actor = self.db.scalar(

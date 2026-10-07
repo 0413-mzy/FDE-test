@@ -183,3 +183,7 @@ export interface Message {
     body: string;
     created_at: string;
 }
+
+export interface ProfileView { account_id: string; username: string; version: number; display_name: string; phone: string; email: string | null; email_verified: boolean; review_enabled: boolean; }
+export interface AddressBookView { id: string; version: number; address: Address; is_default: boolean; created_at: string; updated_at: string; }
+export interface MerchantApplicationView { id: string; version: number; state: 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN'; shop_name: string; business_scope: string; contact_name: string; contact_phone: string; description: string; created_at: string; updated_at: string; decision_reason: string | null; shop_id: string | null; }

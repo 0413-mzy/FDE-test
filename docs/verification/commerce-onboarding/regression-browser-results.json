@@ -1,0 +1,96 @@
+{
+  "source_commit": "f26b371787905778f0d78efb8e8b93339d827e53",
+  "source_dirty": true,
+  "source_tree_sha256": "17b55c94a752483d13dc01481a85600fdeaa41857e8f4bee6d29a135a9ac55ed",
+  "status": "PASSED",
+  "results": [
+    {
+      "scenario": "purchase",
+      "schema": "commerce_demo_8db698e91ebd486f8c113b7d61adde41",
+      "status": "PASSED",
+      "restart_orders": 2,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/purchase"
+    },
+    {
+      "scenario": "partial-return",
+      "schema": "commerce_demo_6c009dc7281c4e7cb2ae40a1da66ec93",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/partial-return"
+    },
+    {
+      "scenario": "full-refund",
+      "schema": "commerce_demo_ec0a111bdc1f43af98c087a2c4f08da2",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/full-refund"
+    },
+    {
+      "scenario": "shipped-partial-refund",
+      "schema": "commerce_demo_c77193020e2f4ec1b000a464eece4d7d",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/shipped-partial-refund"
+    },
+    {
+      "scenario": "return-no-restock",
+      "schema": "commerce_demo_0428b76dcd424ab6acc147409e09b799",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/return-no-restock"
+    },
+    {
+      "scenario": "reject-withdraw",
+      "schema": "commerce_demo_1bc84961e8f946ad8fa5ac633b48b599",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/reject-withdraw"
+    },
+    {
+      "scenario": "exceptions",
+      "schema": "commerce_demo_2d9328e4ed6e460abdf3ed82930aa2b9",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/exceptions"
+    },
+    {
+      "scenario": "onboarding",
+      "schema": "commerce_demo_4c8a0cf5519346ec9677173defccf989",
+      "status": "PASSED",
+      "restart_orders": 1,
+      "http_checks": [
+        "P01 unauthenticated cart/order 401",
+        "P08 duplicate query/JSON 400 without business changes"
+      ],
+      "screenshots": "/private/tmp/fde-onboarding-all-evidence/onboarding"
+    }
+  ]
+}

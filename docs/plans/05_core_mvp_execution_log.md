@@ -1,5 +1,14 @@
 # 项目决策与执行记录
 
+## 2026-10-07：用户与商家入驻扩展
+
+第五步已交付Draft PR #6后，用户选择先补用户/商家入驻，确认本地模拟邮件、部署前再接真实服务。
+从f26b371建立codex/commerce-user-merchant-onboarding：新增注册恢复、账户资料/地址簿、
+人工入驻审核与获批开店；六张新增表、18操作、私有模拟邮箱；旧账号/订单/库存原记录保持。
+[契约](../commerce/onboarding.md)、[实施计划](../superpowers/plans/2026-10-07-commerce-onboarding.md)、
+[本次验收](../verification/2026-10-07-commerce-onboarding.md)保存实际检查与故障边界。
+不部署、不进入AI、不合并main。
+
 ## 2026-10-07：第四步消息与售后
 
 用户明确请求“ok进行第四步吧”。从第三步0e50df5建立codex/commerce-messages-after-sales。

@@ -27,6 +27,7 @@ SCENARIOS = [
     "return-no-restock",
     "reject-withdraw",
     "exceptions",
+    "onboarding",
 ]
 
 
@@ -129,10 +130,8 @@ def http_boundaries(api, password):
     ]
 
 
-def snapshot(api, password):
-    token = request(api, "/auth/login", body={"username": "customer.a", "password": password})[
-        "token"
-    ]
+def snapshot(api, password, username="customer.a"):
+    token = request(api, "/auth/login", body={"username": username, "password": password})["token"]
     try:
         result = []
         offset = 0
@@ -166,6 +165,8 @@ def run_scenario(name, evidence, interactive=False):
     api_port, ui_port = free_port(), free_port()
     api = f"http://127.0.0.1:{api_port}"
     ui = f"http://127.0.0.1:{ui_port}"
+    mailbox = directory / "mailbox"
+    mailbox.mkdir(mode=0o700)
     env = dict(
         os.environ,
         APP_ENV="development",
@@ -173,6 +174,7 @@ def run_scenario(name, evidence, interactive=False):
         DEMO_SEED_PASSWORD=config["password"],
         CORS_ALLOWED_ORIGINS=json.dumps([ui]),
         VITE_API_BASE_URL=api,
+        COMMERCE_MAILBOX_DIR=str(mailbox),
     )
     # Private resume metadata; contains connection configuration and must never be committed.
     runtime = directory / "runtime.json"
@@ -184,6 +186,7 @@ def run_scenario(name, evidence, interactive=False):
                 "api": api,
                 "ui": ui,
                 "password_file": str(password_file),
+                "mailbox_dir": str(mailbox),
             }
         )
     )
@@ -193,7 +196,11 @@ def run_scenario(name, evidence, interactive=False):
     with log_path.open("w") as log:
         log_path.chmod(0o600)
         try:
-            for module in [("alembic", "upgrade", "head"), ("app.commerce.seed",)]:
+            for module in [
+                ("alembic", "upgrade", "head"),
+                ("app.commerce.seed",),
+                ("app.commerce.onboarding_seed",),
+            ]:
                 subprocess.run(
                     [sys.executable, "-m", *module],
                     cwd=ROOT / "backend",
@@ -253,6 +260,7 @@ def run_scenario(name, evidence, interactive=False):
                             "ui": ui,
                             "api": api,
                             "password_file": str(password_file),
+                            "mailbox_dir": str(mailbox),
                             "schema": config["schema"],
                             "note": "Local fictional demo; CtrlC stops services, data retained.",
                         }
@@ -265,6 +273,8 @@ def run_scenario(name, evidence, interactive=False):
             script = (
                 "commerce-browser-acceptance.cjs"
                 if name == "purchase"
+                else "commerce-onboarding-browser-acceptance.cjs"
+                if name == "onboarding"
                 else "commerce-step5-browser-acceptance.cjs"
                 if name == "exceptions"
                 else "commerce-step4-browser-acceptance.cjs"
@@ -279,12 +289,13 @@ def run_scenario(name, evidence, interactive=False):
                 COMMERCE_SCREENSHOT_DIR=str(scenario_dir),
             )
             subprocess.run(["node", str(ROOT / "scripts" / script)], env=browser_env, check=True)
-            before = snapshot(api, config["password"])
+            username = "customer.b" if name == "onboarding" else "customer.a"
+            before = snapshot(api, config["password"], username)
             if not before:
                 raise RuntimeError("Browser scenario left no persistent customer orders")
             stop(api_process)
             api_process = launch_api()
-            after = snapshot(api, config["password"])
+            after = snapshot(api, config["password"], username)
             if before != after:
                 raise RuntimeError("Business records changed across API restart")
             return {

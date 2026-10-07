@@ -2,7 +2,7 @@ import { money, time } from './helpers';
 import { useQuery } from './useQuery';
 import { useState } from 'react';
 import { CommerceClient, uncertain } from './client';
-import type { Address, Cart, Page, Product, SKU, Order } from './types';
+import type { Address, AddressBookView, Cart, Page, Product, SKU, Order } from './types';
 import { AddressForm, ErrorBox, Status, Pagination } from './ui';
 import { ContactShop } from './Messages';
 import { OrderDetail } from './Orders';
@@ -109,6 +109,8 @@ export function CartPage({ client, onOrders }: {
     onOrders: () => void;
 }) {
     const [addressDraft, setAddressDraft] = useState<Address>();
+    const [addressSelection, setAddressSelection] = useState(0);
+    const addresses = useQuery<Page<AddressBookView>>(client, '/customer/addresses?limit=20&offset=0');
     const query = useQuery<Cart>(client, '/customer/cart'), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false);
     async function mutate(path: string, method: string, body: unknown) { setBusy(true); setError(undefined); try {
         await client.request(path, method, body);
@@ -137,7 +139,8 @@ export function CartPage({ client, onOrders }: {
             {money(cart.lines.reduce((n, l) => n + l.current_price_minor * l.quantity, 0))}</strong>
             </h2>
             <p>运费 / 税费 ¥0.00 · 最终金额由服务器校验。</p>
-            <AddressForm initial={addressDraft} onDraftChange={setAddressDraft} disabled={busy} onSave={async (address) => { setBusy(true); setError(undefined); try {
+            <ErrorBox error={addresses.error}/><label>从地址簿预填<select value="" onChange={e => { const chosen=addresses.data?.items.find(a=>a.id===e.target.value); if(chosen){setAddressDraft(chosen.address);setAddressSelection(n=>n+1);} }}><option value="">选择已保存地址（可继续编辑）</option>{addresses.data?.items.map(a=><option key={a.id} value={a.id}>{a.address.recipient_name} · {a.address.city} · {a.address.address_line}{a.is_default?' · 默认':''}</option>)}</select></label>
+            <AddressForm key={addressSelection} initial={addressDraft} onDraftChange={setAddressDraft} disabled={busy} onSave={async (address) => { setBusy(true); setError(undefined); try {
                     await client.request('/customer/checkouts', 'POST', { expected_version: cart.version, address });
                     onOrders();
                 }
