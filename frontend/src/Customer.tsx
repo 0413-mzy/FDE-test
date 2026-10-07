@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CommerceClient, uncertain } from './client';
 import type { Cart, Page, Product, SKU, Order } from './types';
 import { AddressForm, ErrorBox, Status, Pagination } from './ui';
+import { ContactShop } from './Messages';
 import { OrderDetail } from './Orders';
 export function Catalog({ client, customer, onCart }: {
     client: CommerceClient;
@@ -61,12 +62,14 @@ export function Catalog({ client, customer, onCart }: {
     </div>
     <ErrorBox error={error ?? result.error}/>{error&&pendingAdd&&<div className="warning">上次加入操作的结果尚未确认。请保持相同请求重试。<button disabled={busy} onClick={()=>add({id:pendingAdd.sku_id,price_version:pendingAdd.seen_price_version})}>重试上次加入操作</button></div>}
     {result.loading && <p className="muted">正在读取选物…</p>}<div className="products">
-        {result.data?.items.map((p, i) => <ProductCard key={p.id} product={p} index={i} disabled={busy || !customer || !!pendingAdd} onAdd={add}/>)}</div>
+        {result.data?.items.map((p, i) => <ProductCard key={p.id} client={client} customer={customer} product={p} index={i} disabled={busy || !customer || !!pendingAdd} onAdd={add}/>)}</div>
     {result.data?.items.length === 0 && <div className="empty">没有符合条件的商品。试试其他关键词。</div>}<Pagination offset={offset} hasMore={result.data?.has_more ?? false} onChange={setOffset}/>
     {!customer && <p className="muted">登录具有客户资格的账号后，可以加入购物车。</p>}</>;
 }
-function ProductCard({ product: p, index, disabled, onAdd }: {
+function ProductCard({ client, customer, product: p, index, disabled, onAdd }: {
     product: Product;
+    client: CommerceClient;
+    customer: boolean;
     index: number;
     disabled: boolean;
     onAdd: (s: SKU) => void;
@@ -98,7 +101,7 @@ function ProductCard({ product: p, index, disabled, onAdd }: {
         <button disabled={disabled || sku.available < 1} onClick={() => onAdd(sku)}>
         {sku.available < 1 ? '暂时缺货' : '加入购物车'} <span>＋</span>
         </button>
-        </>}</div>
+        </>}{customer && <ContactShop client={client} shopId={p.shop_id} shopName={p.shop_name}/>}</div>
     </article>;
 }
 export function CartPage({ client, onOrders }: {
@@ -168,9 +171,10 @@ function CartRow({ line: l, disabled, onSet, onRemove }: {
     <button className="subtle" disabled={disabled} onClick={onRemove}>移除</button>
     </article>;
 }
-export function Orders({ client, shop }: {
+export function Orders({ client, shop, owner = false }: {
     client: CommerceClient;
     shop?: string;
+    owner?: boolean;
 }) {
     const [offset, setOffset] = useState(0);
     const [id, setId] = useState(''), [status, setStatus] = useState('');
@@ -193,11 +197,11 @@ export function Orders({ client, shop }: {
         <span>
         <Status value={o.status}/>
         <small>
-        {o.id.slice(0, 8)} · {time(o.created_at)}</small>
+        {o.shop_name ?? `店铺 ${o.shop_id.slice(0,8)}`} · {o.id.slice(0, 8)} · {time(o.created_at)}</small>
         </span>
         <strong>
         {money(o.total_minor)} →</strong>
         </button>)}</div>
     {query.data?.items.length === 0 && <div className="empty">暂无订单。</div>}<Pagination offset={offset} hasMore={query.data?.has_more ?? false} onChange={n => { setOffset(n); setId(''); }}/>
-    {id && <OrderDetail key={`${shop ?? 'customer'}-${id}`} client={client} path={`${base}/${id}`} merchant={!!shop} onChange={query.refresh}/>}</>;
+    {id && <OrderDetail key={`${shop ?? 'customer'}-${id}`} client={client} path={`${base}/${id}`} merchant={!!shop} owner={owner} onChange={query.refresh}/>}</>;
 }

@@ -1,6 +1,6 @@
 # 领域与数据关系
 
-所有实体/表名是新平台**目标模型**，不是已有表。版本 commerce-v1。
+以下模型在第三/四步商城模块中独立实现，不对应旧客服表。版本 commerce-v1。
 UUID由服务器生成；时间UTC；写入实体带正整数version、created_at、updated_at。
 字段的null/空列表按本页区分；历史快照和业务事件不可通过通用更新接口重写。
 金额字段为0或正整数minor（不接受bool/小数），currency固定CNY。

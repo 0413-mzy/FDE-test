@@ -120,6 +120,7 @@ export interface Shipment {
 export interface Order {
     id: string;
     shop_id: string;
+    shop_name?: string; // Historical idempotent snapshots may omit this field.
     status: string;
     financial_status: string;
     total_minor: number;
@@ -133,7 +134,7 @@ export interface Order {
     address_revision?: number;
     shipments?: Shipment[];
     payment_attempts?: Attempt[];
-    after_sale_cases?: unknown[];
+    after_sale_cases?: CaseView[];
 }
 export interface Inventory {
     sku_id: string;
@@ -148,5 +149,37 @@ export interface DemoItem {
     state: string;
     version: number;
     simulation: true;
+    created_at: string;
+}
+
+export type CaseType = 'UNSHIPPED_REFUND' | 'RETURN_REFUND';
+export interface CaseView {
+    id: string;
+    order_id: string;
+    type: CaseType;
+    state: 'REQUESTED' | 'REJECTED' | 'CANCELLED' | 'REFUND_PENDING' | 'AWAITING_RETURN' | 'RETURN_IN_TRANSIT' | 'COMPLETED';
+    version: number;
+    reason: string;
+    requested_amount_minor: number;
+    currency: string;
+    created_at: string;
+    lines: {order_line_id: string; quantity: number}[];
+    decision_reason: string | null;
+    return_shipment: {tracking_number: string; state: 'IN_TRANSIT' | 'RECEIVED'; restock: boolean | null; registered_at: string; received_at: string | null} | null;
+    refund_attempts: Attempt[];
+}
+export interface Conversation {
+    id: string;
+    shop_id: string;
+    customer_id: string;
+    order_id: string | null;
+    version: number;
+    created_at: string;
+}
+export interface Message {
+    id: string;
+    conversation_id: string;
+    sender_side: 'CUSTOMER' | 'MERCHANT';
+    body: string;
     created_at: string;
 }

@@ -11,16 +11,20 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import DBAPIError
 from starlette.responses import JSONResponse, Response
 
+from app.commerce import after_sales, views
 from app.commerce import inputs as inp
-from app.commerce import views
 from app.commerce.errors import CommerceError, fail
 from app.commerce.models import (
+    AfterSaleCase,
     BusinessAudit,
     Checkout,
+    Conversation,
     Inventory,
+    Message,
     Order,
     PaymentAttempt,
     Product,
+    RefundAttempt,
     Shipment,
     Shop,
     ShopMembership,
@@ -139,6 +143,8 @@ def setup_authority(svc, request, operation):
             operation.startswith("merchant.product")
             or operation.startswith("merchant.sku")
             or operation.startswith("merchant.inventory")
+            or operation.startswith("merchant.case.")
+            and not operation.endswith("detail")
         )
         svc.auth("merchant", owner=owner)
         svc.auth(
@@ -157,7 +163,11 @@ def setup_authority(svc, request, operation):
     elif operation.startswith("demo"):
         svc.auth("demo")
         if "attempt" in request.path_params:
-            context["attempt"] = svc.get(PaymentAttempt, path_id(request, "attempt"), svc.write)
+            context["attempt"] = svc.get(
+                RefundAttempt if operation == "demo.refund" else PaymentAttempt,
+                path_id(request, "attempt"),
+                svc.write,
+            )
         if "shipment" in request.path_params:
             context["shipment"] = svc.get(Shipment, path_id(request, "shipment"), svc.write)
     else:
@@ -167,11 +177,48 @@ def setup_authority(svc, request, operation):
         if shipment.order_id != context["order"].id:
             fail("NOT_FOUND", 404)
         context["shipment"] = shipment
+    if "conversation" in request.path_params:
+        row = svc.get(Conversation, path_id(request, "conversation"))
+        if (
+            row.customer_id != svc.actor.id
+            if operation.startswith("customer")
+            else row.shop_id != svc.shop.id
+        ):
+            fail("NOT_FOUND", 404)
+        context["conversation"] = row
+    if "case" in request.path_params:
+        row = svc.get(AfterSaleCase, path_id(request, "case"), svc.write)
+        if row.order_id != context["order"].id:
+            fail("NOT_FOUND", 404)
+        context["case"] = row
     return context
 
 
 def read(svc, request, operation, context):
     db = svc.db
+    if operation in {"customer.conversations", "merchant.conversations"}:
+        statement = (
+            select(Conversation)
+            .where(
+                Conversation.customer_id == svc.actor.id
+                if operation.startswith("customer")
+                else Conversation.shop_id == svc.shop.id
+            )
+            .order_by(Conversation.created_at.desc(), Conversation.id.desc())
+        )
+        return page(db, statement, views.conversation, request)
+    if operation.endswith("messages"):
+        statement = (
+            select(Message)
+            .where(Message.conversation_id == context["conversation"].id)
+            .order_by(Message.created_at, Message.id)
+        )
+        return page(db, statement, views.message, request)
+    if operation.endswith("case.detail"):
+        query(request)
+        if request.query_params:
+            fail("INVALID_REQUEST", 400)
+        return views.case(db, context["case"])
     if operation == "me":
         return views.account(db, svc.actor)
     if operation.startswith("catalog"):
@@ -231,7 +278,7 @@ def read(svc, request, operation, context):
             )
             .order_by(Order.created_at.desc(), Order.id.desc())
         )
-        return page(db, statement, lambda o: views.summary(o, svc.now), request, ("status",))
+        return page(db, statement, lambda o: views.summary(o, svc.now, db), request, ("status",))
     if operation in {"customer.order.detail", "merchant.order.detail"}:
         return views.order(db, context["order"], svc.now, operation.startswith("merchant"))
     if operation in {"customer.shipment", "merchant.shipment"}:
@@ -239,7 +286,7 @@ def read(svc, request, operation, context):
     if operation == "demo.pending":
         limit, offset, values = query(request, ("kind",))
         kind = values.get("kind")
-        if kind not in {None, "PAYMENT", "SHIPMENT"}:
+        if kind not in {None, "PAYMENT", "REFUND", "SHIPMENT"}:
             fail("INVALID_REQUEST", 400)
         items = []
         if kind in {None, "PAYMENT"}:
@@ -253,6 +300,18 @@ def read(svc, request, operation, context):
                     "created_at": views.iso(a.created_at),
                 }
                 for a in db.scalars(select(PaymentAttempt).where(PaymentAttempt.state == "PENDING"))
+            )
+        if kind in {None, "REFUND"}:
+            items.extend(
+                {
+                    "id": str(a.id),
+                    "kind": "REFUND",
+                    "state": a.state,
+                    "version": a.version,
+                    "simulation": True,
+                    "created_at": views.iso(a.created_at),
+                }
+                for a in db.scalars(select(RefundAttempt).where(RefundAttempt.state == "PENDING"))
             )
         if kind in {None, "SHIPMENT"}:
             items.extend(
@@ -277,6 +336,20 @@ def read(svc, request, operation, context):
 
 
 def mutate(svc, operation, context, payload):
+    if operation == "customer.conversation.create":
+        return after_sales.conversation_create(svc, payload)
+    if operation.endswith("message.create"):
+        return after_sales.message_create(
+            svc, context["conversation"], payload, operation.startswith("merchant")
+        )
+    if operation == "customer.case.create":
+        return after_sales.create_case(svc, context["order"], payload)
+    if ".case." in operation:
+        return after_sales.case_action(
+            svc, context["order"], context["case"], operation.rsplit(".", 1)[1], payload
+        )
+    if operation == "demo.refund":
+        return after_sales.refund_result(svc, context["attempt"], payload)
     if operation == "logout":
         inp.fields(payload, [])
         svc.session.revoked_at = svc.now
@@ -402,7 +475,7 @@ def handler(operation, method, path):
                             fail("INVALID_REQUEST", 400)
                     result = read(svc, request, operation, context)
                 dto = RESPONSES[operation]
-                if status < 400 and dto is not None:
+                if status < 400 and dto is not None and not replay:
                     result = dto.model_validate(result).model_dump(mode="json")
         except CommerceError as error:
             status = error.status
@@ -437,6 +510,8 @@ def handler(operation, method, path):
             if operation == "customer.checkout.create":
                 response.headers["Location"] = PREFIX + "/customer/checkouts/" + result["id"]
             elif operation == "merchant.product.create":
+                response.headers["Location"] = request.url.path + "/" + result["id"]
+            elif operation == "customer.case.create":
                 response.headers["Location"] = request.url.path + "/" + result["id"]
             elif operation == "merchant.ship":
                 response.headers["Location"] = request.url.path + "/" + result["id"]
@@ -487,6 +562,46 @@ ROUTES = [
     ("GET", "/customer/orders/{order}/shipments/{shipment}", "customer.shipment"),
     ("GET", "/merchant/shops/{shop}/orders/{order}/shipments/{shipment}", "merchant.shipment"),
 ]
+ROUTES.extend(
+    [
+        ("POST", "/customer/conversations", "customer.conversation.create"),
+        ("GET", "/customer/conversations", "customer.conversations"),
+        ("GET", "/merchant/shops/{shop}/conversations", "merchant.conversations"),
+        ("GET", "/customer/conversations/{conversation}/messages", "customer.messages"),
+        ("POST", "/customer/conversations/{conversation}/messages", "customer.message.create"),
+        (
+            "GET",
+            "/merchant/shops/{shop}/conversations/{conversation}/messages",
+            "merchant.messages",
+        ),
+        (
+            "POST",
+            "/merchant/shops/{shop}/conversations/{conversation}/messages",
+            "merchant.message.create",
+        ),
+        ("POST", "/customer/orders/{order}/after-sales", "customer.case.create"),
+        ("GET", "/customer/orders/{order}/after-sales/{case}", "customer.case.detail"),
+        ("GET", "/merchant/shops/{shop}/orders/{order}/after-sales/{case}", "merchant.case.detail"),
+        ("POST", "/customer/orders/{order}/after-sales/{case}/withdraw", "customer.case.withdraw"),
+        ("POST", "/customer/orders/{order}/after-sales/{case}/return", "customer.case.return"),
+        (
+            "POST",
+            "/merchant/shops/{shop}/orders/{order}/after-sales/{case}/decision",
+            "merchant.case.decision",
+        ),
+        (
+            "POST",
+            "/merchant/shops/{shop}/orders/{order}/after-sales/{case}/receive-return",
+            "merchant.case.receive-return",
+        ),
+        (
+            "POST",
+            "/merchant/shops/{shop}/orders/{order}/after-sales/{case}/refunds",
+            "merchant.case.refunds",
+        ),
+    ]
+)
+
 for method, path, operation in ROUTES:
     router.add_api_route(
         path,
@@ -503,6 +618,7 @@ for method, path, operation in ROUTES:
 for method, path, operation in [
     ("GET", "/demo/pending", "demo.pending"),
     ("POST", "/demo/payments/{attempt}/result", "demo.payment"),
+    ("POST", "/demo/refunds/{attempt}/result", "demo.refund"),
     ("POST", "/demo/shipments/{shipment}/events", "demo.tracking"),
     ("POST", "/demo/orders/expire", "demo.expire"),
 ]:

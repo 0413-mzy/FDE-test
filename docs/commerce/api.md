@@ -1,7 +1,7 @@
 # API契约：commerce-v1
 
-**第三步实现其中购买与履约端点，消息/售后/退款端点仍是设计。**
-完整实现清单见 [第三步切片](step-3-implementation.md)。命名空间 `/api/commerce/v1`（下表省略此前缀）；
+**第三步实现购买与履约端点；第四步实现消息、售后和模拟退款端点。**
+实现边界见 [第三步切片](step-3-implementation.md)与[第四步切片](step-4-implementation.md)。命名空间 `/api/commerce/v1`（下表省略此前缀）；
 旧 `/api/v1/auth`、Inquiry等接口继续按旧契约，不复用新Bearer或业务对象。
 详细状态/数量规则见 [lifecycle](lifecycle.md)，对象访问见 [permissions](permissions.md)。
 
@@ -68,7 +68,7 @@ Inventory.version。任何订单关联状态/地址/尝试创建、包裹/事件
 
 ## 2. 类型与公共读视图
 
-下列是设计的闭合DTO；字段全部必需，可null的字段明确标注。UUID/UTC/金额通用类型见上文。
+下列是实现的闭合DTO；字段全部必需，可null的字段明确标注。UUID/UTC/金额通用类型见上文。
 实现不能把ORM对象全量序列化：
 
 - **SessionView**：`token:string`（仅登录）、`expires_at:UTC`、`account:AccountView`。
@@ -86,7 +86,7 @@ Inventory.version。任何订单关联状态/地址/尝试创建、包裹/事件
   商品停售仍显示旧选择与purchasable=false，不悄悄删除。总价由checkout按已确认价计算。
 - **OrderLineView**：`{id,sku_id,title,options,unit_price_minor,quantity,shipped_qty,
   refunded_unshipped_qty,refunded_shipped_qty}`；title/options取购买快照。
-- **OrderSummary**：`{id,shop_id,status,financial_status,total_minor,currency,version,created_at,
+- **OrderSummary**：`{id,shop_id,shop_name,status,financial_status,total_minor,currency,version,created_at,
   payment_deadline,payment_expired:bool}`。OrderView增加`{checkout_id,lines:OrderLineView[],
   address:AddressView,address_revision:int,shipments:ShipmentView[],payment_attempts:AttemptView[],
   after_sale_cases:CaseView[],completed_at:UTC|null,cancel_reason_code:string|null,cancelled_at:UTC|null}`；商家视图checkout_id为null，客户可读自己的ID。
@@ -107,7 +107,11 @@ Inventory.version。任何订单关联状态/地址/尝试创建、包裹/事件
   不含客户、金额、地址或订单内容。demo队列只列PENDING付款/退款及未DELIVERED Shipment。
 
 `has_more`按本授权结果limit+1计算。SKU价格/库存停用后，历史订单详情仍显示原快照。
-没有将Case/Attempt DTO中的目标字段当成已有接口或ORM表。
+各DTO由专用授权视图生成，不全量序列化ORM或暴露内部账号字段。
+
+第四步增量字段：当前订单读取和新写入快照包含 `shop_name`，来自已授权订单的店铺。
+第三步已存的幂等响应仍原样重放，可能不含该字段；不回填或改写历史快照。
+客户端在重放后 GET 最新订单，用当前授权读取显示店铺名称。
 
 ## 3. 身份、商品与购物车
 

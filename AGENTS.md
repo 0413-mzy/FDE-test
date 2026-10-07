@@ -14,8 +14,13 @@
   identity/catalog/inventory, Cart/Checkout/Order with simulated payment, and
   shipment/tracking/receipt, connected to customer/merchant/demo UI. Additive
   PostgreSQL migrations, explicit demo seed and relevant tests are authorized.
-  `docs/commerce/README.md` (`commerce-v1`) governs the behavior. Step 4 messages,
-  after-sales/refunds, AI, real payments/carriers and main merge are not in scope.
+  `docs/commerce/README.md` (`commerce-v1`) governs the behavior.
+  On 2026-10-07 the user authorized Step 4: persistent customer/shop conversations,
+  unshipped refunds and delivered-item returns/refunds, merchant review and narrow
+  simulated refund results, associated money/inventory/state invariants, and UI.
+  Additive migration 0004 and real database/browser acceptance are authorized;
+  preserve existing orders. Also clarify shop names and manual simulated payments.
+  AI, real payments/carriers, Step 5 and main merge remain outside this task.
   Prior Step 1/2 documentation is delivered in dependent draft PRs #2/#3.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.
   Product scope describes the destination; it does not imply a feature is implemented

@@ -4,12 +4,13 @@ import type { Session } from './types';
 import { ErrorBox } from './ui';
 import { CartPage, Catalog, Orders } from './Customer';
 import { MerchantProducts } from './Merchant';
+import { Messages } from './Messages';
 import { Demo } from './Demo';
 import './styles.css';
 const apiBase = (import.meta as ImportMeta & {
     env: Record<string, string | undefined>;
 }).env.VITE_API_BASE_URL ?? 'http://localhost:8000';
-type View = 'catalog' | 'cart' | 'orders' | 'merchant' | 'products' | 'demo';
+type View = 'catalog' | 'cart' | 'orders' | 'merchant' | 'products' | 'demo' | 'messages' | 'merchant-messages';
 export default function App() {
     const [session, setSession] = useState<Session>(), [view, setView] = useState<View>('catalog'), [loginOpen, setLoginOpen] = useState(false), [shop, setShop] = useState(''), [epoch, setEpoch] = useState(0), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false);
     const client = useMemo(() => new CommerceClient(apiBase, session?.token), [session]);
@@ -54,8 +55,9 @@ export default function App() {
     <button className={view === 'catalog' ? 'active' : ''} onClick={() => setView('catalog')}>选物集</button>
         {account?.customer_enabled && <>
         <button className={view === 'cart' ? 'active' : ''} onClick={() => setView('cart')}>购物袋</button>
+        <button className={view === 'messages' ? 'active' : ''} onClick={() => setView('messages')}>店铺消息</button>
         <button className={view === 'orders' ? 'active' : ''} onClick={() => setView('orders')}>我的订单</button>
-        </>}{!!account?.shops.length && <button className={['merchant', 'products'].includes(view) ? 'active' : ''} onClick={() => setView('merchant')}>店铺工作台</button>}{account?.demo_enabled && <button className={view === 'demo' ? 'active' : ''} onClick={() => setView('demo')}>模拟事件</button>}</nav>
+        </>}{!!account?.shops.length && <button className={['merchant', 'products', 'merchant-messages'].includes(view) ? 'active' : ''} onClick={() => setView('merchant')}>店铺工作台</button>}{account?.demo_enabled && <button className={view === 'demo' ? 'active' : ''} onClick={() => setView('demo')}>模拟事件</button>}</nav>
     <div className="account">
         {account ? <>
         <span>
@@ -81,20 +83,21 @@ export default function App() {
         </section>}
         {pending && <section className="pending-operation" role="status">
             <strong>{pending.uncertain?'上次操作的结果尚未确认':'正在确认操作结果…'}</strong>
-            <p>确认前已暂停新的业务提交。可以浏览或刷新记录；请使用原请求重试，避免重复购买、调整库存或发货。</p>
+            <p>确认前已暂停新的业务提交。可以浏览或刷新记录；请使用原请求重试，避免重复购买、退款、发送消息、调整库存或发货。</p>
             <button disabled={!pending.uncertain} onClick={retryOriginal}>重试原操作</button>
             <ErrorBox error={retryError}/>
         </section>}
         {!pending && !!retryError && <div className="pending-operation"><ErrorBox error={retryError}/></div>}
         <main key={epoch}>
-        {['merchant', 'products'].includes(view) && account && <div className="merchant-nav">
+        {['merchant', 'products', 'merchant-messages'].includes(view) && account && <div className="merchant-nav">
         <label>当前店铺<select value={shop} onChange={e => { setShop(e.target.value); setView('merchant'); }}>
             {account.shops.map(s => <option key={s.shop_id} value={s.shop_id}>
             {s.shop_name} · {s.role === 'OWNER' ? '店主' : '员工'}{s.shop_status === 'SUSPENDED' ? ' · 已暂停' : ''}</option>)}</select>
         </label>
         <button className={view === 'merchant' ? 'active' : ''} onClick={() => setView('merchant')}>处理订单</button>
+        <button className={view === 'merchant-messages' ? 'active' : ''} onClick={() => setView('merchant-messages')}>店铺消息</button>
         {member?.role === 'OWNER' && <button className={view === 'products' ? 'active' : ''} onClick={() => setView('products')}>商品与库存</button>}</div>}<div key={`${account?.id ?? 'public'}-${shop}-${view}`}>
-    {view === 'catalog' && <Catalog client={client} customer={!!account?.customer_enabled} onCart={() => setView('cart')}/>} {view === 'cart' && account?.customer_enabled && <CartPage client={client} onOrders={() => setView('orders')}/>} {view === 'orders' && account?.customer_enabled && <Orders client={client}/>} {view === 'merchant' && member && <Orders client={client} shop={shop}/>} {view === 'products' && member?.role === 'OWNER' && <MerchantProducts client={client} shop={shop}/>} {view === 'demo' && account?.demo_enabled && <Demo client={client}/>}</div>
+    {view === 'catalog' && <Catalog client={client} customer={!!account?.customer_enabled} onCart={() => setView('cart')}/>} {view === 'cart' && account?.customer_enabled && <CartPage client={client} onOrders={() => setView('orders')}/>} {view === 'orders' && account?.customer_enabled && <Orders client={client}/>} {view === 'merchant' && member && <Orders client={client} shop={shop} owner={member.role === 'OWNER'}/>} {view === 'products' && member?.role === 'OWNER' && <MerchantProducts client={client} shop={shop}/>} {view === 'messages' && account?.customer_enabled && <Messages client={client}/>} {view === 'merchant-messages' && member && <Messages client={client} shop={shop} shopName={member.shop_name}/>} {view === 'demo' && account?.demo_enabled && <Demo client={client}/>}</div>
     </main>
     <footer>
     <div className="brand">拾物集 <span>把生活，过成喜欢的样子。</span>
