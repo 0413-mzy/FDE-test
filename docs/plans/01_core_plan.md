@@ -76,3 +76,7 @@ Sandbox，网页只有基础外壳。这能支持客服辅助实验，却不能�
 见[第四步验证](../verification/2026-10-07-commerce-step-4.md)。用户随后授权第五步场景完善，
 部署留到之后，见[第五步设计](../superpowers/specs/2026-10-07-commerce-step-5-design.md)。
 见 [路线与阶段出口](04_core_mvp_next_stage_plan.md) 和 [范围](../scope.md)。
+
+用户随后选择先完善用户与商家入驻，并确认本地模拟邮件方案。
+当前扩展见[入驻契约](../commerce/onboarding.md)和[实施计划](../superpowers/plans/2026-10-07-commerce-onboarding.md)。
+该选择先补平台人工功能，不自动进入第六步AI评估或部署。

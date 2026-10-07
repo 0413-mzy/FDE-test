@@ -1,19 +1,22 @@
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import { CommerceClient } from './client';
-import type { Session } from './types';
+import type { Account, ProfileView, Session } from './types';
 import { ErrorBox } from './ui';
 import { CartPage, Catalog, Orders } from './Customer';
 import { MerchantProducts } from './Merchant';
 import { Messages } from './Messages';
 import { Demo } from './Demo';
 import './styles.css';
+import { AccountCenter, Applications, AuthForms } from './Account';
+import { useQuery } from './useQuery';
 const apiBase = (import.meta as ImportMeta & {
     env: Record<string, string | undefined>;
 }).env.VITE_API_BASE_URL ?? 'http://localhost:8000';
-type View = 'catalog' | 'cart' | 'orders' | 'merchant' | 'products' | 'demo' | 'messages' | 'merchant-messages';
+type View = 'catalog' | 'cart' | 'orders' | 'merchant' | 'products' | 'demo' | 'messages' | 'merchant-messages' | 'account' | 'review';
 export default function App() {
     const [session, setSession] = useState<Session>(), [view, setView] = useState<View>('catalog'), [loginOpen, setLoginOpen] = useState(false), [shop, setShop] = useState(''), [epoch, setEpoch] = useState(0), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false);
-    const client = useMemo(() => new CommerceClient(apiBase, session?.token), [session]);
+    const client = useMemo(() => new CommerceClient(apiBase, session?.token), [session?.token]);
+    const profile = useQuery<ProfileView>(client, '/account/profile', !!session);
     const pending = useSyncExternalStore(client.subscribe, client.getPending);
     const [retryError,setRetryError]=useState<unknown>();
     async function retryOriginal() {
@@ -40,6 +43,12 @@ export default function App() {
     finally {
         setBusy(false);
     } }
+    async function refreshIdentity() {
+        const fresh = await client.request<Account>('/auth/me');
+        setSession(old => old ? { ...old, account: fresh } : old);
+        setShop(current => fresh.shops.some(s => s.shop_id === current) ? current : fresh.shops[0]?.shop_id ?? '');
+    }
+    function clearSession() { client.dispose(); setRetryError(undefined); setSession(undefined); setShop(''); setView('catalog'); setLoginOpen(true); setEpoch(n=>n+1); }
     async function logout() { const old = new CommerceClient(apiBase, session?.token); client.dispose(); setRetryError(undefined); setSession(undefined); setShop(''); setView('catalog'); setEpoch(n => n + 1); setError(undefined); try {
         await old.request('/auth/logout', 'POST', {});
     }
@@ -57,7 +66,7 @@ export default function App() {
         <button className={view === 'cart' ? 'active' : ''} onClick={() => setView('cart')}>购物袋</button>
         <button className={view === 'messages' ? 'active' : ''} onClick={() => setView('messages')}>店铺消息</button>
         <button className={view === 'orders' ? 'active' : ''} onClick={() => setView('orders')}>我的订单</button>
-        </>}{!!account?.shops.length && <button className={['merchant', 'products', 'merchant-messages'].includes(view) ? 'active' : ''} onClick={() => setView('merchant')}>店铺工作台</button>}{account?.demo_enabled && <button className={view === 'demo' ? 'active' : ''} onClick={() => setView('demo')}>模拟事件</button>}</nav>
+        </>}{!!account?.shops.length && <button className={['merchant', 'products', 'merchant-messages'].includes(view) ? 'active' : ''} onClick={() => setView('merchant')}>店铺工作台</button>}{account?.demo_enabled && <button className={view === 'demo' ? 'active' : ''} onClick={() => setView('demo')}>模拟事件</button>}{account && <button className={view==='account'?'active':''} onClick={()=>setView('account')}>我的账户</button>}{account && !account.demo_enabled && profile.data?.review_enabled && <button className={view==='review'?'active':''} onClick={()=>setView('review')}>入驻审核</button>}</nav>
     <div className="account">
         {account ? <>
         <span>
@@ -81,9 +90,10 @@ export default function App() {
         <button disabled={busy}>登录</button>
         </form>
         </section>}
+        {loginOpen && !session && <AuthForms client={client}/>}
         {pending && <section className="pending-operation" role="status">
             <strong>{pending.uncertain?'上次操作的结果尚未确认':'正在确认操作结果…'}</strong>
-            <p>确认前已暂停新的业务提交。可以浏览或刷新记录；请使用原请求重试，避免重复购买、退款、发送消息、调整库存或发货。</p>
+            <p>{pending.path.startsWith('/auth/') ? '注册、验证或恢复申请的结果尚未确认。请使用原请求重试；确认前已暂停新的提交。' : '确认前已暂停新的业务提交。可以浏览或刷新记录；请使用原请求重试，避免重复购买、退款、发送消息、调整库存或发货。'}</p>
             <button disabled={!pending.uncertain} onClick={retryOriginal}>重试原操作</button>
             <ErrorBox error={retryError}/>
         </section>}
@@ -97,6 +107,7 @@ export default function App() {
         <button className={view === 'merchant' ? 'active' : ''} onClick={() => setView('merchant')}>处理订单</button>
         <button className={view === 'merchant-messages' ? 'active' : ''} onClick={() => setView('merchant-messages')}>店铺消息</button>
         {member?.role === 'OWNER' && <button className={view === 'products' ? 'active' : ''} onClick={() => setView('products')}>商品与库存</button>}</div>}<div key={`${account?.id ?? 'public'}-${shop}-${view}`}>
+    {view === 'account' && account && <AccountCenter client={client} customer={account.customer_enabled} onPasswordChanged={clearSession} onIdentityRefresh={refreshIdentity}/>} {view === 'review' && account && !account.demo_enabled && profile.data?.review_enabled && <Applications client={client} review/>}
     {view === 'catalog' && <Catalog client={client} customer={!!account?.customer_enabled} onCart={() => setView('cart')}/>} {view === 'cart' && account?.customer_enabled && <CartPage client={client} onOrders={() => setView('orders')}/>} {view === 'orders' && account?.customer_enabled && <Orders client={client}/>} {view === 'merchant' && member && <Orders client={client} shop={shop} owner={member.role === 'OWNER'}/>} {view === 'products' && member?.role === 'OWNER' && <MerchantProducts client={client} shop={shop}/>} {view === 'messages' && account?.customer_enabled && <Messages client={client}/>} {view === 'merchant-messages' && member && <Messages client={client} shop={shop} shopName={member.shop_name}/>} {view === 'demo' && account?.demo_enabled && <Demo client={client}/>}</div>
     </main>
     <footer>

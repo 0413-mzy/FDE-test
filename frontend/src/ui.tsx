@@ -8,7 +8,7 @@ export function ErrorBox({ error }: {
     if (!error)
         return null;
     return <div role="alert" className="error">
-    {error instanceof Error ? error.message : '请求失败'}{error instanceof ApiError && <>
+    {error instanceof Error ? error.message : '请求失败'}{error instanceof ApiError && error.code === 'MAILBOX_DELIVERY_FAILED' && <p>申请已记录，但本机模拟邮件投递失败。请先恢复本机邮件服务，再选择“重发验证”；恢复密码请重新选择“忘记密码”提交。原请求重试不会投递新邮件。</p>}{error instanceof ApiError && <>
         <small>
         {error.code} · 请求 {error.requestId || '未返回编号'}</small>
             {Object.keys(error.details).length > 0 && <small>

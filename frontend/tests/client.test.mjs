@@ -38,3 +38,18 @@ test('partial shipment intent remains immutable while reads reconcile the latest
 test('pending subscription survives view unsubscription and blocks concurrent writes',async()=>{
  let complete;globalThis.fetch=()=>new Promise(resolve=>{complete=resolve});const c=new CommerceClient('http://local');let notifications=0;const unsub=c.subscribe(()=>notifications++);const first=c.request('/orders/o/shipments','POST',{expected_version:1});assert.equal(notifications,1);unsub();await assert.rejects(c.request('/orders/o/shipments','POST',{expected_version:1}),e=>e.code==='CLIENT_OPERATION_PENDING');assert.ok(c.getPending());complete(response({id:'parcel'}));await first;assert.equal(c.getPending(),null);assert.equal(notifications,1)
 })
+test('anonymous onboarding requests preserve their idempotency key on uncertain retry',async()=>{
+ const calls=[];let fail=true;globalThis.fetch=async(_url,init)=>{calls.push(init);if(fail)throw new TypeError('lost receipt');return response({accepted:true,simulation:true},202)};
+ const c=new CommerceClient('http://local');const body={username:'new.customer',email:'new@example.test',password:'a-long-password'};
+ await assert.rejects(c.request('/auth/register','POST',body));assert.ok(c.getPending());assert.ok(calls[0].headers['Idempotency-Key']);
+ await assert.rejects(c.request('/auth/password-reset/request','POST',{email:'new@example.test'}),e=>e.code==='CLIENT_OPERATION_PENDING');
+ fail=false;await c.retryPending();assert.equal(calls[0].headers['Idempotency-Key'],calls[1].headers['Idempotency-Key']);assert.equal(calls[0].body,calls[1].body);assert.equal(c.getPending(),null);
+})
+test('login and logout do not become replayable business actions',async()=>{
+ const calls=[];globalThis.fetch=async(_url,init)=>{calls.push(init);return response({})};const c=new CommerceClient('http://local');await c.request('/auth/login','POST',{});await c.request('/auth/logout','POST',{});assert.ok(calls.every(r=>!r.headers['Idempotency-Key']));assert.equal(c.getPending(),null);
+})
+test('closed mailbox delivery failure releases pending intent so a fresh verification request can recover',async()=>{
+ const calls=[];globalThis.fetch=async(url,init)=>{calls.push({url,init});return url.endsWith('/auth/register')?response({error:{code:'MAILBOX_DELIVERY_FAILED',message:'本机模拟邮件投递失败'}},503):response({accepted:true,simulation:true},202)};
+ const c=new CommerceClient('http://local');await assert.rejects(c.request('/auth/register','POST',{username:'new.customer',email:'new@example.test',password:'a-long-password'}),e=>e.code==='MAILBOX_DELIVERY_FAILED');
+ assert.equal(c.getPending(),null);await c.request('/auth/verification-request','POST',{email:'new@example.test'});assert.equal(calls.length,2);assert.notEqual(calls[0].init.headers['Idempotency-Key'],calls[1].init.headers['Idempotency-Key']);
+})

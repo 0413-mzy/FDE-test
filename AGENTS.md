@@ -23,7 +23,12 @@
   On 2026-10-07 the user then explicitly authorized Step 5: scenario coverage,
   isolated reproducible demos, exception/retry/concurrency regressions and recovery
   usability. Preserve existing orders; deployment is deferred until afterwards.
-  AI, real payments/carriers and main merge remain outside this task.
+  After Step 5 the user authorized the user/merchant onboarding category: registration,
+  password recovery, merchant application/review, profiles and address books. The user
+  selected local simulated email on 2026-10-07; real email is deferred until deployment.
+  An additive 0005 migration, protected local mailbox and narrow independent reviewer
+  seed/UI are authorized; preserve existing accounts, orders and inventory.
+  AI, real payments/carriers, public deployment and main merge remain outside this task.
   Prior Step 1/2 documentation is delivered in dependent draft PRs #2/#3.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.
   Product scope describes the destination; it does not imply a feature is implemented

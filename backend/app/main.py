@@ -14,6 +14,7 @@ from app.api.core import router as core_router
 from app.api.errors import ApiError
 from app.api.health import router as health_router
 from app.api.resolution import router as resolution_router
+from app.commerce.onboarding_router import router as onboarding_router
 from app.commerce.router import demo_router
 from app.commerce.router import router as commerce_router
 from app.context.collector import ProviderBundle
@@ -125,6 +126,7 @@ def create_app(
 
     application.include_router(health_router)
     application.include_router(commerce_router)
+    application.include_router(onboarding_router)
     if settings.app_env in {"development", "test"}:
         application.include_router(demo_router)
     application.include_router(core_router)

@@ -210,7 +210,7 @@ def test_login_password_is_not_trimmed_or_echoed_in_validation_error():
     assert secret not in json.dumps(result.value.payload("req-test"))
 
 
-def test_commerce_step4_endpoint_inventory_is_separate_and_closed():
+def test_commerce_additive_endpoint_inventory_is_separate_and_closed():
     with TestClient(create_app(Settings(_env_file=None), session_factory=no_database)) as client:
         schema = client.get("/openapi.json").json()
     paths = {
@@ -219,6 +219,21 @@ def test_commerce_step4_endpoint_inventory_is_separate_and_closed():
         if path.startswith("/api/commerce/v1")
     }
     assert paths == {
+        "/auth/register",
+        "/auth/verify-email",
+        "/auth/verification-request",
+        "/auth/password-reset/request",
+        "/auth/password-reset/confirm",
+        "/account/profile",
+        "/account/email",
+        "/account/password",
+        "/customer/addresses",
+        "/customer/addresses/{id}/edit",
+        "/customer/addresses/{id}/delete",
+        "/customer/merchant-applications",
+        "/customer/merchant-applications/{id}/withdraw",
+        "/review/merchant-applications",
+        "/review/merchant-applications/{id}/decision",
         "/auth/login",
         "/auth/me",
         "/auth/logout",

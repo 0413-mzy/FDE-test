@@ -1,7 +1,7 @@
 export class ApiError extends Error {
     constructor(public code: string, message: string, public status: number, public details: Record<string, unknown> = {}, public requestId = '') { super(message); }
 }
-export const uncertain = (error: unknown) => !(error instanceof ApiError) || error.status >= 500 || error.code === 'OPERATION_BUSY';
+export const uncertain = (error: unknown) => !(error instanceof ApiError) || (error.code !== 'MAILBOX_DELIVERY_FAILED' && (error.status >= 500 || error.code === 'OPERATION_BUSY'));
 function freezeBody(value: unknown): unknown {
     if(value && typeof value==='object') {
         Object.values(value).forEach(freezeBody);
@@ -36,7 +36,7 @@ export class CommerceClient {
     async request<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
         if (this.disposed) throw new Error('会话已切换，请重新读取当前账号记录');
         const fingerprint = JSON.stringify([path, method, body]);
-        const write = method !== 'GET' && !path.startsWith('/auth/');
+        const write = method !== 'GET' && !['/auth/login', '/auth/logout', '/account/password'].includes(path);
         if (write && this.pending && (this.pending.fingerprint !== fingerprint || !this.pending.uncertain)) {
             throw new ApiError('CLIENT_OPERATION_PENDING', '上次操作的结果尚未确认。请先使用页面顶部的原请求重试，避免重复扣减或发货。', 409);
         }

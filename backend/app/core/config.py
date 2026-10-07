@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     )
 
     app_env: Literal["development", "test", "production"] = "development"
+    commerce_mailbox_dir: Path | None = None
     database_url: SecretStr | None = None
     sandbox_base_url: HttpUrl | None = None
     sandbox_timeout_seconds: float = Field(default=5.0, gt=0, allow_inf_nan=False)
