@@ -1,3 +1,4 @@
+import { ConversationAI } from './ConversationAI';
 import { useState } from 'react';
 import { CommerceClient } from './client';
 import { useQuery } from './useQuery';
@@ -58,6 +59,7 @@ function MessageThread({client, conversation: c, shop, shopName}: {client: Comme
         {q.data?.items.length === 0 && <p className="muted">还没有消息。</p>}
         <p className="muted">按发送时间从早到晚排列。发送后刷新当前页；较新的消息可在下一页查看。</p>
         <Pagination offset={offset} hasMore={q.data?.has_more ?? false} onChange={setOffset}/>
+        {shop && <ConversationAI client={client} shop={shop} conversation={c.id} revision={JSON.stringify(q.data)} onInsert={setBody}/>}
         <form onSubmit={send}><label>消息内容<textarea required maxLength={2000} value={body} onChange={e => setBody(e.target.value)}/></label><button disabled={busy || !body.trim()}>发送消息</button></form>
     </section>;
 }

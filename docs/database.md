@@ -69,7 +69,7 @@ psql 默认开启只读，方便安全查询，但连接仍是开发数据库拥
 | 平台运营 | platform_roles、moderation_reports、moderation_actions、disputes | 独立平台资格、举报、处理决定、售后争议及双方证据和仲裁 |
 | 新增历史 | record_history | 业务记录的新增、修改、删除与升级时基线 |
 
-本机本轮升级至0008，当前共57张表（包含迁移记录及保留的旧客服表）。升级与平台seed保留每一条旧记录，见[验收记录](verification/2026-10-07-shopping-platform.md)。
+商品与平台运营阶段升级至0008，共57张表（包含迁移记录及保留的旧客服表）。该阶段升级与平台seed保留每一条旧记录，见[验收记录](verification/2026-10-07-shopping-platform.md)。
 
 上述表名均以 `commerce_` 开头。旧客服模块的表单独保留，不与商城业务混用。
 
@@ -94,3 +94,34 @@ psql 默认开启只读，方便安全查询，但连接仍是开发数据库拥
 升级只为现存业务记录建立当前状态 BASELINE，原有订单、账户和库存保持原值。此前没有记录下来的旧值无法恢复，完整的行变更历史从本次升级后开始积累。原有库存流水、物流节点、消息及操作审计仍然保留，可以与新历史一起查询。此功能不等于数据库备份。
 
 0007/0008扩展使用说明见[商品购物与平台运营](commerce/shopping-and-platform.md)。查看图片元数据用 `--rows commerce_product_images`，查看图片变更用 `--history commerce_product_images`；图片内容不会显示在普通查询或历史快照中。
+
+## 会话 AI 生成记录（0009）
+
+本机随后增量升级至0009，共58张表，新增 `commerce_ai_attempts`。升级前后逐表计算原38张业务表
+的内容指纹与行数，150条原记录保持不变。原会话/消息表保持原样；AI记录是独立扩展。
+
+每条记录保存会话与发起商家、幂等请求键、消息快照指纹、全部来源编号及覆盖数量、
+模型与提示词版本、RUNNING/SUCCEEDED/FAILED状态、租约截止时间、请求创建/完成时间，
+以及校验后的中文摘要、建议回复、安全错误码和逐次模型调用的实际token用量。
+`cached_from` 指向复用来源；缓存请求没有新的模型用量，并保留来源的实际生成时间。
+失败保留已完成分段调用的用量；进程突然终止、供应商未返回用量时，不能编造未知消耗。
+API Key、原始供应商请求与完整数据库资料不存入这张表。
+
+每次新生成或新的缓存请求都单独留记录；失败不会覆盖之前的成功摘要。
+这张技术请求表保存自身尝试历史，没有加入38张业务表的全行前后值触发器。
+
+本机只读查看：
+
+```sh
+python scripts/commerce-db.py --local-demo --describe commerce_ai_attempts
+python scripts/commerce-db.py --local-demo --rows commerce_ai_attempts --limit 20
+```
+
+进入只读psql后查看生成时间与实际用量：
+
+```sql
+SELECT id, conversation_id, state, message_count, model,
+       created_at, finished_at, cached_from, usage
+FROM commerce_ai_attempts
+ORDER BY created_at DESC LIMIT 20;
+```

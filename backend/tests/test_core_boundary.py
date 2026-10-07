@@ -219,6 +219,7 @@ def test_commerce_additive_endpoint_inventory_is_separate_and_closed():
         if path.startswith("/api/commerce/v1")
     }
     assert paths == {
+        "/merchant/shops/{shop}/conversations/{conversation}/ai-assistance",
         "/auth/register",
         "/auth/verify-email",
         "/auth/verification-request",

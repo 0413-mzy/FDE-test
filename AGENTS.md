@@ -55,6 +55,16 @@
 
 ## Existing implementation and compatibility
 
+- On 2026-10-07 the user approved the narrow AI conversation assistance design and
+  explicitly requested implementation. DeepSeek may process authorized conversation
+  message snapshots to produce brief Chinese summaries and suggested reply drafts.
+  Additive migration 0009, generation/usage records, merchant-only UI and relevant
+  real PostgreSQL/HTTP/provider/browser acceptance are authorized. Replies require
+  human editing and explicit sending through the existing message flow; AI cannot
+  change orders, money or permissions. This supersedes earlier AI deferral only for
+  this slice. AI monthly budget is uncapped; Render/Neon remain free-only. Credentials
+  stay in private backend environment configuration, never Git or frontend bundles.
+
 - Existing code is the order-support foundation: sessions, Inquiry permissions,
   canonical Providers, snapshots, Evidence/CaseContext and recovery. Step 3 adds a
   separate commerce namespace and customer/merchant/demo UI. Support contracts remain separate.
