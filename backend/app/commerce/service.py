@@ -15,6 +15,7 @@ from sqlalchemy import select, text
 from app.commerce import after_sales, views
 from app.commerce import inputs as inp
 from app.commerce.errors import CommerceError, fail
+from app.commerce.history import set_context
 from app.commerce.models import (
     SKU,
     AddressRevision,
@@ -77,6 +78,7 @@ class Commerce:
         self.shop = None
         self.now = clock.now()
         self.request_id = request.state.request_id
+        set_context(self.db, request=self.request)
         if write:
             self.acquire_write()
 
@@ -151,6 +153,7 @@ class Commerce:
                 if owner and member.role != "OWNER":
                     fail("CAPABILITY_REQUIRED", 403)
                 self.shop = self.get(Shop, shop_id, self.write)
+        set_context(self.db, actor, self.request)
         return actor
 
     def own_order(self, identifier, merchant=False):
@@ -327,6 +330,7 @@ class Commerce:
         ):
             fail("INVALID_CREDENTIALS", 401)
         self.actor = actor
+        set_context(self.db, actor, self.request)
         token = new_token()
         session = self.new(
             CommerceSession,

@@ -7,6 +7,7 @@ from uuid import NAMESPACE_URL, uuid5
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.commerce.history import set_context
 from app.commerce.models import SKU, Cart, CommerceAccount, Inventory, Product, Shop, ShopMembership
 from app.core.security import PASSWORD_HASHER
 from app.db.connection import product_engine
@@ -21,6 +22,7 @@ def seed_commerce(db: Session, password: str, now=None):
         raise ValueError("DEMO_SEED_PASSWORD must contain 12..128 characters")
     now = now or datetime.now(UTC)
     with db.begin():
+        set_context(db, action="DEMO_SEED")
         db.execute(
             text(
                 "SELECT pg_advisory_xact_lock("

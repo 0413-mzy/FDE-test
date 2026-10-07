@@ -14,6 +14,7 @@ from starlette.responses import JSONResponse
 from app.commerce import mailbox
 from app.commerce import onboarding as domain
 from app.commerce.errors import CommerceError, fail
+from app.commerce.history import set_context
 from app.commerce.onboarding_models import (
     AddressBook,
     AnonymousRequest,
@@ -219,6 +220,8 @@ def handler(method, path, op):
                     svc.acquire_write()
                     row = authority(svc, request, op)
                     payload = body(raw)
+                    if op == "application.decision" and isinstance(payload, dict):
+                        set_context(db, svc.actor, request, payload.get("reason"))
                     if request.query_params:
                         fail("INVALID_REQUEST", 400)
                     if op in {

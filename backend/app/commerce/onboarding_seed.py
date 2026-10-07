@@ -5,6 +5,7 @@ import os
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app.commerce.history import set_context
 from app.commerce.models import CommerceAccount
 from app.commerce.onboarding_models import AccountProfile
 from app.commerce.seed import seed_id
@@ -16,6 +17,7 @@ def seed_reviewer(db, password):
     if not isinstance(password, str) or not 12 <= len(password) <= 128:
         raise ValueError("DEMO_SEED_PASSWORD must contain 12..128 characters")
     with db.begin():
+        set_context(db, action="REVIEWER_SEED")
         db.execute(
             text(
                 "SELECT pg_advisory_xact_lock("
