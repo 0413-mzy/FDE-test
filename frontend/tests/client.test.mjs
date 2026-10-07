@@ -53,3 +53,16 @@ test('closed mailbox delivery failure releases pending intent so a fresh verific
  const c=new CommerceClient('http://local');await assert.rejects(c.request('/auth/register','POST',{username:'new.customer',email:'new@example.test',password:'a-long-password'}),e=>e.code==='MAILBOX_DELIVERY_FAILED');
  assert.equal(c.getPending(),null);await c.request('/auth/verification-request','POST',{email:'new@example.test'});assert.equal(calls.length,2);assert.notEqual(calls[0].init.headers['Idempotency-Key'],calls[1].init.headers['Idempotency-Key']);
 })
+test('private product image uses current authorization and releases no stale session response',async()=>{
+ let finish,calls=[];globalThis.fetch=(url,init)=>{calls.push({url,init});return new Promise(resolve=>{finish=resolve})};
+ const c=new CommerceClient('http://local','owner-token');const image=c.imageBlob('/api/commerce/v1/shopping/images/image');
+ assert.equal(calls[0].url,'http://local/api/commerce/v1/shopping/images/image');assert.equal(calls[0].init.headers.Authorization,'Bearer owner-token');assert.equal(calls[0].init.cache,'no-store');assert.equal(c.getPending(),null);
+ c.dispose();finish(new Response(new Uint8Array([1,2]),{headers:{'Content-Type':'image/png'}}));await assert.rejects(image,/会话已切换/);await assert.rejects(c.imageBlob('/image'),/会话已切换/);assert.equal(calls.length,1);
+});
+test('uncertain platform decision preserves exact reason version and action across image reads',async()=>{
+ const calls=[];let fail=true;globalThis.fetch=async(url,init)=>{calls.push({url,init});if(url.endsWith('/image'))return new Response(new Uint8Array([1]),{headers:{'Content-Type':'image/png'}});if(fail)throw new TypeError('lost decision receipt');return response({state:'RESOLVED',version:2})};
+ const c=new CommerceClient('http://local','platform-token'),body={expected_version:1,decision:'RESOLVE',action:'HIDE_PRODUCT',reason:'confirmed rule violation'};
+ await assert.rejects(c.request('/platform/reports/report/decision','POST',body));const pending=c.getPending();body.reason='edited later';await c.imageBlob('/image');assert.equal(c.getPending(),pending);
+ await assert.rejects(c.request('/platform/disputes/dispute/decision','POST',{expected_version:1,decision:'APPROVE',reason:'different intent'}),e=>e.code==='CLIENT_OPERATION_PENDING');
+ fail=false;await c.retryPending();assert.equal(calls[0].init.headers['Idempotency-Key'],calls[2].init.headers['Idempotency-Key']);assert.equal(calls[0].init.body,calls[2].init.body);assert.equal(c.getPending(),null);
+});

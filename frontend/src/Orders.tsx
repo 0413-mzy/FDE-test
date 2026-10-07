@@ -1,8 +1,9 @@
 import { money, time, label, hasActiveCase } from './helpers';
-import { useQuery } from './useQuery';
+import { useAllPages, useQuery } from './useQuery';
 import { useState } from 'react';
 import { CommerceClient } from './client';
-import type { Order } from './types';
+import type { Dispute, Order } from './types';
+import { PurchaseReviews } from './Shopping';
 import { AfterSales } from './AfterSales';
 import { ContactShop } from './Messages';
 import { AddressForm, ErrorBox, Status } from './ui';
@@ -17,6 +18,7 @@ export function OrderDetail({ client, path, merchant, owner = false, onChange }:
     async function action(suffix: string, body: unknown) { setBusy(true); setError(undefined); try {
         await client.request(path + suffix, 'POST', body);
         q.refresh();
+        disputes.refresh();
         onChange();
         setEditing(false);
         setQuantities({});
@@ -27,13 +29,15 @@ export function OrderDetail({ client, path, merchant, owner = false, onChange }:
     finally {
         setBusy(false);
     } }
+    const disputes=useAllPages<Dispute>(client,merchant?`/merchant/shops/${q.data?.shop_id??''}/disputes`:'/customer/disputes',!merchant||!!q.data?.shop_id);
     const o = q.data;
     if (!o)
         return <>
         <ErrorBox error={q.error}/>
         {q.loading && <p>正在读取详情…</p>}</>;
-    const editable = !merchant && ((o.status === 'PENDING_PAYMENT' && !o.payment_expired) || (o.status === 'READY_TO_SHIP' && !o.shipments?.length && !hasActiveCase(o)));
-    const shippingBlocked = o.after_sale_cases?.some(c => c.type === 'UNSHIPPED_REFUND' && !['COMPLETED','REJECTED','CANCELLED'].includes(c.state));
+    const disputeOpen=disputes.items.some(d=>d.order_id===o.id&&d.state==='OPEN');
+    const editable = !disputeOpen && !merchant && ((o.status === 'PENDING_PAYMENT' && !o.payment_expired) || (o.status === 'READY_TO_SHIP' && !o.shipments?.length && !hasActiveCase(o)));
+    const shippingBlocked = disputeOpen || disputes.loading || o.after_sale_cases?.some(c => c.type === 'UNSHIPPED_REFUND' && !['COMPLETED','REJECTED','CANCELLED'].includes(c.state));
     const pending = o.status === 'PENDING_PAYMENT' && !o.payment_expired;
     return <section className="order-detail">
     <div className="section-head">
@@ -42,9 +46,9 @@ export function OrderDetail({ client, path, merchant, owner = false, onChange }:
     <h2>{o.shop_name ?? `店铺 ${o.shop_id.slice(0,8)}`} · 订单详情 <Status value={o.status}/>
     </h2>
     </div>
-    <button className="subtle" onClick={() => { q.refresh(); onChange(); }}>刷新详情</button>
+    <button className="subtle" onClick={() => { q.refresh(); disputes.refresh(); onChange(); }}>刷新详情</button>
     </div>
-    <ErrorBox error={error ?? q.error}/>
+    <ErrorBox error={error ?? q.error??disputes.error}/>{disputeOpen&&<p className="warning">该订单有待处理的平台争议。相关售后、新售后与冲突发货已冻结，消息与业务记录仍可读取。</p>}
     <div className="detail-facts">
     <div>订单金额<strong>
     {money(o.total_minor)}</strong>
@@ -124,6 +128,6 @@ export function OrderDetail({ client, path, merchant, owner = false, onChange }:
             <time>
             {time(e.occurred_at)} · 序号 {e.sequence}</time>
             </li>)}</ol>
-        </article>)}{!merchant && o.status === 'SHIPPED' && o.shipments?.length && o.shipments.every(s => s.status === 'DELIVERED') && !hasActiveCase(o) && <button disabled={busy} onClick={() => action('/confirm-receipt', { expected_version: o.version })}>所有包裹已送达 · 确认收货</button>}<AfterSales client={client} order={o} path={path} merchant={merchant} owner={owner} onChange={() => {q.refresh(); onChange();}}/>{!merchant && <ContactShop client={client} shopId={o.shop_id} shopName={o.shop_name} orderId={o.id}/>}<small className="muted">记录版本 {o.version} · 状态与金额以服务器记录为准</small>
+        </article>)}{!merchant && o.status === 'SHIPPED' && o.shipments?.length && o.shipments.every(s => s.status === 'DELIVERED') && !hasActiveCase(o) && !disputeOpen && <button disabled={busy} onClick={() => action('/confirm-receipt', { expected_version: o.version })}>所有包裹已送达 · 确认收货</button>}{!merchant&&o.status==='COMPLETED'&&<PurchaseReviews client={client} order={o}/>}<AfterSales disputeOpen={disputeOpen} disputeLoading={disputes.loading} client={client} order={o} path={path} merchant={merchant} owner={owner} onChange={() => {q.refresh(); disputes.refresh(); onChange();}}/>{!merchant && <ContactShop client={client} shopId={o.shop_id} shopName={o.shop_name} orderId={o.id}/>}<small className="muted">记录版本 {o.version} · 状态与金额以服务器记录为准</small>
     </section>;
 }

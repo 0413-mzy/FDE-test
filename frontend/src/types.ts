@@ -154,6 +154,8 @@ export interface DemoItem {
 
 export type CaseType = 'UNSHIPPED_REFUND' | 'RETURN_REFUND';
 export interface CaseView {
+    can_dispute?: boolean;
+    dispute_open?: boolean;
     id: string;
     order_id: string;
     type: CaseType;
@@ -187,3 +189,13 @@ export interface Message {
 export interface ProfileView { account_id: string; username: string; version: number; display_name: string; phone: string; email: string | null; email_verified: boolean; review_enabled: boolean; }
 export interface AddressBookView { id: string; version: number; address: Address; is_default: boolean; created_at: string; updated_at: string; }
 export interface MerchantApplicationView { id: string; version: number; state: 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN'; shop_name: string; business_scope: string; contact_name: string; contact_phone: string; description: string; created_at: string; updated_at: string; decision_reason: string | null; shop_id: string | null; }
+
+export interface Category {id:string;name:string;active:boolean;version:number}
+export interface ShopView {id:string;name:string;status:string;version:number}
+export interface ProductImage {id:string;url:string;alt:string;position:number}
+export interface ProductCardView extends Product {category_id:string|null;category_name:string|null;images:ProductImage[];rating:number|null;review_count:number}
+export interface Review {id:string;product_id:string;shop_id:string;order_id:string;order_line_id:string;rating:number;body:string;reply:string|null;visible:boolean;version:number;created_at:string;updated_at:string;financial_status:string}
+export interface Favorite {id:string;product_id:string;active:boolean;version:number;purchasable:boolean;product:ProductCardView|null}
+export interface ReportView {id:string;version:number;target_type:string;target_id:string;reason:string;state:string;decision_reason:string|null;created_at:string}
+export interface Dispute {case_state:string;can_refund:boolean;id:string;version:number;customer_id:string;order_id:string;case_id:string;shop_id:string;reason:string;state:string;customer_evidence:string|null;merchant_evidence:string|null;decision_reason:string|null;created_at:string}
+export interface Analytics {offset:number;limit:number;shops_has_more:boolean;sales_has_more:boolean;simulation:true;currency:string;start:string;end:string;shop_id:string|null;payment_total_minor:number;refund_total_minor:number;net_total_minor:number;orders_created:number;orders_completed:number;backlog:{unpaid:number;awaiting_shipment:number;in_transit:number;after_sales:number};daily:Record<string,string|number>[];shops:Record<string,string|number>[];sales:Record<string,string|number>[]}

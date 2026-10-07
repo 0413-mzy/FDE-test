@@ -431,7 +431,7 @@ results.json记录场景、重启数量、源码HEAD/dirty标识/源码树SHA256
 ## 本地模拟邮件与入驻
 
 当前采用 `commerce-onboarding-v1`，没有真实邮件服务。统一演示入口自动创建私有模拟邮箱，
-初始化独立 `reviewer`（与虚构演示账号使用同一受保护随机密码文件），`all`现在包含八个场景。
+初始化独立 `reviewer`（与虚构演示账号使用同一受保护随机密码文件），`all`现在包含九个场景。
 仅注册新用户时使用自行选择的12..128字符密码；新注册账号不能在邮箱验证前登录。
 
 ```sh
@@ -470,3 +470,22 @@ python -m app.commerce.onboarding_seed
 ## 数据库只读查看与历史
 
 见[本机数据库查询说明](database.md)。`scripts/commerce-db.py` 支持列出表、字段、当前行、按业务表/UUID查询历史、私有CSV导出与默认只读psql。正常迁移命令仍为 `alembic upgrade head`；0006是新增历史对象，不清空已有账户、订单或库存。
+
+## 商品体验与平台运营
+
+已有开发数据库先执行 `alembic upgrade head`，然后在backend目录、显式development/test和DEMO_SEED_PASSWORD配置下运行：
+
+```sh
+python -m app.commerce.platform_seed
+```
+
+只新增独立虚构 `platform` 账号，密码使用受保护的演示密码配置；若该用户名已存在，保持原账号不变。统一演示入口会显式执行这一seed。该账号拥有平台运营入口，审核员reviewer继续只处理入驻。
+图片由后端校验、解码并重编码PNG，原始上传限制3MiB、最多1600万像素、每商品最多8张。图片二进制保存在独立数据库表；普通查询/CSV和历史快照不输出图片字节。
+
+```sh
+python scripts/commerce-demo.py --scenario experience-operations
+python scripts/commerce-demo.py --scenario all
+```
+
+新增浏览器场景覆盖图片分类筛选、收藏、评价回复、举报处理恢复、店铺限制、争议证据及仲裁后模拟退款、报表和移动端布局。它使用新的隔离schema，保留原有本机数据；需要与原场景相同的Playwright/Chrome配置。
+具体操作规则见[领域说明](commerce/shopping-and-platform.md)。报表统计已成功模拟支付/退款，净额不是利润。

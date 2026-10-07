@@ -407,6 +407,13 @@ class Commerce:
             inp.fields(body, ["expected_version"])
             self.version(product, body)
             if action == "publish":
+                from app.commerce.catalog_models import ProductExperience
+
+                info = self.db.scalar(
+                    select(ProductExperience).where(ProductExperience.product_id == product.id)
+                )
+                if info and info.moderation_hidden:
+                    fail("PRODUCT_RESTRICTED")
                 if self.shop.status != "ACTIVE" or not any(
                     s.active for s in views.rows(self.db, SKU, product_id=product.id)
                 ):
@@ -586,6 +593,10 @@ class Commerce:
         return views.checkout(self.db, checkout, self.now), 201
 
     def order_action(self, order, action, body):
+        from app.commerce.platform_service import ensure_unfrozen
+
+        if action in {"address", "confirm-receipt"}:
+            ensure_unfrozen(self, order.id)
         inp.fields(
             body,
             ["expected_version", "address"]
@@ -656,6 +667,9 @@ class Commerce:
         return views.order(self.db, order, self.now), 200
 
     def ship(self, order, body):
+        from app.commerce.platform_service import ensure_unfrozen
+
+        ensure_unfrozen(self, order.id)
         inp.fields(body, ["expected_version", "lines"])
         self.version(order, body)
         selected = inp.selection(body["lines"])

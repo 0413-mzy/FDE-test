@@ -213,7 +213,7 @@ def inspect_database(engine, args):
                 conn.execute(
                     text(
                         "SELECT column_name FROM information_schema.columns "
-                        "WHERE table_schema=:schema AND table_name=:table "
+                        "WHERE table_schema=:schema AND table_name=:table AND data_type<>'bytea' "
                         "ORDER BY ordinal_position"
                     ),
                     {"schema": schema, "table": target},

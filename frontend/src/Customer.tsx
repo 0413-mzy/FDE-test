@@ -1,9 +1,10 @@
 import { money, time } from './helpers';
-import { useQuery } from './useQuery';
+import { useAllPages, useQuery } from './useQuery';
 import { useState } from 'react';
 import { CommerceClient, uncertain } from './client';
-import type { Address, AddressBookView, Cart, Page, Product, SKU, Order } from './types';
+import type { Address, AddressBookView, Cart, Page, ProductCardView, Category, ShopView, Favorite, SKU, Order } from './types';
 import { AddressForm, ErrorBox, Status, Pagination } from './ui';
+import { Photo, FavoriteButton, ProductDetails } from './Shopping';
 import { ContactShop } from './Messages';
 import { OrderDetail } from './Orders';
 export function Catalog({ client, customer, onCart }: {
@@ -13,8 +14,11 @@ export function Catalog({ client, customer, onCart }: {
 }) {
     const [offset, setOffset] = useState(0);
     const [q, setQ] = useState(''), [shop, setShop] = useState(''), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false);
-    const shops = useQuery<Page<Product>>(client, '/catalog/products?limit=100');
-    const result = useQuery<Page<Product>>(client, `/catalog/products?limit=20&offset=${offset}${q ? `&q=${encodeURIComponent(q)}` : ''}${shop ? `&shop_id=${encodeURIComponent(shop)}` : ''}`);
+    const [category,setCategory]=useState(''),[minimum,setMinimum]=useState(''),[maximum,setMaximum]=useState(''),[stock,setStock]=useState(false),[sort,setSort]=useState('newest');
+    const shops = useAllPages<ShopView>(client, '/shopping/shops');
+    const favorites=useAllPages<Favorite>(client,'/customer/favorites',customer);
+    const categories = useAllPages<Category>(client, '/shopping/categories');
+    const result = useQuery<Page<ProductCardView>>(client, `/shopping/products?limit=20&offset=${offset}${q ? `&q=${encodeURIComponent(q)}` : ''}${shop ? `&shop_id=${encodeURIComponent(shop)}` : ''}${category?`&category_id=${category}`:''}${minimum?`&min_price_minor=${minimum}`:''}${maximum?`&max_price_minor=${maximum}`:''}${stock?'&in_stock=true':''}&sort=${sort}`);
     const [pendingAdd,setPendingAdd]=useState<{sku_id:string;expected_version:number;quantity:number;seen_price_version:number}>();
     async function add(sku: Pick<SKU,'id'|'price_version'>) { setBusy(true); setError(undefined); try {
         let body=pendingAdd;
@@ -49,25 +53,32 @@ export function Catalog({ client, customer, onCart }: {
     <div className="section-head">
     <h2>选物集 <small>COLLECTION</small>
     </h2>
-    <button className="subtle" onClick={result.refresh}>刷新商品</button>
+    <button className="subtle" onClick={()=>{result.refresh();categories.refresh();shops.refresh();favorites.refresh();}}>刷新商品</button>
     </div>
     <div className="filters">
     <label>搜索商品<input placeholder="搜索名称或描述" value={q} maxLength={100} onChange={e => { setQ(e.target.value); setOffset(0); }}/>
     </label>
     <label>店铺筛选<select value={shop} onChange={e => { setShop(e.target.value); setOffset(0); }}>
     <option value="">全部店铺</option>
-        {Array.from(new Map(shops.data?.items.map(p => [p.shop_id, p.shop_name]) ?? [])).map(([id, name]) => <option key={id} value={id}>
-        {name}</option>)}</select>
+        {shops.items.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
     </label>
+    <label>商品分类<select aria-label="商品分类" value={category} onChange={e=>{setCategory(e.target.value);setOffset(0);}}><option value="">全部分类</option>{categories.items.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+    <label>最低价格（分）<input type="number" min={0} value={minimum} onChange={e=>{setMinimum(e.target.value);setOffset(0);}}/></label>
+    <label>最高价格（分）<input type="number" min={0} value={maximum} onChange={e=>{setMaximum(e.target.value);setOffset(0);}}/></label>
+    <label>排序<select aria-label="排序" value={sort} onChange={e=>{setSort(e.target.value);setOffset(0);}}><option value="newest">最新商品</option><option value="price_asc">价格从低到高</option><option value="price_desc">价格从高到低</option><option value="rating">购买评分</option></select></label>
+    <label className="check"><input type="checkbox" checked={stock} onChange={e=>{setStock(e.target.checked);setOffset(0);}}/>仅显示有货商品</label>
     </div>
+    <ErrorBox error={shops.error??categories.error}/>
     <ErrorBox error={error ?? result.error}/>{error&&pendingAdd&&<div className="warning">上次加入操作的结果尚未确认。请保持相同请求重试。<button disabled={busy} onClick={()=>add({id:pendingAdd.sku_id,price_version:pendingAdd.seen_price_version})}>重试上次加入操作</button></div>}
     {result.loading && <p className="muted">正在读取选物…</p>}<div className="products">
-        {result.data?.items.map((p, i) => <ProductCard key={p.id} client={client} customer={customer} product={p} index={i} disabled={busy || !customer || !!pendingAdd} onAdd={add}/>)}</div>
+        {result.data?.items.map((p, i) => <ProductCard key={p.id} client={client} customer={customer} product={p} index={i} disabled={busy || !customer || !!pendingAdd} onAdd={add} favorite={favorites.items.some(f=>f.product_id===p.id&&f.active)} onFavorite={favorites.refresh}/>)}</div>
     {result.data?.items.length === 0 && <div className="empty">没有符合条件的商品。试试其他关键词。</div>}<Pagination offset={offset} hasMore={result.data?.has_more ?? false} onChange={setOffset}/>
     {!customer && <p className="muted">登录具有客户资格的账号后，可以加入购物车。</p>}</>;
 }
-function ProductCard({ client, customer, product: p, index, disabled, onAdd }: {
-    product: Product;
+function ProductCard({ client, customer, product: p, index, disabled, onAdd, favorite, onFavorite }: {
+    product: ProductCardView;
+    favorite:boolean;
+    onFavorite:()=>void;
     client: CommerceClient;
     customer: boolean;
     index: number;
@@ -77,10 +88,10 @@ function ProductCard({ client, customer, product: p, index, disabled, onAdd }: {
     const [selected, setSelected] = useState(p.skus[0]?.id ?? '');
     const sku = p.skus.find(s => s.id === selected) ?? p.skus[0];
     return <article className="product">
-    <div className={`product-art art-${index % 3}`} aria-label="商品本地占位插画">
+    {p.images?.[0]?<Photo client={client} image={p.images[0]}/>:<div className={`product-art art-${index % 3}`} aria-label="商品本地占位插画">
     <div className="object"/>
     <span>商品示意 · 非实物照片</span>
-    </div>
+    </div>}
     <div className="product-body">
     <span className="eyebrow">
     {p.shop_name}</span>
@@ -101,7 +112,7 @@ function ProductCard({ client, customer, product: p, index, disabled, onAdd }: {
         <button disabled={disabled || sku.available < 1} onClick={() => onAdd(sku)}>
         {sku.available < 1 ? '暂时缺货' : '加入购物车'} <span>＋</span>
         </button>
-        </>}{customer && <ContactShop client={client} shopId={p.shop_id} shopName={p.shop_name}/>}</div>
+        </>}<ProductDetails client={client} product={p} customer={customer}/>{customer&&<FavoriteButton key={`${p.id}-${favorite}`} client={client} productId={p.id} initial={favorite} onChange={onFavorite}/>} {customer && <ContactShop client={client} shopId={p.shop_id} shopName={p.shop_name}/>}</div>
     </article>;
 }
 export function CartPage({ client, onOrders }: {

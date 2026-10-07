@@ -13,6 +13,7 @@ from starlette.responses import JSONResponse, Response
 
 from app.commerce import after_sales, views
 from app.commerce import inputs as inp
+from app.commerce.catalog_models import ProductExperience
 from app.commerce.errors import CommerceError, fail
 from app.commerce.history import set_context
 from app.commerce.models import (
@@ -225,12 +226,24 @@ def read(svc, request, operation, context):
     if operation.startswith("catalog"):
         if operation == "catalog.detail":
             p = svc.get(Product, path_id(request, "product"))
-            if p.status != "PUBLISHED" or db.get(Shop, p.shop_id).status != "ACTIVE":
+            info = db.scalar(select(ProductExperience).where(ProductExperience.product_id == p.id))
+            if (
+                p.status != "PUBLISHED"
+                or db.get(Shop, p.shop_id).status != "ACTIVE"
+                or (info and info.moderation_hidden)
+            ):
                 fail("NOT_FOUND", 404)
             return views.product(db, p)
         _, _, values = query(request, ("shop_id", "q"))
         statement = (
-            select(Product).join(Shop).where(Product.status == "PUBLISHED", Shop.status == "ACTIVE")
+            select(Product)
+            .join(Shop)
+            .outerjoin(ProductExperience, ProductExperience.product_id == Product.id)
+            .where(
+                Product.status == "PUBLISHED",
+                Shop.status == "ACTIVE",
+                (ProductExperience.id.is_(None) | ProductExperience.moderation_hidden.is_(False)),
+            )
         )
         if "shop_id" in values:
             statement = statement.where(Product.shop_id == inp.identifier(values["shop_id"]))

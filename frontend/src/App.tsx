@@ -5,6 +5,8 @@ import { ErrorBox } from './ui';
 import { CartPage, Catalog, Orders } from './Customer';
 import { MerchantProducts } from './Merchant';
 import { Messages } from './Messages';
+import { Favorites, Reviews } from './Shopping';
+import { PlatformWorkbench, CustomerCases, Disputes, AnalyticsPanel } from './Platform';
 import { Demo } from './Demo';
 import './styles.css';
 import { AccountCenter, Applications, AuthForms } from './Account';
@@ -12,10 +14,11 @@ import { useQuery } from './useQuery';
 const apiBase = (import.meta as ImportMeta & {
     env: Record<string, string | undefined>;
 }).env.VITE_API_BASE_URL ?? 'http://localhost:8000';
-type View = 'catalog' | 'cart' | 'orders' | 'merchant' | 'products' | 'demo' | 'messages' | 'merchant-messages' | 'account' | 'review';
+type View = 'catalog' | 'cart' | 'orders' | 'merchant' | 'products' | 'demo' | 'messages' | 'merchant-messages' | 'account' | 'review' | 'favorites' | 'cases' | 'platform' | 'merchant-reviews' | 'merchant-disputes' | 'merchant-analytics';
 export default function App() {
     const [session, setSession] = useState<Session>(), [view, setView] = useState<View>('catalog'), [loginOpen, setLoginOpen] = useState(false), [shop, setShop] = useState(''), [epoch, setEpoch] = useState(0), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false);
     const client = useMemo(() => new CommerceClient(apiBase, session?.token), [session?.token]);
+    const access = useQuery<{platform_enabled:boolean}>(client, '/platform/access', !!session);
     const profile = useQuery<ProfileView>(client, '/account/profile', !!session);
     const pending = useSyncExternalStore(client.subscribe, client.getPending);
     const [retryError,setRetryError]=useState<unknown>();
@@ -66,7 +69,7 @@ export default function App() {
         <button className={view === 'cart' ? 'active' : ''} onClick={() => setView('cart')}>购物袋</button>
         <button className={view === 'messages' ? 'active' : ''} onClick={() => setView('messages')}>店铺消息</button>
         <button className={view === 'orders' ? 'active' : ''} onClick={() => setView('orders')}>我的订单</button>
-        </>}{!!account?.shops.length && <button className={['merchant', 'products', 'merchant-messages'].includes(view) ? 'active' : ''} onClick={() => setView('merchant')}>店铺工作台</button>}{account?.demo_enabled && <button className={view === 'demo' ? 'active' : ''} onClick={() => setView('demo')}>模拟事件</button>}{account && <button className={view==='account'?'active':''} onClick={()=>setView('account')}>我的账户</button>}{account && !account.demo_enabled && profile.data?.review_enabled && <button className={view==='review'?'active':''} onClick={()=>setView('review')}>入驻审核</button>}</nav>
+        <button className={view==='favorites'?'active':''} onClick={()=>setView('favorites')}>我的收藏</button><button className={view==='cases'?'active':''} onClick={()=>setView('cases')}>举报与争议</button></>}{!!account?.shops.length && <button className={['merchant', 'products', 'merchant-messages', 'merchant-reviews', 'merchant-disputes', 'merchant-analytics'].includes(view) ? 'active' : ''} onClick={() => setView('merchant')}>店铺工作台</button>}{account?.demo_enabled && <button className={view === 'demo' ? 'active' : ''} onClick={() => setView('demo')}>模拟事件</button>}{account && <button className={view==='account'?'active':''} onClick={()=>setView('account')}>我的账户</button>}{account && !account.demo_enabled && profile.data?.review_enabled && <button className={view==='review'?'active':''} onClick={()=>setView('review')}>入驻审核</button>}{account&&access.data?.platform_enabled&&<button className={view==='platform'?'active':''} onClick={()=>setView('platform')}>平台运营</button>}</nav>
     <div className="account">
         {account ? <>
         <span>
@@ -99,14 +102,15 @@ export default function App() {
         </section>}
         {!pending && !!retryError && <div className="pending-operation"><ErrorBox error={retryError}/></div>}
         <main key={epoch}>
-        {['merchant', 'products', 'merchant-messages'].includes(view) && account && <div className="merchant-nav">
+        {['merchant', 'products', 'merchant-messages', 'merchant-reviews', 'merchant-disputes', 'merchant-analytics'].includes(view) && account && <div className="merchant-nav">
         <label>当前店铺<select value={shop} onChange={e => { setShop(e.target.value); setView('merchant'); }}>
             {account.shops.map(s => <option key={s.shop_id} value={s.shop_id}>
             {s.shop_name} · {s.role === 'OWNER' ? '店主' : '员工'}{s.shop_status === 'SUSPENDED' ? ' · 已暂停' : ''}</option>)}</select>
         </label>
         <button className={view === 'merchant' ? 'active' : ''} onClick={() => setView('merchant')}>处理订单</button>
         <button className={view === 'merchant-messages' ? 'active' : ''} onClick={() => setView('merchant-messages')}>店铺消息</button>
-        {member?.role === 'OWNER' && <button className={view === 'products' ? 'active' : ''} onClick={() => setView('products')}>商品与库存</button>}</div>}<div key={`${account?.id ?? 'public'}-${shop}-${view}`}>
+        {member?.role === 'OWNER' && <button className={view === 'products' ? 'active' : ''} onClick={() => setView('products')}>商品与库存</button>}<button className={view==='merchant-disputes'?'active':''} onClick={()=>setView('merchant-disputes')}>售后争议</button>{member?.role==='OWNER'&&<><button className={view==='merchant-reviews'?'active':''} onClick={()=>setView('merchant-reviews')}>购买评价</button><button className={view==='merchant-analytics'?'active':''} onClick={()=>setView('merchant-analytics')}>经营报表</button></>}</div>}<div key={`${account?.id ?? 'public'}-${shop}-${view}`}>
+    {view==='platform'&&access.data?.platform_enabled&&<PlatformWorkbench client={client}/>} {view==='favorites'&&account?.customer_enabled&&<Favorites client={client}/>} {view==='cases'&&account?.customer_enabled&&<CustomerCases client={client}/>} {view==='merchant-disputes'&&member&&<Disputes client={client} shop={shop}/>} {view==='merchant-reviews'&&member?.role==='OWNER'&&<><h1>购买评价与回复</h1><Reviews client={client} path={`/merchant/shops/${shop}/reviews`} merchant/></>} {view==='merchant-analytics'&&member?.role==='OWNER'&&<AnalyticsPanel client={client} shop={shop}/>}
     {view === 'account' && account && <AccountCenter client={client} customer={account.customer_enabled} onPasswordChanged={clearSession} onIdentityRefresh={refreshIdentity}/>} {view === 'review' && account && !account.demo_enabled && profile.data?.review_enabled && <Applications client={client} review/>}
     {view === 'catalog' && <Catalog client={client} customer={!!account?.customer_enabled} onCart={() => setView('cart')}/>} {view === 'cart' && account?.customer_enabled && <CartPage client={client} onOrders={() => setView('orders')}/>} {view === 'orders' && account?.customer_enabled && <Orders client={client}/>} {view === 'merchant' && member && <Orders client={client} shop={shop} owner={member.role === 'OWNER'}/>} {view === 'products' && member?.role === 'OWNER' && <MerchantProducts client={client} shop={shop}/>} {view === 'messages' && account?.customer_enabled && <Messages client={client}/>} {view === 'merchant-messages' && member && <Messages client={client} shop={shop} shopName={member.shop_name}/>} {view === 'demo' && account?.demo_enabled && <Demo client={client}/>}</div>
     </main>

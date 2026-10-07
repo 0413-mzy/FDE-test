@@ -28,6 +28,7 @@ SCENARIOS = [
     "reject-withdraw",
     "exceptions",
     "onboarding",
+    "experience-operations",
 ]
 
 
@@ -200,6 +201,7 @@ def run_scenario(name, evidence, interactive=False):
                 ("alembic", "upgrade", "head"),
                 ("app.commerce.seed",),
                 ("app.commerce.onboarding_seed",),
+                ("app.commerce.platform_seed",),
             ]:
                 subprocess.run(
                     [sys.executable, "-m", *module],
@@ -271,7 +273,9 @@ def run_scenario(name, evidence, interactive=False):
                     time.sleep(0.5)
                 raise RuntimeError("Demo service exited unexpectedly")
             script = (
-                "commerce-browser-acceptance.cjs"
+                "commerce-experience-browser-acceptance.cjs"
+                if name == "experience-operations"
+                else "commerce-browser-acceptance.cjs"
                 if name == "purchase"
                 else "commerce-onboarding-browser-acceptance.cjs"
                 if name == "onboarding"

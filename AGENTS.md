@@ -33,6 +33,12 @@
   actor/request/source/reason/time and profile/address versions. Preserve all
   existing records; initialize honest current-state baselines, never invent past
   values or copy passwords/tokens/codes. Developer inspection remains local.
+  On 2026-10-07 the user authorized completing catalog/shopping experience and
+  platform operations: product images/categories/search/filter/favorites/reviews;
+  independent platform management/moderation/disputes/arbitration/analytics.
+  Additive0007/0008, safe image decoding, new-role explicit seed, transactional
+  history and real PostgreSQL/browser acceptance are authorized. Preserve current
+  business rows; no old account promotion or deployed migration rewrite.
   AI, real payments/carriers, public deployment and main merge remain outside this task.
   Prior Step 1/2 documentation is delivered in dependent draft PRs #2/#3.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.

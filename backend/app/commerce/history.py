@@ -331,6 +331,108 @@ FIELD_POLICY = {
 }
 
 
+# Additive shopping/platform policies; binary image content is intentionally excluded.
+FIELD_POLICY.update(
+    {
+        "commerce_categories": ("name", "active", "id", "version", "created_at", "updated_at"),
+        "commerce_product_experiences": (
+            "product_id",
+            "category_id",
+            "moderation_hidden",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_product_images": (
+            "product_id",
+            "position",
+            "alt",
+            "mime",
+            "width",
+            "height",
+            "digest",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_favorites": (
+            "customer_id",
+            "product_id",
+            "active",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_product_reviews": (
+            "customer_id",
+            "order_id",
+            "order_line_id",
+            "product_id",
+            "shop_id",
+            "rating",
+            "body",
+            "reply",
+            "visible",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_platform_roles": (
+            "account_id",
+            "active",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_moderation_reports": (
+            "reporter_id",
+            "target_type",
+            "target_id",
+            "reason",
+            "state",
+            "decision_reason",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_moderation_actions": (
+            "actor_id",
+            "target_type",
+            "target_id",
+            "action",
+            "reason",
+            "report_id",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+        "commerce_disputes": (
+            "customer_id",
+            "order_id",
+            "case_id",
+            "shop_id",
+            "reason",
+            "state",
+            "customer_evidence",
+            "merchant_evidence",
+            "decision_reason",
+            "decided_by",
+            "id",
+            "version",
+            "created_at",
+            "updated_at",
+        ),
+    }
+)
+
+
 class RecordHistory(Base):
     __tablename__ = "commerce_record_history"
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)

@@ -1,10 +1,11 @@
+import { DisputeEligibility }  from './Platform';
 import { useState } from 'react';
 import { ApiError, CommerceClient } from './client';
 import type { CaseType, CaseView, Order } from './types';
 import { hasActiveCase, label, money, refundableQuantity, time } from './helpers';
 import { ErrorBox, Status } from './ui';
 
-export function AfterSales({client, order: o, path, merchant, owner, onChange}: {client: CommerceClient; order: Order; path: string; merchant: boolean; owner: boolean; onChange: () => void}) {
+export function AfterSales({client, order: o, path, merchant, owner, onChange, disputeOpen=false,disputeLoading=false}: {client: CommerceClient; order: Order; path: string; merchant: boolean; owner: boolean; onChange: () => void;disputeOpen?:boolean;disputeLoading?:boolean}) {
     const [type, setType] = useState<CaseType>('UNSHIPPED_REFUND'), [reason,setReason] = useState(''), [quantities,setQuantities] = useState<Record<string,number>>({}), [error,setError] = useState<unknown>(), [busy,setBusy] = useState(false);
     async function action(suffix: string, body: unknown) {
         setBusy(true); setError(undefined);
@@ -16,14 +17,14 @@ export function AfterSales({client, order: o, path, merchant, owner, onChange}: 
         }
         finally {setBusy(false);}
     }
-    const canRequest = !merchant && !hasActiveCase(o) && ['PAID','PARTIALLY_REFUNDED'].includes(o.financial_status);
+    const canRequest = !merchant && !disputeOpen && !disputeLoading && !hasActiveCase(o) && ['PAID','PARTIALLY_REFUNDED'].includes(o.financial_status);
     const lines = o.lines ?? [];
     return <section className="after-sales">
         <h2>售后与退款 <small>SIMULATED REFUNDS</small></h2>
         <p className="muted">金额由服务器按购买时单价与申请数量计算。退货需相关包裹全部送达，申请窗口为送达后 14 天。</p>
         <ErrorBox error={error}/>
         {!o.after_sale_cases?.length && <p className="muted">还没有售后记录。</p>}
-        {o.after_sale_cases?.map(c => <CaseCard key={`${c.id}-${c.version}`} c={c} order={o} merchant={merchant} owner={owner} busy={busy} onAction={(suffix,body) => action(`/${c.id}${suffix}`,body)}/>)}
+        {o.after_sale_cases?.map(c => <CaseCard key={`${c.id}-${c.version}`} client={client} onChange={onChange} c={c} order={o} merchant={merchant} owner={owner} busy={busy||disputeOpen||disputeLoading} onAction={(suffix,body) => action(`/${c.id}${suffix}`,body)}/>)}
         {merchant && !owner && <p className="muted">员工可读取售后与发送消息；审核、收退货和退款由店主处理。</p>}
         {hasActiveCase(o) && <p className="warning">当前售后处理完成、拒绝或撤销后，才可再次申请；活动售后期间不能修改地址或确认收货。</p>}
         {canRequest && <form className="panel" data-testid="after-sale-request" onSubmit={e => {e.preventDefault(); action('',{expected_version:o.version,type,reason,lines:Object.entries(quantities).filter(([,n])=>n>0).map(([order_line_id,quantity])=>({order_line_id,quantity}))});}}>
@@ -35,7 +36,7 @@ export function AfterSales({client, order: o, path, merchant, owner, onChange}: 
         </form>}
     </section>;
 }
-function CaseCard({c,order,merchant,owner,busy,onAction}: {c:CaseView;order:Order;merchant:boolean;owner:boolean;busy:boolean;onAction:(suffix:string,body:unknown)=>void}) {
+function CaseCard({client,onChange,c,order,merchant,owner,busy,onAction}: {client:CommerceClient;onChange:()=>void;c:CaseView;order:Order;merchant:boolean;owner:boolean;busy:boolean;onAction:(suffix:string,body:unknown)=>void}) {
     const [reason,setReason] = useState(''), [tracking,setTracking]=useState(''), [restock,setRestock]=useState('');
     const pending = c.refund_attempts.some(a=>a.state==='PENDING');
     const failed = c.refund_attempts.some(a=>a.state==='FAILED');
@@ -44,6 +45,7 @@ function CaseCard({c,order,merchant,owner,busy,onAction}: {c:CaseView;order:Orde
         <small>售后 {c.id} · 版本 {c.version} · {time(c.created_at)}</small>
         <p>申请退款 {money(c.requested_amount_minor)} · {c.reason}</p>
         <ul>{c.lines.map(l=><li key={l.order_line_id}>{order.lines?.find(x=>x.id===l.order_line_id)?.title??l.order_line_id} × {l.quantity}</li>)}</ul>
+        {!merchant&&<DisputeEligibility client={client} orderId={order.id} caseId={c.id} version={c.version} onChange={onChange}/>}
         {c.decision_reason && <p>商家审核说明：{c.decision_reason}</p>}
         {!merchant && ['REQUESTED','AWAITING_RETURN'].includes(c.state) && <button className="subtle" disabled={busy} onClick={()=>onAction('/withdraw',{expected_version:c.version})}>撤销售后申请</button>}
         {!merchant && c.state==='AWAITING_RETURN' && <form onSubmit={e=>{e.preventDefault();onAction('/return',{expected_version:c.version,tracking_number:tracking});}}><label>模拟退货运单<input required maxLength={100} value={tracking} onChange={e=>setTracking(e.target.value)}/></label><button disabled={busy || !tracking.trim()}>登记模拟退货</button></form>}
