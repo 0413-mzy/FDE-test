@@ -4,12 +4,16 @@ from sqlalchemy import select
 
 from app.commerce.models import (
     SKU,
+    AfterSaleCase,
+    AfterSaleLine,
     CartLine,
     Inventory,
     Order,
     OrderLine,
     PaymentAttempt,
     Product,
+    RefundAttempt,
+    ReturnShipment,
     Shipment,
     ShipmentLine,
     Shop,
@@ -126,10 +130,11 @@ def expired(order, now):
     return order.status == "PENDING_PAYMENT" and now >= order.payment_deadline
 
 
-def summary(row, now):
+def summary(row, now, db=None):
     return {
         "id": str(row.id),
         "shop_id": str(row.shop_id),
+        "shop_name": db.get(Shop, row.shop_id).name if db else None,
         "status": row.status,
         "financial_status": row.financial_status,
         "total_minor": row.total_minor,
@@ -185,7 +190,7 @@ def shipment(db, row):
 
 
 def order(db, row, now, merchant=False):
-    return summary(row, now) | {
+    return summary(row, now, db) | {
         "checkout_id": None if merchant else str(row.checkout_id),
         "lines": [
             {
@@ -205,7 +210,7 @@ def order(db, row, now, merchant=False):
         "address_revision": row.address_revision,
         "shipments": [shipment(db, s) for s in rows(db, Shipment, order_id=row.id)],
         "payment_attempts": [attempt(a) for a in rows(db, PaymentAttempt, order_id=row.id)],
-        "after_sale_cases": [],
+        "after_sale_cases": [case(db, c) for c in rows(db, AfterSaleCase, order_id=row.id)],
         "completed_at": iso(row.completed_at),
         "cancel_reason_code": row.cancel_reason_code,
         "cancelled_at": iso(row.cancelled_at),
@@ -217,6 +222,58 @@ def checkout(db, row, now):
     return {
         "id": str(row.id),
         "order_ids": [str(o.id) for o in orders],
-        "orders": [summary(o, now) for o in orders],
+        "orders": [summary(o, now, db) for o in orders],
         "cart_version": row.result_cart_version,
+    }
+
+
+def conversation(row):
+    return {
+        "id": str(row.id),
+        "shop_id": str(row.shop_id),
+        "customer_id": str(row.customer_id),
+        "order_id": str(row.order_id) if row.order_id else None,
+        "version": row.version,
+        "created_at": iso(row.created_at),
+    }
+
+
+def message(row):
+    return {
+        "id": str(row.id),
+        "conversation_id": str(row.conversation_id),
+        "sender_side": row.sender_side,
+        "body": row.body,
+        "created_at": iso(row.created_at),
+    }
+
+
+def case(db, row):
+    returns = rows(db, ReturnShipment, case_id=row.id)
+    ret = returns[0] if returns else None
+    return {
+        "id": str(row.id),
+        "order_id": str(row.order_id),
+        "type": row.type,
+        "state": row.state,
+        "version": row.version,
+        "reason": row.reason,
+        "requested_amount_minor": row.requested_amount_minor,
+        "currency": row.currency,
+        "created_at": iso(row.created_at),
+        "decision_reason": row.decision_reason,
+        "lines": [
+            {"order_line_id": str(line.order_line_id), "quantity": line.quantity}
+            for line in rows(db, AfterSaleLine, case_id=row.id)
+        ],
+        "return_shipment": {
+            "tracking_number": ret.tracking_number,
+            "state": ret.state,
+            "restock": ret.restock,
+            "registered_at": iso(ret.registered_at),
+            "received_at": iso(ret.received_at),
+        }
+        if ret
+        else None,
+        "refund_attempts": [attempt(a) for a in rows(db, RefundAttempt, after_sale_id=row.id)],
     }

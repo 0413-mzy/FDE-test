@@ -1,6 +1,6 @@
 # 当前代码的启动与验证
 
-本页说明第三步商城及保留的客服模块。Stage/Phase 编号仅指旧客服交付。
+本页说明第三/四步商城及保留的客服模块。Stage/Phase 编号仅指旧客服交付。
 商城实际范围见 [第三步切片](commerce/step-3-implementation.md)，结果见
 [验证记录](verification/2026-10-06-commerce-step-3.md)。
 
@@ -76,15 +76,15 @@ Seed 密码不自动传入容器；在本地 shell 设置后，用
 
 Seed 仅 development/test 运行，重复执行保留已有账号、商品、库存和历史；改密码环境变量
 不会覆盖已有账号。不要把密码、Bearer 或真实客户资料写入 Git/普通日志。商城新增迁移
-0003，与旧客服 0001/0002 共存；旧客服 Seed 不会生成商城数据。
+0003/0004，与旧客服 0001/0002 共存；旧客服 Seed 不会生成商城数据。
 
 所有演示账号使用本次显式配置的密码：
 
 | 账号 | 能力 |
 | --- | --- |
-| customer.a / customer.b | 各自购物车、订单与收货 |
-| owner.a / owner.b | shopA / shopB 店主，商品、库存与履约 |
-| staff.a | shopA 履约成员，无商品/库存修改权 |
+| customer.a / customer.b | 各自购物车、订单、消息、收货与售后申请 |
+| owner.a / owner.b | shopA / shopB 店主，商品、库存、履约、消息与售后审核/退款 |
+| staff.a | shopA 履约/消息成员，可读售后，无审核/退款或商品/库存修改权 |
 | dual.a | 客户与 shopA 店主，能力分开校验 |
 | demo | 独立模拟事件操作者；不具备客户/商家权限 |
 
@@ -105,7 +105,19 @@ Seed 仅 development/test 运行，重复执行保留已有账号、商品、库
 付款预留15分钟，GET不自动清理库存；客户取消/付款或 DEMO 指定订单到期结算触发事务。
 不确定的写请求保留原请求重试，禁止通过刷新版本重复扣库存或重复发货。
 模拟控制台仅development/test注册；生产环境没有结果注入端点。
-消息、退款、退货、真实支付与真实物流尚未实现，不作为本次演示步骤。
+第四步新增消息与模拟售后；真实支付和真实物流仍未接入。
+
+7. 客户从商品联系店铺建立通用会话，或从订单“联系店铺 · 此订单”建立订单会话；
+   商家进入“店铺消息”读取并回复，双方点击刷新获取新消息。
+8. 已付未发订单选“未发货退款”，填写部分数量与原因；店主在订单中批准或拒绝。
+   批准后店主发起模拟退款，demo在模拟事件台提交成功/失败；失败后店主可重新发起。
+9. 已送达商品选“退货退款”（14天窗口）；批准后客户登记虚构退货运单。
+   店主确认收到全部申请数量并明确选择回库/不回库，再发起模拟退款。
+10. 双方刷新查看金额、退款数量和履约状态；回库发生于收退货时，退款不会再次回库。
+
+付款/退款PENDING不会按等待时间自动成功；必须使用独立demo账号手动提交结果。
+每张订单显示所属店铺：shopA由owner.a处理，shopB由owner.b处理。
+已有数据库只运行alembic upgrade head，不为升级删除或重新播种订单。
 
 ## Backend APIs (Stage 3 baseline + Stage 4 feature branch)
 
@@ -359,3 +371,22 @@ instance safety notes are in [the local database validation record](verification
 
 前端/API时钟需正常同步；模拟物流时间不能早于出库或晚于服务端当前时间。
 脚本等待具体HTTP成功和队列变化，不把等待若干秒当作付款/物流成功证据。
+
+第四步使用 [commerce-step4-browser-acceptance.cjs](../scripts/commerce-step4-browser-acceptance.cjs)：
+同样在全新隔离schema/Seed中运行，必需 `COMMERCE_UI_URL` 与 `COMMERCE_PASSWORD_FILE`，
+其余模块/浏览器/截图变量同上。未设置CHROME_EXECUTABLE时，第四步脚本默认本机macOS Chrome；
+其他系统需显式设置已安装浏览器路径。
+
+从仓库根目录运行 `node scripts/commerce-step4-browser-acceptance.cjs`。
+`COMMERCE_SCENARIO` 选择下列之一；**每个场景都要另外新建schema并迁移/Seed**，不能连续复用已经修改的库存：
+
+| 场景 | 内容 |
+| --- | --- |
+| partial-return（默认） | 消息、未发部分退款失败后重试、余量发货、送达后退货回库再退款 |
+| full-refund | 全部未发数量退款，订单取消/财务已退款 |
+| shipped-partial-refund | 发1件后退款未发1件，订单成为全部有效量已发 |
+| return-no-restock | 已送达商品退货退款，明确不回库 |
+| reject-withdraw | 拒绝及客户撤销，保留历史且金额/库存不变 |
+
+各场景均验证通用/订单会话、纯文本消息、STAFF只读售后、重新登录持久化及移动端宽度。
+脚本通过页面写入，仅使用额外授权GET核实订单和库存，不直接读库或重置schema。

@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt
 
 
 class DTO(BaseModel):
@@ -103,6 +103,7 @@ class AddressView(DTO):
 class OrderSummary(DTO):
     id: str
     shop_id: str
+    shop_name: str
     status: Literal[
         "PENDING_PAYMENT", "READY_TO_SHIP", "PARTIALLY_SHIPPED", "SHIPPED", "COMPLETED", "CANCELLED"
     ]
@@ -167,6 +168,55 @@ class ShipmentView(DTO):
     events: list[EventView]
 
 
+class ConversationView(DTO):
+    id: str
+    shop_id: str
+    customer_id: str
+    order_id: str | None
+    version: StrictInt
+    created_at: str
+
+
+class MessageView(DTO):
+    id: str
+    conversation_id: str
+    sender_side: Literal["CUSTOMER", "MERCHANT"]
+    body: str
+    created_at: str
+
+
+class ReturnView(DTO):
+    tracking_number: str
+    state: Literal["IN_TRANSIT", "RECEIVED"]
+    restock: StrictBool | None
+    registered_at: str
+    received_at: str | None
+
+
+class CaseView(DTO):
+    id: str
+    order_id: str
+    type: Literal["UNSHIPPED_REFUND", "RETURN_REFUND"]
+    state: Literal[
+        "REQUESTED",
+        "REJECTED",
+        "CANCELLED",
+        "AWAITING_RETURN",
+        "RETURN_IN_TRANSIT",
+        "REFUND_PENDING",
+        "COMPLETED",
+    ]
+    version: StrictInt
+    reason: str
+    requested_amount_minor: StrictInt
+    currency: Literal["CNY"]
+    created_at: str
+    lines: list[ShipmentLineView]
+    decision_reason: str | None
+    return_shipment: ReturnView | None
+    refund_attempts: list[AttemptView]
+
+
 class OrderView(OrderSummary):
     checkout_id: str | None
     lines: list[OrderLineView]
@@ -174,7 +224,7 @@ class OrderView(OrderSummary):
     address_revision: StrictInt
     shipments: list[ShipmentView]
     payment_attempts: list[AttemptView]
-    after_sale_cases: list[dict] = Field(max_length=0)
+    after_sale_cases: list[CaseView]
     completed_at: str | None
     cancel_reason_code: str | None
     cancelled_at: str | None
@@ -196,7 +246,7 @@ class Page[T](DTO):
 
 class DemoItem(DTO):
     id: str
-    kind: Literal["PAYMENT", "SHIPMENT"]
+    kind: Literal["PAYMENT", "REFUND", "SHIPMENT"]
     state: str
     version: StrictInt
     simulation: Literal[True]
@@ -260,3 +310,24 @@ RESPONSES = {
     "demo.tracking": TrackingResult,
     "demo.expire": ExpireResult,
 }
+
+RESPONSES.update(
+    {
+        "customer.conversation.create": ConversationView,
+        "customer.conversations": Page[ConversationView],
+        "merchant.conversations": Page[ConversationView],
+        "customer.messages": Page[MessageView],
+        "merchant.messages": Page[MessageView],
+        "customer.message.create": MessageView,
+        "merchant.message.create": MessageView,
+        "customer.case.create": CaseView,
+        "customer.case.detail": CaseView,
+        "merchant.case.detail": CaseView,
+        "customer.case.withdraw": CaseView,
+        "customer.case.return": CaseView,
+        "merchant.case.decision": CaseView,
+        "merchant.case.receive-return": CaseView,
+        "merchant.case.refunds": AttemptView,
+        "demo.refund": PaymentResult,
+    }
+)

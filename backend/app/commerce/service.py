@@ -12,8 +12,8 @@ from uuid import uuid4
 
 from sqlalchemy import select, text
 
+from app.commerce import after_sales, views
 from app.commerce import inputs as inp
-from app.commerce import views
 from app.commerce.errors import CommerceError, fail
 from app.commerce.models import (
     SKU,
@@ -582,6 +582,8 @@ class Commerce:
             if result:
                 return result
         self.version(order, body)
+        if action in {"address", "confirm-receipt"} and after_sales.active(self.db, order):
+            fail("ACTIVE_CASE_EXISTS")
         if action == "address":
             address = inp.address(body["address"])
             if (
@@ -639,7 +641,9 @@ class Commerce:
         inp.fields(body, ["expected_version", "lines"])
         self.version(order, body)
         selected = inp.selection(body["lines"])
-        if order.financial_status != "PAID" or order.status not in {
+        if after_sales.active(self.db, order, "UNSHIPPED_REFUND"):
+            fail("ACTIVE_CASE_EXISTS")
+        if order.financial_status not in {"PAID", "PARTIALLY_REFUNDED"} or order.status not in {
             "READY_TO_SHIP",
             "PARTIALLY_SHIPPED",
         }:
@@ -718,6 +722,7 @@ class Commerce:
 
     def payment_result(self, attempt, body):
         inp.fields(body, ["expected_version", "result", "event_id"])
+        inp.integer(body["expected_version"])
         event_id = inp.string(body["event_id"], 1, 100)
         result = body["result"]
         if not isinstance(result, str) or result not in {"SUCCEEDED", "FAILED"}:
@@ -766,6 +771,7 @@ class Commerce:
 
     def tracking(self, shipment, body):
         inp.fields(body, ["expected_version", "event_id", "kind", "description", "occurred_at"])
+        inp.integer(body["expected_version"])
         event_id = inp.string(body["event_id"], 1, 100)
         kind = body["kind"]
         if not isinstance(kind, str) or kind not in {"IN_TRANSIT", "DELIVERED", "EXCEPTION"}:

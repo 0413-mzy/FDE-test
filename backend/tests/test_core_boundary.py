@@ -210,7 +210,7 @@ def test_login_password_is_not_trimmed_or_echoed_in_validation_error():
     assert secret not in json.dumps(result.value.payload("req-test"))
 
 
-def test_commerce_step3_endpoint_inventory_is_separate_and_closed():
+def test_commerce_step4_endpoint_inventory_is_separate_and_closed():
     with TestClient(create_app(Settings(_env_file=None), session_factory=no_database)) as client:
         schema = client.get("/openapi.json").json()
     paths = {
@@ -250,6 +250,19 @@ def test_commerce_step3_endpoint_inventory_is_separate_and_closed():
         "/merchant/shops/{shop}/orders/{order}/shipments",
         "/customer/orders/{order}/shipments/{shipment}",
         "/merchant/shops/{shop}/orders/{order}/shipments/{shipment}",
+        "/customer/conversations",
+        "/merchant/shops/{shop}/conversations",
+        "/customer/conversations/{conversation}/messages",
+        "/merchant/shops/{shop}/conversations/{conversation}/messages",
+        "/customer/orders/{order}/after-sales",
+        "/customer/orders/{order}/after-sales/{case}",
+        "/merchant/shops/{shop}/orders/{order}/after-sales/{case}",
+        "/customer/orders/{order}/after-sales/{case}/withdraw",
+        "/customer/orders/{order}/after-sales/{case}/return",
+        "/merchant/shops/{shop}/orders/{order}/after-sales/{case}/decision",
+        "/merchant/shops/{shop}/orders/{order}/after-sales/{case}/receive-return",
+        "/merchant/shops/{shop}/orders/{order}/after-sales/{case}/refunds",
+        "/demo/refunds/{attempt}/result",
         "/demo/pending",
         "/demo/payments/{attempt}/result",
         "/demo/shipments/{shipment}/events",

@@ -1,5 +1,20 @@
 # 项目决策与执行记录
 
+## 2026-10-07：第四步消息与售后
+
+用户明确请求“ok进行第四步吧”。从第三步0e50df5建立codex/commerce-messages-after-sales。
+新增持久化通用/订单会话、双方消息、部分/全额未发退款、14天送达退货退款、
+OWNER审批/接收/明确回库及DEMO退款结果；52个商城操作保持独立命名空间。
+0004增量迁移保留既有订单/库存/支付/包裹/流水，原演示地址已升级。
+补充订单店铺名称及手动模拟PENDING说明。没有真实资金/承运商/外部消息或AI，不合并main。
+
+[实施计划](../superpowers/plans/2026-10-07-commerce-step-4.md)、
+[切片](../commerce/step-4-implementation.md)、
+[本次验证](../verification/2026-10-07-commerce-step-4.md)记录代码、浏览器、事务/权限与限制。
+本地全套371通过；补充后的售后专项16通过；前端13通过；5个售后浏览器场景及原第三步双店回归通过。
+实现提交2211c4a已交付[Draft PR #5](https://github.com/0413-mzy/FDE-test/pull/5)，依赖第三步PR #4。
+最终CI状态以该PR当前SHA检查为准。
+
 ## 2026-10-06：第三步购买与履约
 
 用户明确请求“开始第三部”。基于第二步89b988e建立codex/commerce-purchase-fulfillment。

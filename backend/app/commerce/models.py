@@ -179,6 +179,7 @@ class Order(Record, Base):
             ["commerce_checkouts.id", "commerce_checkouts.customer_id"],
         ),
         UniqueConstraint("id", "shop_id"),
+        UniqueConstraint("id", "customer_id", "shop_id"),
         CheckConstraint("total_minor > 0"),
         CheckConstraint("currency='CNY'"),
     )
@@ -340,6 +341,131 @@ class BusinessAudit(Record, Base):
     target_id: Mapped[UUID | None]
     request_id: Mapped[str] = mapped_column(String(100))
     safe_metadata: Mapped[dict] = mapped_column(JSONB)
+
+
+class Conversation(Record, Base):
+    __tablename__ = "commerce_conversations"
+    customer_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_accounts.id"))
+    shop_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_shops.id"))
+    order_id: Mapped[UUID | None] = mapped_column(ForeignKey("commerce_orders.id"))
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["order_id", "customer_id", "shop_id"],
+            ["commerce_orders.id", "commerce_orders.customer_id", "commerce_orders.shop_id"],
+        ),
+        Index(
+            "commerce_conversation_unique",
+            "customer_id",
+            "shop_id",
+            "order_id",
+            unique=True,
+            postgresql_nulls_not_distinct=True,
+        ),
+    )
+
+
+class Message(Record, Base):
+    __tablename__ = "commerce_messages"
+    conversation_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_conversations.id"))
+    sender_account_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_accounts.id"))
+    sender_side: Mapped[str] = mapped_column(String(10))
+    body: Mapped[str] = mapped_column(Text)
+    __table_args__ = (
+        CheckConstraint("sender_side IN ('CUSTOMER','MERCHANT')"),
+        CheckConstraint("length(btrim(body)) BETWEEN 1 AND 2000"),
+    )
+
+
+class AfterSaleCase(Record, Base):
+    __tablename__ = "commerce_after_sale_cases"
+    order_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_orders.id"))
+    type: Mapped[str] = mapped_column(String(30))
+    state: Mapped[str] = mapped_column(String(30))
+    reason: Mapped[str] = mapped_column(Text)
+    requested_amount_minor: Mapped[int] = mapped_column(BigInteger)
+    currency: Mapped[str] = mapped_column(String(3), default="CNY")
+    decision_reason: Mapped[str | None] = mapped_column(Text)
+    __table_args__ = (
+        UniqueConstraint("id", "order_id"),
+        CheckConstraint("type IN ('UNSHIPPED_REFUND','RETURN_REFUND')"),
+        CheckConstraint(
+            "state IN ('REQUESTED','REJECTED','CANCELLED','AWAITING_RETURN',"
+            "'RETURN_IN_TRANSIT','REFUND_PENDING','COMPLETED')"
+        ),
+        CheckConstraint("requested_amount_minor > 0 AND currency='CNY'"),
+        Index(
+            "commerce_one_active_case",
+            "order_id",
+            unique=True,
+            postgresql_where=text("state NOT IN ('REJECTED','CANCELLED','COMPLETED')"),
+        ),
+    )
+
+
+class AfterSaleLine(Record, Base):
+    __tablename__ = "commerce_after_sale_lines"
+    case_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_after_sale_cases.id"))
+    order_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_orders.id"))
+    order_line_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_order_lines.id"))
+    quantity: Mapped[int]
+    unit_price_minor_snapshot: Mapped[int]
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["case_id", "order_id"],
+            ["commerce_after_sale_cases.id", "commerce_after_sale_cases.order_id"],
+        ),
+        ForeignKeyConstraint(
+            ["order_line_id", "order_id"],
+            ["commerce_order_lines.id", "commerce_order_lines.order_id"],
+        ),
+        UniqueConstraint("case_id", "order_line_id"),
+        CheckConstraint("quantity BETWEEN 1 AND 99 AND unit_price_minor_snapshot > 0"),
+    )
+
+
+class ReturnShipment(Record, Base):
+    __tablename__ = "commerce_return_shipments"
+    case_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_after_sale_cases.id"), unique=True)
+    tracking_number: Mapped[str] = mapped_column(String(100))
+    state: Mapped[str] = mapped_column(String(20))
+    restock: Mapped[bool | None] = mapped_column(Boolean)
+    registered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    received_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (
+        CheckConstraint("state IN ('IN_TRANSIT','RECEIVED')"),
+        CheckConstraint(
+            "(state='IN_TRANSIT' AND restock IS NULL AND received_at IS NULL) OR "
+            "(state='RECEIVED' AND restock IS NOT NULL AND received_at IS NOT NULL)"
+        ),
+    )
+
+
+class RefundAttempt(Record, Base):
+    __tablename__ = "commerce_refund_attempts"
+    after_sale_id: Mapped[UUID] = mapped_column(ForeignKey("commerce_after_sale_cases.id"))
+    amount_minor: Mapped[int] = mapped_column(BigInteger)
+    currency: Mapped[str] = mapped_column(String(3), default="CNY")
+    state: Mapped[str] = mapped_column(String(20), default="PENDING")
+    simulation: Mapped[bool] = mapped_column(default=True)
+    provider_reference: Mapped[str | None] = mapped_column(Text)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    failure_code: Mapped[str | None] = mapped_column(String(40))
+    __table_args__ = (
+        CheckConstraint("state IN ('PENDING','SUCCEEDED','FAILED')"),
+        CheckConstraint("amount_minor > 0 AND simulation AND currency='CNY'"),
+        Index(
+            "commerce_one_pending_refund",
+            "after_sale_id",
+            unique=True,
+            postgresql_where=text("state='PENDING'"),
+        ),
+        Index(
+            "commerce_one_success_refund",
+            "after_sale_id",
+            unique=True,
+            postgresql_where=text("state='SUCCEEDED'"),
+        ),
+    )
 
 
 for _table in Base.metadata.tables.values():
