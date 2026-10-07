@@ -10,6 +10,8 @@
 > [Draft PR #9](https://github.com/0413-mzy/FDE-test/pull/9)补齐商品体验与平台运营，包含图片、分类筛选、收藏评价、举报仲裁和经营报表。
 > 用户已授权公开演示部署，候选提供单容器、独立云库与共享虚构账号；实际上线状态见[部署验证](docs/verification/2026-10-07-public-demo.md)。支付、物流、退款和邮件均为模拟，不合并 main。
 > 部署、费用、权限与备份说明见[公开演示部署](docs/deployment-public-demo.md)。
+> **公开演示：<https://fde-commerce-demo.onrender.com/>**。采用 Render Free + Neon Free；
+> 登录页面提供共享虚构账号和公开演示密码，闲置后的首次打开通常需要等待约1分钟。
 
 ## 目标体验
 

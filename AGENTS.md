@@ -40,6 +40,9 @@
   history and real PostgreSQL/browser acceptance are authorized. Preserve current
   business rows; no old account promotion or deployed migration rewrite.
   On 2026-10-07 the user authorized public demo deployment with RMB100/month maximum.
+  The user subsequently declined paid creation and explicitly approved Render Free
+  + Neon Free, including storing the new cloud database credential in Render.
+  Do not add payment methods or paid resources; accept suspension at free limits.
   Explicit production public-demo configuration, independent cloud PostgreSQL,
   simulated transactions, disabled public mail/account mutations, separate private
   operator credentials, production container and HTTPS publishing are authorized.
