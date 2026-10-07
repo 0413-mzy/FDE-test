@@ -8,12 +8,13 @@
 
 一个 Render Docker Web Service 同源提供静态前端与 FastAPI；一个独立 Neon Free
 PostgreSQL 保存云端业务。使用 Virginia / AWS us-east-1，保持数据库和服务邻近。
-Render 创建页当前选择 `0.5c-512mb`，显示每月7美元；不增加付费数据库、域名或第二个服务。
-保持单实例，不启用自动扩容。100元人民币月预算还需包含汇率、税费及可能的超额用量；
-创建前核对结算金额，在 Billing 检查带宽/构建用量并设置平台提供的预算限制或告警。
+用户随后选择暂不创建付费服务，并确认采用 Render Free + Neon Free；Render 创建页
+显示每月0美元。保持单实例，不添加支付方式、付费数据库、域名或第二个服务。
+闲置15分钟会休眠，唤醒通常约1分钟。没有支付方式时，超出免费带宽会暂停服务，
+构建分钟耗尽会停止新构建；不自动升级为付费服务。额度请在 Billing 检查。
 Neon Free 的额度用尽可能暂停；不是无限容量或正式经营的可用性保证。
 
-参考：[Render Blueprint](https://render.com/docs/blueprint-spec)、
+参考：[Render 免费限制](https://render.com/docs/free)、[Render Blueprint](https://render.com/docs/blueprint-spec)、
 [Render 价格](https://render.com/pricing)、
 [Neon Free 当前额度](https://neon.com/blog/neon-free-plan-1-gb-per-project)。
 

@@ -1,10 +1,10 @@
 # Existing commerce records stay local. Set a NEW Neon Free direct connection URL.
-# Paid app plan must be checked against the user's RMB100/month budget before creation.
+# User selected free-only publication; do not add a payment method or paid resources.
 services:
   - type: web
     name: fde-commerce-demo
     runtime: docker
-    plan: 0.5c-512mb
+    plan: free
     region: virginia
     branch: codex/commerce-public-demo-deployment
     dockerfilePath: deployment/Dockerfile
