@@ -27,7 +27,7 @@ Files: frontend/src/DataCenter.tsx, App.tsx, styles.css, frontend/tests/data-cen
 
 ### Task 3: Acceptance and review
 - [x] Run actual PostgreSQL/HTTP acceptance on existing local runtime without clearing records; actual mutation and before/after history verified, including API restart persistence.
-- [ ] Actual browser acceptance: blocked by unavailable administrator policy verification service; do not bypass.
+- [x] Actual browser acceptance: after Codex restart policy verification recovered; local and public private UI verified.
 - [x] Independent spec then quality review; fix issues and rerun affected gates.
 - [x] Update database/development/README and verification evidence with scope and true history limits; screenshot unavailable because browser acceptance is blocked.
 - [x] Commit/push candidate, draft dependent PR, attach PR; never merge main. Public demo release retains Free resources and private platform credentials; report actual release status separately.

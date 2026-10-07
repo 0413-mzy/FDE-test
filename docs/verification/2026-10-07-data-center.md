@@ -54,3 +54,26 @@ BASELINE为升级当时状态，不是更早版本；删除记录可经历史查
 35项可选旧Sandbox外部集成未运行，不计为本轮接受；一项已有Starlette依赖弃用警告。
 前端命令为`npm test`、`npm run lint`、`npm run build`；Python检查为Ruff check与format check。
 文档本地链接及diff whitespace检查通过。
+
+## 2026-10-07 公开发布补充
+
+用户明确请求公开发布并重启Codex后，浏览器策略验证恢复。本机真实页面已验证私有登录、
+37类目录、商品关键词筛选、真实INSERT/UPDATE前后历史、商品到规格关联跳转。
+一轮瞬时Failed to fetch后，页面显式重试成功，错误未被当作新鲜数据。默认刷新关闭；
+开启后成功读取时间自动推进，随后关闭。没有因验收修改已有业务行。
+
+Render指定源码提交`08d0edbe4e3741b4da6deb3f09a574589eeabd08`，部署
+`dep-db33col9fdbs739rc52g`于20:09（UTC+8）开始，1m33s后显示Deploy succeeded / Live。
+使用Deploy a specific commit（any branch）；服务追踪分支仍为codex/commerce-conversation-ai，
+自动部署未开启，无main合并，无免费计划升级，无数据库/私有凭据变更。
+
+公网真实HTTP：私有platform资格通过；匿名401、六类共享账号403；全部37类允许资源可读，
+无password_hash/token_digest；production/public_demo/只读标识正确；全局历史可读。
+旧验收订单仍COMPLETED/PAID、1000分，旧会话AI尝试仍存在。没有发起新的计费模型生成。
+公网浏览器刷新新版本后私有登录成功，数据中心目录、云端订单和AI尝试数量显示。
+该源码提交GitHub push/PR十项检查均通过，包括真实数据库与生产容器。
+公开地址：https://fde-commerce-demo.onrender.com/ 。本机数据库与云端数据库仍独立。
+
+公网全局历史页面读取成功，最后成功读取时间推进至20:12:55（UTC+8）。
+
+![公开站私有数据中心](assets/data-center-public.png)
