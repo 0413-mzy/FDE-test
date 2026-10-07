@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     commerce_static_dir: Path | None = None
     commerce_image_quota_bytes: int = Field(default=32 * 1024 * 1024, gt=0)
     commerce_mailbox_dir: Path | None = None
+    deepseek_api_key: SecretStr | None = None
+    deepseek_model: str = Field(default="deepseek-flash", min_length=1, max_length=100)
     database_url: SecretStr | None = None
     sandbox_base_url: HttpUrl | None = None
     sandbox_timeout_seconds: float = Field(default=5.0, gt=0, allow_inf_nan=False)

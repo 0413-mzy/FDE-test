@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CommerceClient } from './client';
-export function useQuery<T>(client: CommerceClient, path: string, enabled = true) {
+export function useQuery<T>(client: CommerceClient, path: string, enabled = true, refreshKey = "") {
     const [state, setState] = useState<{
         data?: T;
         error?: unknown;
@@ -11,7 +11,7 @@ export function useQuery<T>(client: CommerceClient, path: string, enabled = true
     const [revision, setRevision] = useState(0);
     useEffect(() => { if (!enabled) return; let active = true; client.request<T>(path).then(data => { if (active)
         setState({ data, loading: false, client, path }); }).catch(error => { if (active)
-        setState({ error, loading: false, client, path }); }); return () => { active = false; }; }, [client, path, revision, enabled]);
+        setState({ error, loading: false, client, path }); }); return () => { active = false; }; }, [client, path, revision, enabled, refreshKey]);
     const visible = enabled && state.client === client && state.path === path ? state : {loading: enabled};
     return { ...visible, refresh: () => { setState({ loading: true }); setRevision(n => n + 1); } };
 }
