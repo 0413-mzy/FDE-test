@@ -16,6 +16,7 @@ from app.api.health import router as health_router
 from app.api.resolution import router as resolution_router
 from app.commerce.ai_router import router as ai_router
 from app.commerce.catalog_router import router as catalog_router
+from app.commerce.data_router import router as data_router
 from app.commerce.onboarding_router import router as onboarding_router
 from app.commerce.platform_router import router as platform_router
 from app.commerce.public_demo import install_public_demo
@@ -134,6 +135,7 @@ def create_app(
     application.include_router(onboarding_router)
     application.include_router(catalog_router)
     application.include_router(platform_router)
+    application.include_router(data_router)
     if settings.app_env in {"development", "test"} or settings.commerce_public_demo:
         application.include_router(demo_router)
     if not settings.commerce_public_demo:
