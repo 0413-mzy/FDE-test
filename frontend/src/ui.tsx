@@ -12,7 +12,7 @@ export function ErrorBox({ error }: {
         <small>
         {error.code} · 请求 {error.requestId || '未返回编号'}</small>
             {Object.keys(error.details).length > 0 && <small>
-            {JSON.stringify(error.details)}</small>}</>}{error instanceof ApiError && ['VERSION_CONFLICT', 'PRICE_CHANGED', 'ORDER_EXPIRED'].includes(error.code) && <p>请刷新当前记录，核实最新状态或价格后再次明确提交。</p>}</div>;
+            {JSON.stringify(error.details)}</small>}</>}{error instanceof ApiError && ['DEMO_ACTION_DISABLED', 'PUBLIC_DEMO_DISABLED'].includes(error.code) && <p>公开演示已关闭此账号修改操作。请使用共享访客账号体验购物、店铺与模拟业务。</p>}{error instanceof ApiError && ['IMAGE_STORAGE_LIMIT', 'DEMO_STORAGE_QUOTA_EXCEEDED', 'IMAGE_STORAGE_QUOTA_EXCEEDED', 'DEMO_QUOTA_EXCEEDED'].includes(error.code) && <p>共享演示存储已满，请删除不用的商品图片后重试，或联系演示管理员。</p>}{error instanceof ApiError && ['VERSION_CONFLICT', 'PRICE_CHANGED', 'ORDER_EXPIRED'].includes(error.code) && <p>请刷新当前记录，核实最新状态或价格后再次明确提交。</p>}</div>;
 }
 export function AddressForm({ initial, onSave, button = '使用地址下单', disabled = false, onDraftChange }: {
     initial?: Address;

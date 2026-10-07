@@ -22,7 +22,18 @@ def test_seed_preserves_password_exactly():
     assert validate_seed_config("test", password) == password
 
 
-@pytest.mark.parametrize("url", ["sqlite://", "postgresql://localhost/order_support"])
+@pytest.mark.parametrize("url", ["sqlite://", "postgresql+psycopg2://localhost/order_support"])
 def test_database_engine_requires_explicit_postgresql_driver(url):
     with pytest.raises(ValueError, match="postgresql\\+psycopg"):
         product_engine(url)
+
+
+@pytest.mark.parametrize("prefix", ["postgres://", "postgresql://"])
+def test_cloud_postgresql_urls_use_psycopg_and_preserve_tls(prefix):
+    engine = product_engine(prefix + "localhost/order_support?sslmode=require")
+    try:
+        assert engine.url.drivername == "postgresql+psycopg"
+        assert engine.url.query["sslmode"] == "require"
+        assert engine.hide_parameters
+    finally:
+        engine.dispose()

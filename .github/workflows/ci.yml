@@ -84,3 +84,67 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker compose --env-file .env.example config --quiet
+
+  public-demo-container:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: commerce_container_test
+          POSTGRES_DB: commerce_container_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U commerce_container_test -d commerce_container_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      APP_ENV: production
+      COMMERCE_PUBLIC_DEMO: "true"
+      COMMERCE_PUBLIC_DEMO_BOOTSTRAP: "true"
+      COMMERCE_PUBLIC_DEMO_LOCAL_ACCEPTANCE: "true"
+      COMMERCE_PUBLIC_ORIGIN: http://127.0.0.1:8000
+      DATABASE_URL: postgresql+psycopg://commerce_container_test@127.0.0.1:5432/commerce_container_test
+      PORT: "8000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate disposable demo credentials
+        run: |
+          python - <<'PY'
+          import os, secrets
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for key in ['COMMERCE_DEMO_PASSWORD', 'COMMERCE_OPERATOR_PASSWORD']:
+                  value = secrets.token_urlsafe(32)
+                  print('::add-mask::' + value)
+                  output.write(key + '=' + value + '\n')
+          PY
+      - run: docker build -f deployment/Dockerfile -t commerce-public-demo .
+      - name: Start actual production container
+        run: >-
+          docker run -d --name commerce-public-demo --network host
+          -e APP_ENV -e COMMERCE_PUBLIC_DEMO -e COMMERCE_PUBLIC_DEMO_BOOTSTRAP
+          -e COMMERCE_PUBLIC_DEMO_LOCAL_ACCEPTANCE -e COMMERCE_PUBLIC_ORIGIN
+          -e DATABASE_URL -e COMMERCE_DEMO_PASSWORD -e COMMERCE_OPERATOR_PASSWORD
+          -e PORT commerce-public-demo
+      - name: Wait for database readiness
+        run: |
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:8000/ready; then exit 0; fi
+            sleep 2
+          done
+          docker logs commerce-public-demo
+          exit 1
+      - name: Verify real purchase, images and authorization
+        run: python scripts/commerce-public-demo-acceptance.py --base-url http://127.0.0.1:8000 --receipt-file /tmp/commerce-public-receipt.json
+      - run: docker restart commerce-public-demo
+      - name: Verify restart keeps business records
+        run: |
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:8000/ready; then break; fi
+            sleep 2
+          done
+          python scripts/commerce-public-demo-acceptance.py --receipt-file /tmp/commerce-public-receipt.json --check-persisted

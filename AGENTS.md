@@ -39,7 +39,15 @@
   Additive0007/0008, safe image decoding, new-role explicit seed, transactional
   history and real PostgreSQL/browser acceptance are authorized. Preserve current
   business rows; no old account promotion or deployed migration rewrite.
-  AI, real payments/carriers, public deployment and main merge remain outside this task.
+  On 2026-10-07 the user authorized public demo deployment with RMB100/month maximum.
+  The user subsequently declined paid creation and explicitly approved Render Free
+  + Neon Free, including storing the new cloud database credential in Render.
+  Do not add payment methods or paid resources; accept suspension at free limits.
+  Explicit production public-demo configuration, independent cloud PostgreSQL,
+  simulated transactions, disabled public mail/account mutations, separate private
+  operator credentials, production container and HTTPS publishing are authorized.
+  Preserve the existing local database; account signup/agreements and payment
+  details are completed by the user. No real payments/carriers, AI or main merge.
   Prior Step 1/2 documentation is delivered in dependent draft PRs #2/#3.
 - Subsequent implementation follows `docs/plans/04_core_mvp_next_stage_plan.md`.
   Product scope describes the destination; it does not imply a feature is implemented

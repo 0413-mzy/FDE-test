@@ -187,6 +187,13 @@ class Catalog(Commerce):
             Image.DecompressionBombWarning,
         ):
             fail("INVALID_IMAGE", 400)
+        settings = self.request.app.state.settings
+        if settings.commerce_public_demo:
+            stored = self.db.scalar(
+                select(func.coalesce(func.sum(func.octet_length(ProductImage.content)), 0))
+            )
+            if stored + len(content) > settings.commerce_image_quota_bytes:
+                fail("IMAGE_STORAGE_LIMIT", 409)
         used = set(
             self.db.scalars(select(ProductImage.position).where(ProductImage.product_id == p.id))
         )

@@ -321,6 +321,7 @@ def test_commerce_additive_endpoint_inventory_is_separate_and_closed():
         "/shopping/shops",
         "/platform/actions",
         "/platform/disputes/{id}/context",
+        "/demo-info",
     }
     assert schema["paths"]["/api/commerce/v1/auth/me"]["get"]["security"] == [
         {"CommerceBearer": []}

@@ -1,0 +1,17 @@
+.git
+.agents
+.codex
+**/node_modules
+**/dist
+**/.test-output
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/*.egg-info
+**/.env*
+**/*.log
+**/runtime.json
+**/*password*
+**/*.dump
+**/tests

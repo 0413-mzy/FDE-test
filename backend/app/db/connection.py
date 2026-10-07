@@ -6,6 +6,8 @@ from sqlalchemy.engine import make_url
 
 def product_engine(database_url: str) -> Engine:
     url = make_url(database_url)
+    if url.drivername in {"postgres", "postgresql"}:
+        url = url.set(drivername="postgresql+psycopg")
     if url.drivername != "postgresql+psycopg":
         raise ValueError("Product persistence requires postgresql+psycopg")
     options = str(url.query.get("options", "")) + " -c timezone=UTC"

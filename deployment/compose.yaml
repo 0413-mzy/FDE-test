@@ -1,0 +1,22 @@
+# Local production acceptance. Cloud uses Render HTTPS plus separate Neon PostgreSQL.
+services:
+  commerce:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    environment:
+      APP_ENV: production
+      COMMERCE_PUBLIC_DEMO: "true"
+      COMMERCE_PUBLIC_DEMO_BOOTSTRAP: "true"
+      COMMERCE_PUBLIC_DEMO_LOCAL_ACCEPTANCE: "true"
+      COMMERCE_PUBLIC_ORIGIN: ${COMMERCE_PUBLIC_ORIGIN:?Set explicit public origin}
+      DATABASE_URL: ${DATABASE_URL:?Set isolated PostgreSQL URL}
+      COMMERCE_DEMO_PASSWORD: ${COMMERCE_DEMO_PASSWORD:?Set visitor demo password}
+      COMMERCE_OPERATOR_PASSWORD: ${COMMERCE_OPERATOR_PASSWORD:?Set separate private operator password}
+    ports:
+      - "127.0.0.1:${PUBLIC_DEMO_PORT:-18009}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
