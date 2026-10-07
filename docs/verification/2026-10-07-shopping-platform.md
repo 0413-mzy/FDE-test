@@ -34,3 +34,7 @@
 ## 交付限制
 
 外部真实支付、承运商、真实邮件与AI未接入；Docker Compose由CI验证，本机无Docker。报表净额不是利润，不含成本/税费；平台仲裁围绕已有退款/退货申请，不是完整现实司法或支付争议系统。图片初版数据库BYTEA有界存储，未接云对象存储。没有公共部署或main合并。
+
+## GitHub交付
+
+实现提交 `cc37c6293659f76b42592f796c3aac65a8db55a5`；[Draft PR #9](https://github.com/0413-mzy/FDE-test/pull/9)依赖PR #8。最后文档提交的精确HEAD CI在交付前通过GitHub checks核验，结果附于PR；不将本地工作树证据冒充最终提交CI。

@@ -7,6 +7,7 @@
 > 2026-10-07：第五步场景验收已交付为 [Draft PR #6](https://github.com/0413-mzy/FDE-test/pull/6)。
 > [Draft PR #7](https://github.com/0413-mzy/FDE-test/pull/7)新增用户注册/恢复、账户资料/地址簿、商家入驻与独立人工审核，采用受保护的本地模拟邮件。
 > [Draft PR #8](https://github.com/0413-mzy/FDE-test/pull/8)补齐业务行变更历史与本机数据库查询，使用增量0006，保留原有数据。
+> [Draft PR #9](https://github.com/0413-mzy/FDE-test/pull/9)补齐商品体验与平台运营，包含图片、分类筛选、收藏评价、举报仲裁和经营报表。
 > 规则见 [入驻契约](docs/commerce/onboarding.md)和[验证记录](docs/verification/2026-10-07-commerce-onboarding.md)。支付、物流、退款和邮件均为模拟；不部署或合并 main。
 
 ## 目标体验
