@@ -59,9 +59,7 @@ class DemoSafetyTests(unittest.TestCase):
         response.__enter__.return_value = response
         with patch.object(self.module.urllib.request, "urlopen", return_value=response):
             self.assertIsNone(
-                self.module.request(
-                    "http://127.0.0.1:1", "/auth/logout", "fictional", {}
-                )
+                self.module.request("http://127.0.0.1:1", "/auth/logout", "fictional", {})
             )
 
     def test_interrupted_acceptance_overwrites_stale_success_and_exits_nonzero(self):
@@ -82,9 +80,7 @@ class DemoSafetyTests(unittest.TestCase):
                     "argv",
                     ["demo", "--scenario", "purchase", "--evidence-dir", directory],
                 ),
-                patch.object(
-                    self.module, "run_scenario", side_effect=KeyboardInterrupt
-                ),
+                patch.object(self.module, "run_scenario", side_effect=KeyboardInterrupt),
                 self.assertRaises(SystemExit) as stopped,
             ):
                 self.module.main()

@@ -127,3 +127,17 @@ R14退款覆盖库存/Order/Attempt/事件/Audit五处注入；其他操作用Au
 没有宣称每个操作每个故障点全组合、性能负载或所有外部网络故障覆盖。
 临时生成schema保留供调查，无自动删除，不影响用户原订单。重启操作系统后需按开发说明启动。
 未部署公网、未合并main、未开始第六步AI。
+
+## GitHub交付
+
+实现提交ca7b1f97ced1826e0b6bc5957ff7a67f8dace458已推送并创建
+[Draft PR #6](https://github.com/0413-mzy/FDE-test/pull/6)，base为第四步分支，状态OPEN/DRAFT。
+本机原演示地址http://127.0.0.1:5179/、API18008已恢复；5类身份授权GET检查通过，未写业务记录。
+实现提交的[PR检查](https://github.com/0413-mzy/FDE-test/actions/runs/37574097664)及
+[push检查](https://github.com/0413-mzy/FDE-test/actions/runs/37574080343)以实际run状态为准。
+文档收尾会形成新head，最终检查须再核对准确SHA，不用旧提交结果替代。
+
+初次实现CI的backend任务在scripts Ruff失败：根目录与backend工作目录默认配置不同，
+B904与行宽规则未一致。新增scripts/ruff.toml继承backend配置，并补异常raise from None；
+根目录和backend目录都重跑Ruff/format与5项安全测试通过。业务后端/前端未因此改变。
+该初次run不能被称为全绿；修正后的最终head结果以PR当前检查为准。

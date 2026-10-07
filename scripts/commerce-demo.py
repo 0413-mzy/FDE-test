@@ -38,9 +38,7 @@ def configuration(env):
         raise ValueError("An explicit isolated TEST_DATABASE_URL is required")
     url = make_url(raw)
     if url.drivername != "postgresql+psycopg" or "options" in url.query:
-        raise ValueError(
-            "Use a PostgreSQL psycopg test URL without search_path/options"
-        )
+        raise ValueError("Use a PostgreSQL psycopg test URL without search_path/options")
     return {
         "url": url,
         "schema": "commerce_demo_" + uuid4().hex,
@@ -106,16 +104,16 @@ def http_boundaries(api, password):
                 raise RuntimeError("Unexpected HTTP boundary status") from None
             payload = json.load(error)
             if set(payload["error"]) != {"code", "message", "request_id", "details"}:
-                raise RuntimeError("Nonclosed HTTP error")
+                raise RuntimeError("Nonclosed HTTP error") from None
             return
         raise RuntimeError("HTTP boundary unexpectedly accepted request")
 
     for path in ["/customer/cart", "/customer/orders"]:
         rejected(path, 401)
     rejected("/catalog/products?limit=2&limit=3", 400)
-    token = request(
-        api, "/auth/login", body={"username": "customer.a", "password": password}
-    )["token"]
+    token = request(api, "/auth/login", body={"username": "customer.a", "password": password})[
+        "token"
+    ]
     try:
         rejected("/customer/cart/lines", 400, token, b'{"quantity":1,"quantity":2}')
         if (
@@ -132,9 +130,9 @@ def http_boundaries(api, password):
 
 
 def snapshot(api, password):
-    token = request(
-        api, "/auth/login", body={"username": "customer.a", "password": password}
-    )["token"]
+    token = request(api, "/auth/login", body={"username": "customer.a", "password": password})[
+        "token"
+    ]
     try:
         result = []
         offset = 0
@@ -280,14 +278,10 @@ def run_scenario(name, evidence, interactive=False):
                 COMMERCE_SCENARIO=name,
                 COMMERCE_SCREENSHOT_DIR=str(scenario_dir),
             )
-            subprocess.run(
-                ["node", str(ROOT / "scripts" / script)], env=browser_env, check=True
-            )
+            subprocess.run(["node", str(ROOT / "scripts" / script)], env=browser_env, check=True)
             before = snapshot(api, config["password"])
             if not before:
-                raise RuntimeError(
-                    "Browser scenario left no persistent customer orders"
-                )
+                raise RuntimeError("Browser scenario left no persistent customer orders")
             stop(api_process)
             api_process = launch_api()
             after = snapshot(api, config["password"])
@@ -322,30 +316,22 @@ def provenance():
         "source_commit": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip(),
-        "source_dirty": bool(
-            subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)
-        ),
+        "source_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
         "source_tree_sha256": digest.hexdigest(),
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--scenario", choices=SCENARIOS + ["all", "interactive"], default="all"
-    )
+    parser.add_argument("--scenario", choices=SCENARIOS + ["all", "interactive"], default="all")
     parser.add_argument("--evidence-dir", type=Path)
     args = parser.parse_args()
     results = []
-    evidence = args.evidence_dir or Path(
-        tempfile.mkdtemp(prefix="fde-commerce-evidence-")
-    )
+    evidence = args.evidence_dir or Path(tempfile.mkdtemp(prefix="fde-commerce-evidence-"))
     evidence.mkdir(parents=True, exist_ok=True)
     source = provenance()
     try:
-        configuration(
-            os.environ
-        )  # Reject unsafe configuration before starting anything.
+        configuration(os.environ)  # Reject unsafe configuration before starting anything.
         if args.scenario == "interactive":
             run_scenario("interactive", evidence, interactive=True)
             return

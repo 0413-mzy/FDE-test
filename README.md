@@ -90,5 +90,6 @@ python scripts/commerce-demo.py --scenario all
 ```
 
 interactive输出本地网址及仅本机可读的随机密码文件，CtrlC停止自己的服务并保留数据。
+交付见[Draft PR #6](https://github.com/0413-mzy/FDE-test/pull/6)与[第五步验收](docs/verification/2026-10-07-commerce-step-5.md)。
 all还需Playwright和Chrome，详见[开发说明](docs/development.md#第五步统一演示入口)。
 覆盖清单区分通过和细项缺口；本步不部署、不合并main、不加AI。

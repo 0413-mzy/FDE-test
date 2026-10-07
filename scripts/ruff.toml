@@ -1,0 +1,2 @@
+# Share the backend's Python rules from both repository root and backend/ CI cwd.
+extend = "../backend/pyproject.toml"
