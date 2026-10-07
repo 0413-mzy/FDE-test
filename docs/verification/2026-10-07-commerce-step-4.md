@@ -17,7 +17,8 @@
 
 完整后端回归371项通过（260.51秒、0跳过）；随后只补充3个验收测试，
 补充后的Step4专项16项全部通过（36.57秒）。两次运行没有业务源码变更，
-最终提交的全部测试由GitHub CI再次执行。唯一警告是已有Starlette/httpx弃用提示。
+GitHub CI重复执行单元与独立数据库回归；integration标记的测试在本机全套执行，
+CI显式排除这些测试。唯一警告是已有Starlette/httpx弃用提示。
 
 | 检查 | 本次结果 |
 | --- | --- |
@@ -110,7 +111,9 @@ GitHub交付为依赖第三步的草稿PR；最终SHA与CI结果以该PR检查�
 [Draft PR #5](https://github.com/0413-mzy/FDE-test/pull/5)，base为第三步分支，未合并main。
 实现提交的[push CI](https://github.com/0413-mzy/FDE-test/actions/runs/37571040119)与
 [PR CI](https://github.com/0413-mzy/FDE-test/actions/runs/37571058419)包含backend、frontend、database和compose。
-具体完成状态以链接为准；文档收尾提交会另外触发CI，最终head检查以PR页面为准。
+该实现提交两次CI均成功：每次backend 161通过、database 178通过，frontend 13通过，
+Compose配置通过。35项integration标记测试不在CI中运行，已包含在本机371项全套回归中。
+文档收尾提交会另外触发CI，最终head检查以PR页面为准。
 
 本机原演示前端 `http://127.0.0.1:5179/`、API `http://127.0.0.1:18008` 已重启到第四步。
 旧订单与库存保留，密码沿用现有受保护的本机文件；未把凭证提交GitHub。
