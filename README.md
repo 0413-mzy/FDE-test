@@ -6,7 +6,8 @@
 
 > 2026-10-07：第四步新增双方消息、部分退款与退货退款，用户、商家和模拟事件控制台
 > 连接同一 PostgreSQL。实际验收以 [第四步验证记录](docs/verification/2026-10-07-commerce-step-4.md)
-> 为准。支付、物流和退款是模拟；本分支不合并 main。
+> 为准。候选交付为 [Draft PR #5](https://github.com/0413-mzy/FDE-test/pull/5)，依赖第三步PR #4。
+> 支付、物流和退款是模拟；本分支不合并 main。
 
 ## 目标体验
 

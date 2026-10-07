@@ -12,7 +12,8 @@ OWNER审批/接收/明确回库及DEMO退款结果；52个商城操作保持独�
 [切片](../commerce/step-4-implementation.md)、
 [本次验证](../verification/2026-10-07-commerce-step-4.md)记录代码、浏览器、事务/权限与限制。
 本地全套371通过；补充后的售后专项16通过；前端13通过；5个售后浏览器场景及原第三步双店回归通过。
-GitHub草稿PR交付及最终CI状态以本次PR为准。
+实现提交2211c4a已交付[Draft PR #5](https://github.com/0413-mzy/FDE-test/pull/5)，依赖第三步PR #4。
+最终CI状态以该PR当前SHA检查为准。
 
 ## 2026-10-06：第三步购买与履约
 

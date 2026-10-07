@@ -34,4 +34,4 @@
 - [x] Verify failure/retry, stock conservation, permissions, persistence, and mobile flow. Save safe screenshots and verification records.
 - [x] Update README, scope, architecture, development, acceptance and execution log with actual results and limitations.
 - [x] Additively migrate the existing demo schema and restart services only after validation. No reset or user-order modifications.
-- [ ] Commit/push Step4 branch and create/attach dependent draft PR, then inspect final-head CI. Do not merge main or proceed to Step5.
+- [x] Commit/push Step4 branch and create/attach dependent draft PR, then inspect final-head CI. Do not merge main or proceed to Step5.

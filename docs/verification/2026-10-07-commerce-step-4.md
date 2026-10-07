@@ -103,3 +103,16 @@ COMMERCE_SCENARIO=partial-return node scripts/commerce-step4-browser-acceptance.
 退货一次接收全部申请数量，无部分验货/争议仲裁/换货。模拟退款需要DEMO明确提交结果，
 没有真实资金、承运商、外部消息投递或AI。没有定时自动审批、自动退款或自动确认收货。
 GitHub交付为依赖第三步的草稿PR；最终SHA与CI结果以该PR检查为准，不能把历史CI当作当前检查。
+
+## GitHub与本地运行交付
+
+实现提交 `2211c4a148ee0e47015b296accf29518cc1083d4` 已推送并创建
+[Draft PR #5](https://github.com/0413-mzy/FDE-test/pull/5)，base为第三步分支，未合并main。
+实现提交的[push CI](https://github.com/0413-mzy/FDE-test/actions/runs/37571040119)与
+[PR CI](https://github.com/0413-mzy/FDE-test/actions/runs/37571058419)包含backend、frontend、database和compose。
+具体完成状态以链接为准；文档收尾提交会另外触发CI，最终head检查以PR页面为准。
+
+本机原演示前端 `http://127.0.0.1:5179/`、API `http://127.0.0.1:18008` 已重启到第四步。
+旧订单与库存保留，密码沿用现有受保护的本机文件；未把凭证提交GitHub。
+隔离QA前端和独立Sandbox已停止，用户演示服务与数据库继续运行。
+仓库描述同步为购买/履约PR #4、消息/售后PR #5和模拟业务，AI仍后置。
