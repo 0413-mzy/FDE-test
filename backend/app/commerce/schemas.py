@@ -148,23 +148,50 @@ class ShipmentLineView(DTO):
 class EventView(DTO):
     id: str
     event_id: str
-    kind: Literal["SHIPPED", "IN_TRANSIT", "DELIVERED", "EXCEPTION"]
+    kind: Literal[
+        "SHIPPED", "COLLECTED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "EXCEPTION"
+    ]
     description: str
     occurred_at: str
     sequence: StrictInt
     source: Literal["SIMULATED_CARRIER"]
+    created_at: str
+    location: str | None
+    reason: Literal["TRANSPORT_DELAY", "DELIVERY_FAILED"] | None
+    actor_id: str | None
+    status_applied: bool | None
+    request_version: StrictInt | None
 
 
 class ShipmentView(DTO):
     id: str
     order_id: str
     tracking_number: str
-    status: Literal["SHIPPED", "IN_TRANSIT", "DELIVERED", "EXCEPTION"]
+    status: Literal[
+        "SHIPPED", "COLLECTED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "EXCEPTION"
+    ]
     version: StrictInt
     simulation: Literal[True]
     shipped_at: str
     delivered_at: str | None
+    exception_reason: Literal["TRANSPORT_DELAY", "DELIVERY_FAILED"] | None
+    exception_from_status: str | None
     lines: list[ShipmentLineView]
+    events: list[EventView]
+
+
+class DemoShipmentView(DTO):
+    id: str
+    tracking_number: str
+    status: Literal[
+        "SHIPPED", "COLLECTED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "EXCEPTION"
+    ]
+    version: StrictInt
+    simulation: Literal[True]
+    shipped_at: str
+    delivered_at: str | None
+    exception_reason: Literal["TRANSPORT_DELAY", "DELIVERY_FAILED"] | None
+    exception_from_status: str | None
     events: list[EventView]
 
 
@@ -262,7 +289,10 @@ class PaymentResult(DTO):
 
 class TrackingResult(DTO):
     id: str
-    status: Literal["IN_TRANSIT", "DELIVERED", "EXCEPTION"]
+    status: Literal[
+        "SHIPPED", "COLLECTED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "EXCEPTION"
+    ]
+    status_applied: bool
     version: StrictInt
     simulation: Literal[True]
 
@@ -306,6 +336,8 @@ RESPONSES = {
     "merchant.shipment": ShipmentView,
     "customer.shipment": ShipmentView,
     "demo.pending": Page[DemoItem],
+    "demo.shipments": Page[DemoShipmentView],
+    "demo.shipment": DemoShipmentView,
     "demo.payment": PaymentResult,
     "demo.tracking": TrackingResult,
     "demo.expire": ExpireResult,

@@ -268,8 +268,13 @@ class Shipment(Record, Base):
     simulation: Mapped[bool] = mapped_column(default=True)
     shipped_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    exception_reason: Mapped[str | None] = mapped_column(String(30))
+    exception_from_status: Mapped[str | None] = mapped_column(String(20))
     __table_args__ = (
-        CheckConstraint("status IN ('SHIPPED','IN_TRANSIT','EXCEPTION','DELIVERED')"),
+        CheckConstraint(
+            "status IN ('SHIPPED','COLLECTED','IN_TRANSIT','OUT_FOR_DELIVERY',"
+            "'EXCEPTION','DELIVERED')"
+        ),
         UniqueConstraint("id", "order_id"),
         CheckConstraint("simulation"),
     )
@@ -303,11 +308,19 @@ class TrackingEvent(Record, Base):
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     sequence: Mapped[int]
     source: Mapped[str] = mapped_column(String(30), default="SIMULATED_CARRIER")
+    location: Mapped[str | None] = mapped_column(String(200))
+    reason: Mapped[str | None] = mapped_column(String(30))
+    actor_id: Mapped[UUID | None] = mapped_column(ForeignKey("commerce_accounts.id"))
+    status_applied: Mapped[bool | None]
+    request_version: Mapped[int | None]
     __table_args__ = (
         UniqueConstraint("shipment_id", "sequence"),
         CheckConstraint("sequence > 0"),
         CheckConstraint("source='SIMULATED_CARRIER'"),
-        CheckConstraint("kind IN ('SHIPPED','IN_TRANSIT','EXCEPTION','DELIVERED')"),
+        CheckConstraint(
+            "kind IN ('SHIPPED','COLLECTED','IN_TRANSIT','OUT_FOR_DELIVERY',"
+            "'EXCEPTION','DELIVERED')"
+        ),
     )
 
 

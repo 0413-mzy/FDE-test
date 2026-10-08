@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 import pytest
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
-from test_commerce import ADDRESS, get, pay, post, purchase, signin
+from test_commerce import ADDRESS, carrier_stages, get, pay, post, purchase, signin
 from test_commerce import commerce as commerce
 
 from app.commerce.models import (
@@ -130,12 +130,13 @@ def test_return_boundary_failure_retry_stock_and_events(commerce, monkeypatch):
         },
         expected=201,
     ).json()
+    shipment = carrier_stages(client, demo, shipment, clock)
     post(
         client,
         "/demo/shipments/" + shipment["id"] + "/events",
         demo,
         {
-            "expected_version": 1,
+            "expected_version": shipment["version"],
             "event_id": "delivered",
             "kind": "DELIVERED",
             "description": "simulated",
@@ -768,6 +769,7 @@ def test_active_case_nested_ownership_and_order_conversation_binding(commerce):
 
 
 def deliver(client, demo, shipment, clock, event):
+    shipment = carrier_stages(client, demo, shipment, clock)
     return post(
         client,
         "/demo/shipments/" + shipment["id"] + "/events",

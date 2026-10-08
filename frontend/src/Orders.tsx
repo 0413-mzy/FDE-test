@@ -1,3 +1,4 @@
+import { TrackingTimeline } from './LogisticsControl';
 import { money, time, label, hasActiveCase } from './helpers';
 import { useAllPages, useQuery } from './useQuery';
 import { useState } from 'react';
@@ -119,15 +120,7 @@ export function OrderDetail({ client, path, merchant, owner = false, onChange }:
         <span className="simulation">模拟承运商 · 包裹 {s.id.slice(0, 8)}</span>
         <p>
         {s.lines.map(l => `${o.lines?.find(x => x.id === l.order_line_id)?.title ?? l.order_line_id.slice(0, 8)} × ${l.quantity}`).join(' / ')}</p>
-        <ol className="timeline">
-            {s.events.map(e => <li key={e.id}>
-            <strong>
-            {label(e.kind)}</strong>
-            <p>
-            {e.description}</p>
-            <time>
-            {time(e.occurred_at)} · 序号 {e.sequence}</time>
-            </li>)}</ol>
+        <TrackingTimeline events={s.events}/>
         </article>)}{!merchant && o.status === 'SHIPPED' && o.shipments?.length && o.shipments.every(s => s.status === 'DELIVERED') && !hasActiveCase(o) && !disputeOpen && <button disabled={busy} onClick={() => action('/confirm-receipt', { expected_version: o.version })}>所有包裹已送达 · 确认收货</button>}{!merchant&&o.status==='COMPLETED'&&<PurchaseReviews client={client} order={o}/>}<AfterSales disputeOpen={disputeOpen} disputeLoading={disputes.loading} client={client} order={o} path={path} merchant={merchant} owner={owner} onChange={() => {q.refresh(); disputes.refresh(); onChange();}}/>{!merchant && <ContactShop client={client} shopId={o.shop_id} shopName={o.shop_name} orderId={o.id}/>}<small className="muted">记录版本 {o.version} · 状态与金额以服务器记录为准</small>
     </section>;
 }

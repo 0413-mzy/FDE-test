@@ -281,6 +281,8 @@ def test_commerce_additive_endpoint_inventory_is_separate_and_closed():
         "/demo/refunds/{attempt}/result",
         "/demo/pending",
         "/demo/payments/{attempt}/result",
+        "/demo/shipments",
+        "/demo/shipments/{shipment}",
         "/demo/shipments/{shipment}/events",
         "/demo/orders/expire",
         "/customer/disputes",

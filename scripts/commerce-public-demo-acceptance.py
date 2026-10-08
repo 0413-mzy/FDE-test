@@ -174,18 +174,20 @@ def run(base):
             },
             201,
         )
-        request(
-            base,
-            api + f"/demo/shipments/{shipment['id']}/events",
-            demo,
-            {
-                "expected_version": shipment["version"],
-                "event_id": str(uuid4()),
-                "kind": "DELIVERED",
-                "description": "公开演示验收：模拟送达",
-                "occurred_at": datetime.now(UTC).isoformat(),
-            },
-        )
+        for kind in ("COLLECTED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED"):
+            result = request(
+                base,
+                api + f"/demo/shipments/{shipment['id']}/events",
+                demo,
+                {
+                    "expected_version": shipment["version"],
+                    "event_id": str(uuid4()),
+                    "kind": kind,
+                    "description": "公开演示验收：手动模拟物流 " + kind,
+                    "occurred_at": datetime.now(UTC).isoformat(),
+                },
+            )
+            shipment.update(result)
         order = request(base, order_path, customer)
         completed = request(
             base,

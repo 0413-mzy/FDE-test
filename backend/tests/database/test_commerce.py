@@ -203,6 +203,7 @@ def test_split_payment_partial_ship_deliver_receipt(commerce):
         expected=409,
     )
     for n, parcel in enumerate(parcels):
+        parcel = carrier_stages(client, demo, parcel, clock)
         payload = {
             "expected_version": parcel["version"],
             "event_id": "delivery-" + str(n),
@@ -660,7 +661,9 @@ def test_tracking_recovery_time_and_terminal_guards(commerce):
     ).json()
     endpoint = f"/demo/shipments/{parcel['id']}/events"
     version = 1
-    for index, kind in enumerate(["EXCEPTION", "IN_TRANSIT", "DELIVERED"]):
+    for index, kind in enumerate(
+        ["COLLECTED", "IN_TRANSIT", "EXCEPTION", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED"]
+    ):
         clock.value += timedelta(seconds=1)
         payload = {
             "expected_version": version,
@@ -668,6 +671,7 @@ def test_tracking_recovery_time_and_terminal_guards(commerce):
             "kind": kind,
             "description": "Simulated " + kind,
             "occurred_at": clock.now().isoformat(),
+            "reason": "TRANSPORT_DELAY" if kind == "EXCEPTION" else None,
         }
         result = post(client, endpoint, demo, payload).json()
         version = result["version"]
@@ -704,7 +708,7 @@ def test_tracking_recovery_time_and_terminal_guards(commerce):
         == "INVALID_STATE"
     )
     with Session(engine) as db:
-        assert db.scalar(select(func.count()).select_from(TrackingEvent)) == 4
+        assert db.scalar(select(func.count()).select_from(TrackingEvent)) == 7
 
 
 def test_mutation_failure_rolls_back_every_aggregate(commerce, monkeypatch):
@@ -1338,7 +1342,7 @@ def test_audit_failure_rolls_back_payment_shipment_tracking(commerce, monkeypatc
             payload = {
                 "expected_version": 1,
                 "event_id": "failure-track",
-                "kind": "DELIVERED",
+                "kind": "COLLECTED",
                 "description": "Simulated delivery",
                 "occurred_at": clock.now().isoformat(),
             }
@@ -1545,3 +1549,22 @@ def test_two_distinct_success_callbacks_consume_inventory_once(commerce):
             )
             == 1
         )
+
+
+def carrier_stages(client, demo, shipment, clock):
+    """Reach dispatch destination through explicit valid simulation stages."""
+    for kind in ("COLLECTED", "IN_TRANSIT", "OUT_FOR_DELIVERY"):
+        response = post(
+            client,
+            f"/demo/shipments/{shipment['id']}/events",
+            demo,
+            {
+                "expected_version": shipment["version"],
+                "event_id": str(uuid4()),
+                "kind": kind,
+                "description": "simulation prerequisite " + kind,
+                "occurred_at": clock.now().isoformat(),
+            },
+        ).json()
+        shipment = shipment | response
+    return shipment

@@ -38,3 +38,5 @@
 控制台是模拟外部事件入口，不是商家或客户的任意状态修改器。
 
 商品体验与平台运营增量规则见[shopping-and-platform.md](shopping-and-platform.md)，独立于冻结的旧客服契约。
+
+手动物流场景控制增量见[logistics-simulation.md](logistics-simulation.md)，细化模拟承运商状态与延迟/重复事件规则；旧订单与轨迹保留。

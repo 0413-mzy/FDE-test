@@ -99,15 +99,15 @@ const passed = [];
    await m.locator('.shipment').waitFor(); return shipment;
   }
   async function deliver(shipment) {
-   await d.getByRole('button',{name:'刷新队列',exact:true}).click();
-   const panel = d.locator('article.panel').filter({has:d.getByText(shipment.id,{exact:true})});
-   await panel.waitFor(); await panel.locator('select[name=kind]').selectOption('DELIVERED');
-   await panel.getByLabel('物流描述',{exact:true}).fill('模拟送达虚构地址');
-   // Local timestamp refreshed after shipment creation; server rejects future events.
-   const local = new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,23).replace(/0+$/, '').replace(/\.$/, '');
-   await panel.getByLabel('事件发生时间（本地时间）',{exact:true}).fill(local);
-   await write(d,`/demo/shipments/${shipment.id}/events`,()=>panel.getByRole('button',{name:'提交模拟结果',exact:true}).click());
-   await panel.waitFor({state:'detached'});
+   await d.getByRole('button',{name:'刷新包裹',exact:true}).click();
+   await d.locator(`[data-shipment-id="${shipment.id}"]`).click();
+   for(const action of ['模拟揽收','开始运输','开始派送','模拟签收']) {
+    const panel = d.locator(`article[data-demo-id="${shipment.id}"]`);
+    await panel.getByRole('button',{name:action,exact:true}).waitFor();
+    await panel.getByLabel('物流描述',{exact:true}).fill('模拟物流虚构地址 '+action);
+    await write(d,`/demo/shipments/${shipment.id}/events`,()=>panel.getByRole('button',{name:action,exact:true}).click());
+   }
+   await d.locator(`article[data-demo-id="${shipment.id}"] .status-DELIVERED`).waitFor();
   }
   async function assertOrder(expected) {
    const current = await customer.read(route);

@@ -128,3 +128,13 @@ paid resources or changes to private credentials.
    integration behavior requires real HTTP tests; a skipped test is not acceptance.
 5. Report concrete changes, commands/results, missing acceptance gates and GitHub
    branch/PR status. Do not automatically merge main or start the next step.
+
+## 2026-10-08 approved logistics scenario controls
+
+The user approved demo-controlled manual collection/transit/dispatch/signature, transport
+delay and delivery failure recovery, delayed reports and duplicate event replay. Additive
+0010 and transaction-safe history, customer/merchant shared timeline, and real PostgreSQL/
+HTTP/browser acceptance are authorized. Preserve old orders and events; no reset or
+invented past actor/location/reason. Carrier delivery stays separate from customer
+receipt. No real carrier API, automatic progression, public release or main merge in
+this slice; use a dependent draft PR.

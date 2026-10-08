@@ -297,6 +297,37 @@ def read(svc, request, operation, context):
         return views.order(db, context["order"], svc.now, operation.startswith("merchant"))
     if operation in {"customer.shipment", "merchant.shipment"}:
         return views.shipment(db, context["shipment"])
+    if operation == "demo.shipment":
+        return views.demo_shipment(db, context["shipment"])
+    if operation == "demo.shipments":
+        limit, offset, values = query(request, ("status",))
+        state = values.get("status")
+        if state not in {
+            None,
+            "SHIPPED",
+            "COLLECTED",
+            "IN_TRANSIT",
+            "OUT_FOR_DELIVERY",
+            "DELIVERED",
+            "EXCEPTION",
+        }:
+            fail("INVALID_REQUEST", 400)
+        statement = select(Shipment)
+        if state:
+            statement = statement.where(Shipment.status == state)
+        rows = list(
+            db.scalars(
+                statement.order_by(Shipment.created_at.desc(), Shipment.id.desc())
+                .limit(limit + 1)
+                .offset(offset)
+            )
+        )
+        return {
+            "items": [views.demo_shipment(db, s) for s in rows[:limit]],
+            "limit": limit,
+            "offset": offset,
+            "has_more": len(rows) > limit,
+        }
     if operation == "demo.pending":
         limit, offset, values = query(request, ("kind",))
         kind = values.get("kind")
@@ -640,6 +671,8 @@ for method, path, operation in [
     ("GET", "/demo/pending", "demo.pending"),
     ("POST", "/demo/payments/{attempt}/result", "demo.payment"),
     ("POST", "/demo/refunds/{attempt}/result", "demo.refund"),
+    ("GET", "/demo/shipments", "demo.shipments"),
+    ("GET", "/demo/shipments/{shipment}", "demo.shipment"),
     ("POST", "/demo/shipments/{shipment}/events", "demo.tracking"),
     ("POST", "/demo/orders/expire", "demo.expire"),
 ]:

@@ -178,6 +178,8 @@ def shipment(db, row):
         "simulation": True,
         "shipped_at": iso(row.shipped_at),
         "delivered_at": iso(row.delivered_at),
+        "exception_reason": row.exception_reason,
+        "exception_from_status": row.exception_from_status,
         "lines": [
             {"order_line_id": str(line.order_line_id), "quantity": line.quantity}
             for line in rows(db, ShipmentLine, shipment_id=row.id)
@@ -191,6 +193,12 @@ def shipment(db, row):
                 "occurred_at": iso(e.occurred_at),
                 "sequence": e.sequence,
                 "source": e.source,
+                "created_at": iso(e.created_at),
+                "location": e.location,
+                "reason": e.reason,
+                "actor_id": str(e.actor_id) if e.actor_id else None,
+                "status_applied": e.status_applied,
+                "request_version": e.request_version,
             }
             for e in sorted(rows(db, TrackingEvent, shipment_id=row.id), key=lambda e: e.sequence)
         ],
@@ -285,3 +293,9 @@ def case(db, row):
         else None,
         "refund_attempts": [attempt(a) for a in rows(db, RefundAttempt, after_sale_id=row.id)],
     }
+
+
+def demo_shipment(db, row):
+    """Carrier console deliberately omits order/customer/address/line records."""
+    result = shipment(db, row)
+    return {key: value for key, value in result.items() if key not in {"order_id", "lines"}}

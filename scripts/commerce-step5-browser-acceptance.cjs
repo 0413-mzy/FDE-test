@@ -120,25 +120,27 @@ const passed = [];
   await m.getByRole('button',{name:'刷新订单',exact:true}).click(); await m.locator('.order-summary').first().click();
   await m.getByLabel('Fictional Product A本次发货数量',{exact:true}).fill('1');
   const shipment=await write(m,'/shipments',()=>m.getByRole('button',{name:'确认模拟出库 · 创建包裹',exact:true}).click());
-  async function shipmentEvent(kind) {
-   await refreshQueue();
-   const panel=d.locator(`article[data-demo-id="${shipment.id}"]`); await panel.waitFor();
-   await panel.locator('select[name=kind]').selectOption(kind); await panel.getByLabel('物流描述',{exact:true}).fill('虚构模拟物流 '+kind);
-   const local=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,23).replace(/0+$/, '').replace(/\.$/, '');
-   await panel.getByLabel('事件发生时间（本地时间）',{exact:true}).fill(local);
-   await write(d,`/demo/shipments/${shipment.id}/events`,()=>panel.getByRole('button',{name:'提交模拟结果',exact:true}).click());
+  await d.getByRole('button',{name:'刷新包裹',exact:true}).click();
+  await d.locator(`[data-shipment-id="${shipment.id}"]`).click();
+  async function shipmentEvent(kind,action) {
+   const panel=d.locator(`article[data-demo-id="${shipment.id}"]`);
+   await panel.getByRole('button',{name:action,exact:true}).waitFor();
+   await panel.getByLabel('物流描述',{exact:true}).fill('虚构模拟物流 '+kind);
+   await write(d,`/demo/shipments/${shipment.id}/events`,()=>panel.getByRole('button',{name:action,exact:true}).click());
    await refresh(c);
-   // The demo card remains for nonterminal events and changes version after each result.
    order=await customer.read(route); assert.equal(order.shipments[0].status,kind);
   }
-  await shipmentEvent('EXCEPTION');
+  await shipmentEvent('COLLECTED','模拟揽收');
+  await shipmentEvent('IN_TRANSIT','开始运输');
+  await shipmentEvent('EXCEPTION','运输延误');
   assert.equal(await c.getByRole('button',{name:'所有包裹已送达 · 确认收货',exact:true}).count(),0);
   await c.locator('.shipment .status-EXCEPTION').waitFor();
   await c.screenshot({path:path.join(screenshots,'step5-exception.png'),fullPage:true});
-  await shipmentEvent('IN_TRANSIT');
+  await shipmentEvent('IN_TRANSIT','恢复物流');
   assert.equal(await c.getByRole('button',{name:'所有包裹已送达 · 确认收货',exact:true}).count(),0);
-  await shipmentEvent('DELIVERED');
-  assert.deepEqual(order.shipments[0].events.slice(-3).map(e=>e.kind),['EXCEPTION','IN_TRANSIT','DELIVERED']);
+  await shipmentEvent('OUT_FOR_DELIVERY','开始派送');
+  await shipmentEvent('DELIVERED','模拟签收');
+  assert.deepEqual(order.shipments[0].events.slice(-4).map(e=>e.kind),['EXCEPTION','IN_TRANSIT','OUT_FOR_DELIVERY','DELIVERED']);
   await write(c,'/confirm-receipt',()=>c.getByRole('button',{name:'所有包裹已送达 · 确认收货',exact:true}).click());
   passed.push('S5-B03 EXCEPTION and IN_TRANSIT hide receipt; DELIVERED enables explicit completion with persisted event history');
   stage='fresh login persistence';

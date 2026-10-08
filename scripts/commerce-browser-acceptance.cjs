@@ -72,21 +72,22 @@ let stage = 'launch';
         await mb.getByRole('button', { name: '确认模拟出库 · 创建包裹' }).click();
         await mb.locator('.shipment').first().waitFor();
         stage = 'delivery events';
-        await demo.getByRole('button', { name: '刷新队列' }).click();
-        await demo.locator('article.panel').nth(2).waitFor();
-        for (let i = 0; i < 3; i++) {
-            const card = demo.locator('article.panel').first();
-            await card.locator('select[name=kind]').selectOption('DELIVERED');
-            await card.getByLabel('物流描述').fill('模拟送达虚构地址');
-            const local = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 23).replace(/0+$/, '').replace(/\.$/, '');
-            await card.getByLabel('事件发生时间（本地时间）').fill(local);
-            const id = (await card.locator('.mono').innerText()).trim();
-            const response = demo.waitForResponse(r => r.request().method() === 'POST' && r.url().includes('/demo/shipments/' + id + '/events') && r.status() === 200);
-            await card.getByRole('button', { name: '提交模拟结果' }).click();
-            await response;
-            await demo.waitForFunction(n => document.querySelectorAll('article.panel').length === n, 2 - i);
+        await demo.getByRole('button', { name: '刷新包裹', exact: true }).click();
+        await demo.locator('.parcel-select').nth(2).waitFor();
+        const parcelIds = await demo.locator('.parcel-select').evaluateAll(nodes => nodes.map(n => n.getAttribute('data-shipment-id')));
+        assert.equal(parcelIds.length, 3);
+        for (const id of parcelIds) {
+            await demo.locator(`[data-shipment-id="${id}"]`).click();
+            for (const action of ['模拟揽收', '开始运输', '开始派送', '模拟签收']) {
+                const card = demo.locator(`article[data-demo-id="${id}"]`);
+                await card.getByRole('button', { name: action, exact: true }).waitFor();
+                await card.getByLabel('物流描述', { exact: true }).fill('模拟物流虚构地址 '+action);
+                const response = demo.waitForResponse(r => r.request().method() === 'POST' && r.url().includes('/demo/shipments/' + id + '/events') && r.status() === 200);
+                await card.getByRole('button', { name: action, exact: true }).click();
+                await response;
+            }
+            await demo.locator(`article[data-demo-id="${id}"] .status-DELIVERED`).waitFor();
         }
-        assert.equal(await demo.locator('article.panel').count(), 0);
         stage = 'customer receipt';
         await c.getByRole('button', { name: '刷新订单' }).click();
         await c.waitForTimeout(200);
@@ -98,7 +99,7 @@ let stage = 'launch';
         }
         await c.screenshot({ path: screenshots + '/commerce-completed.png', fullPage: true });
         assert.equal(errors.length, 0);
-        console.log('PASS: real Chrome customer checkout splits 2 shops,2 payments,3 parcels including partial shipments,3 delivered events,2 confirmed orders; zero page errors.');
+        console.log('PASS: real Chrome customer checkout splits 2 shops,2 payments,3 parcels including partial shipments,12 explicit carrier events,2 confirmed orders; zero page errors.');
     }
     finally {
         await browser.close();

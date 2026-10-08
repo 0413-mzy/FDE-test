@@ -94,7 +94,13 @@ export interface Attempt {
     finished_at: string | null;
     failure_code: string | null;
 }
-export interface Shipment {
+export interface TrackingEvent {
+    id: string; event_id: string; kind: string; description: string; occurred_at: string; created_at: string; sequence: number; source: string; location: string | null; reason: string | null; actor_id: string | null; status_applied: boolean | null; request_version: number | null;
+}
+export interface DemoShipment {
+    id: string; tracking_number: string; status: string; version: number; simulation: true; shipped_at: string; delivered_at: string | null; exception_reason: string | null; exception_from_status: string | null; events: TrackingEvent[];
+}
+export interface Shipment extends DemoShipment {
     id: string;
     order_id: string;
     tracking_number: string;
@@ -107,15 +113,7 @@ export interface Shipment {
         order_line_id: string;
         quantity: number;
     }[];
-    events: {
-        id: string;
-        event_id: string;
-        kind: string;
-        description: string;
-        occurred_at: string;
-        sequence: number;
-        source: string;
-    }[];
+
 }
 export interface Order {
     id: string;
