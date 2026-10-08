@@ -150,3 +150,8 @@ Safe AI context metadata migration0011 and fictional bounded real DeepSeek
 acceptance are authorized; preserve prior attempts/business rows. Manual draft
 insert/send remains unchanged. No public release, main merge, automatic reply
 or business action in this slice.
+
+On 2026-10-08 the user subsequently explicitly requested publishing the current
+experiment progress. This authorizes deploying logistics controls and AI logistics
+context to the existing Render Free/Neon Free public demo, preserving cloud data,
+private credentials and human-only replies. No main merge or paid resource upgrade.

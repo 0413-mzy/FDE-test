@@ -112,6 +112,10 @@ DeepSeek会话摘要与建议回复已接入公开演示；真实邮件、支付
 
 ## 私有数据中心发布
 
+2026-10-08后续指定f45137f已发布物流控制和AI物流上下文；追踪分支仍保持原AI分支，
+不要直接部署其latest。新增能力、数据保留、临时恢复点及公网验收见
+[本轮发布记录](verification/2026-10-08-logistics-ai-public.md)。
+
 2026-10-07指定提交`08d0edb`已发布，源码在`codex/commerce-data-center`；
 Render追踪分支保持原AI分支，自动部署关闭。后续发布须明确选择已验证提交，
 不要直接部署旧追踪分支的latest。验收见[数据中心验证](verification/2026-10-07-data-center.md)。
