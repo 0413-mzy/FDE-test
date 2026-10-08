@@ -245,6 +245,8 @@ FIELDS = {
     "commerce_shipments": (
         "order_id",
         "tracking_number",
+        "exception_reason",
+        "exception_from_status",
         "status",
         "simulation",
         "shipped_at",
@@ -303,6 +305,11 @@ FIELDS = {
     "commerce_tracking_events": (
         "shipment_id",
         "event_id",
+        "location",
+        "reason",
+        "actor_id",
+        "status_applied",
+        "request_version",
         "kind",
         "description",
         "occurred_at",

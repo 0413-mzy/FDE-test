@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from sqlalchemy import select, text
 
-from app.commerce import after_sales, views
+from app.commerce import after_sales, logistics, views
 from app.commerce import inputs as inp
 from app.commerce.errors import CommerceError, fail
 from app.commerce.history import set_context
@@ -711,7 +711,9 @@ class Commerce:
             shipment_id=shipment.id,
             event_id="shipped-" + str(shipment.id),
             kind="SHIPPED",
-            description="Simulated merchant dispatch",
+            description="商家已模拟发货，等待承运商揽收",
+            actor_id=self.actor.id,
+            status_applied=True,
             occurred_at=self.now,
             sequence=1,
             source="SIMULATED_CARRIER",
@@ -802,53 +804,7 @@ class Commerce:
         return self.event_result("SIMULATED_PAYMENT", attempt, event_id, {"result": result}, apply)
 
     def tracking(self, shipment, body):
-        inp.fields(body, ["expected_version", "event_id", "kind", "description", "occurred_at"])
-        inp.integer(body["expected_version"])
-        event_id = inp.string(body["event_id"], 1, 100)
-        kind = body["kind"]
-        if not isinstance(kind, str) or kind not in {"IN_TRANSIT", "DELIVERED", "EXCEPTION"}:
-            fail("INVALID_REQUEST", 400)
-        description = inp.string(body["description"], 1, 500)
-        occurred = inp.timestamp(body["occurred_at"])
-
-        def apply():
-            self.version(shipment, body)
-            events = views.rows(self.db, TrackingEvent, shipment_id=shipment.id)
-            latest = max(e.occurred_at for e in events)
-            if occurred < latest or occurred > self.now:
-                fail("INVALID_EVENT_ORDER")
-            if shipment.status == "DELIVERED" or shipment.status == kind:
-                fail("INVALID_STATE")
-            self.new(
-                TrackingEvent,
-                shipment_id=shipment.id,
-                event_id=event_id,
-                kind=kind,
-                description=description,
-                occurred_at=occurred,
-                sequence=max(e.sequence for e in events) + 1,
-                source="SIMULATED_CARRIER",
-            )
-            shipment.status = kind
-            if kind == "DELIVERED":
-                shipment.delivered_at = occurred
-            self.bump(shipment)
-            order = self.get(Order, shipment.order_id, True)
-            self.bump(order)
-            return {
-                "id": str(shipment.id),
-                "status": shipment.status,
-                "version": shipment.version,
-                "simulation": True,
-            }, 200
-
-        return self.event_result(
-            "SIMULATED_CARRIER",
-            shipment,
-            event_id,
-            {"kind": kind, "description": description, "occurred_at": views.iso(occurred)},
-            apply,
-        )
+        return logistics.record(self, shipment, body)
 
     def expire_orders(self, body):
         inp.fields(body, ["order_ids"])
