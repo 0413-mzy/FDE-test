@@ -43,6 +43,7 @@
 | 商家会话 AI 摘要与建议回复 | 公开演示已上线；真实 DeepSeek 与公网浏览器已验证 | 中文摘要、人工编辑发送；见[功能说明](docs/commerce/conversation-ai.md) |
 | 私有只读数据中心 | 已公开发布（私有入口）；见[验证](docs/verification/2026-10-07-data-center.md) | 当前数据、关联记录、修改前后历史与可选15秒刷新 |
 | 手动物流场景控制 | 本机候选；见[验证](docs/verification/2026-10-08-logistics-control.md) | 揽收/运输/派送/签收、异常恢复、迟报与去重 |
+| AI 关联物流摘要与建议回复 | 本机候选；见[验证](docs/verification/2026-10-08-ai-logistics-context.md) | 读取明确关联订单的安全物流快照，变化后提示更新，人工发送 |
 | AI 推荐与自主业务执行 | 尚未实现 | 不在本轮范围 |
 
 已有 Stage 4 的 316 项测试记录只证明客服基础的对应实现，不能证明新平台已完成。

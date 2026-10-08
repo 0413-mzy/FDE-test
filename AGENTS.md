@@ -138,3 +138,15 @@ HTTP/browser acceptance are authorized. Preserve old orders and events; no reset
 invented past actor/location/reason. Carrier delivery stays separate from customer
 receipt. No real carrier API, automatic progression, public release or main merge in
 this slice; use a dependent draft PR.
+
+## 2026-10-08 approved AI logistics context
+
+The user approved merchant conversation assistance reading its explicitly linked
+order logistics. Validate order/shop/customer ownership; whitelist bounded status
+and tracking facts, never addresses, phone numbers, full tracking identifiers or
+credentials. Bind cache/staleness to both messages and logistics. Treat carrier
+text as untrusted; distinguish simulation, missing ETA and customer claims.
+Safe AI context metadata migration0011 and fictional bounded real DeepSeek
+acceptance are authorized; preserve prior attempts/business rows. Manual draft
+insert/send remains unchanged. No public release, main merge, automatic reply
+or business action in this slice.

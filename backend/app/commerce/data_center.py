@@ -430,6 +430,7 @@ FIELDS = {
         "result",
         "error_code",
         "usage",
+        "logistics_context",
     ),
 }
 
