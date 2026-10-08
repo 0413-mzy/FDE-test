@@ -14,4 +14,4 @@
 ## Task 2 Real acceptance and delivery
 - [x] Preserve original local DB with additive migration; prepare fictional linked conversation to existing newtestorder/parcel. Generate actualDeepSeek shortChinese response and inspect facts, no inventedETA, no automatic message send.
 - [x] Change logistics only, verify stale and new snapshot generation. Boundmodelcalls; recordactualusage/results. Browser acceptance if allowed, honest blocker otherwise.
-- [ ] Fullbackend regression, docs/links/credentialscan, commit/push and dependent draftPR attach. No publicrelease/mainmerge.
+- [x] Fullbackend regression, docs/links/credentialscan, commit/push and dependent draftPR attach. No publicrelease/mainmerge. Delivered in Draft PR #14; actual browser operation remains blocked as documented.

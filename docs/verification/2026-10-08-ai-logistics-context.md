@@ -2,6 +2,8 @@
 
 用户授权让现有会话摘要和建议回复依据物流事实。本轮从0febc178建立
 `codex/commerce-ai-logistics-context`，依赖物流控制候选；没有合并main或公开发布。
+已推送实现6d3a605并创建[Draft PR #14](https://github.com/0413-mzy/FDE-test/pull/14)，
+目标分支为`codex/commerce-logistics-control`。
 
 ## 实现与原数据
 
