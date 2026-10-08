@@ -1,5 +1,8 @@
 # 手动物流场景控制验证
 
+2026-10-08后续：用户明确请求发布，已随AI物流上下文公开上线；
+实际公网与浏览器验收见[公开发布记录](2026-10-08-logistics-ai-public.md)。
+
 日期：2026-10-08。候选codex/commerce-logistics-control，依赖codex/commerce-data-center；不合并main，不自动公开部署。
 
 ## 本机数据库与真实HTTP

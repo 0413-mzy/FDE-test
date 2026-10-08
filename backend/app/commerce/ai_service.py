@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from sqlalchemy import func, select, text
 
+from app.commerce.ai_context import fingerprint, input_secrets, logistics_snapshot, sanitize_known
 from app.commerce.ai_models import AIAttempt
 from app.commerce.ai_provider import PROMPT_VERSION, DeepSeek, ProviderFailure
 from app.commerce.errors import fail
@@ -28,6 +29,7 @@ def authority(db, request):
 
 
 def snapshot(db, conversation, enforce_limit=True):
+    context, logistics_digest = logistics_snapshot(db, conversation)
     rows = db.scalars(
         select(Message)
         .where(Message.conversation_id == conversation.id)
@@ -37,16 +39,16 @@ def snapshot(db, conversation, enforce_limit=True):
     if len(rows) > 500:
         if enforce_limit:
             fail("AI_INPUT_LIMIT", 400)
-        return [], "over-limit"
+        return [], "over-limit", None
     messages = [{"id": str(r.id), "sender_side": r.sender_side, "body": r.body} for r in rows]
     if sum(len(m["body"]) for m in messages) > 80000:
         if enforce_limit:
             fail("AI_INPUT_LIMIT", 400)
-        return [], "over-limit"
+        return [], "over-limit", None
     digest = hashlib.sha256(
         json.dumps(messages, ensure_ascii=False, sort_keys=True).encode()
     ).hexdigest()
-    return messages, digest
+    return messages, fingerprint([digest, logistics_digest]), context
 
 
 def attempt_view(row):
@@ -72,6 +74,7 @@ def attempt_view(row):
             "result",
             "error_code",
             "usage",
+            "logistics_context",
         )
         for value in [getattr(row, name)]
     }
@@ -119,7 +122,12 @@ def assistance(request, generate=False, raw=b""):
             )
             # Serialize only reservation bookkeeping across workers, outside provider calls.
             svc, conversation = authority(db, request)
-        messages, digest = snapshot(db, conversation, enforce_limit=generate)
+        linked_order = conversation.order_id is not None
+        messages, digest, context = snapshot(db, conversation, enforce_limit=generate)
+        secrets = input_secrets(db, conversation)
+        messages = [
+            {**message, "body": sanitize_known(message["body"], secrets)} for message in messages
+        ]
         if not generate:
             return view(db, request, conversation, digest), False
         now = svc.clock.now()
@@ -178,6 +186,7 @@ def assistance(request, generate=False, raw=b""):
                     result=success.result,
                     usage=[],
                     cached_from=success.id,
+                    logistics_context=success.logistics_context,
                 )
             )
             db.flush()
@@ -205,7 +214,8 @@ def assistance(request, generate=False, raw=b""):
                 actor_id=svc.actor.id,
                 idempotency_key=key,
                 snapshot_hash=digest,
-                source_ids=[m["id"] for m in messages],
+                source_ids=[m["id"] for m in messages] + context["source_ids"],
+                logistics_context=context,
                 message_count=len(messages),
                 model=settings.deepseek_model,
                 prompt_version=PROMPT_VERSION,
@@ -220,7 +230,15 @@ def assistance(request, generate=False, raw=b""):
         provider = getattr(request.app.state, "conversation_ai_provider_factory", DeepSeek)(
             settings
         )
-        result, usage = provider.generate(messages)
+        result, usage = (
+            provider.generate(messages, context=context)
+            if linked_order or isinstance(provider, DeepSeek)
+            else provider.generate(messages)
+        )
+        result = {
+            name: sanitize_known(value, secrets) if isinstance(value, str) else value
+            for name, value in result.items()
+        }
         error = None
     except ProviderFailure as exc:
         result, usage, error = None, exc.usage, exc.code
@@ -240,5 +258,5 @@ def assistance(request, generate=False, raw=b""):
     # Fresh transaction rechecks sessions, membership and conversation ownership after I/O.
     with factory() as db, db.begin():
         _, conversation = authority(db, request)
-        _, digest = snapshot(db, conversation, enforce_limit=False)
+        _, digest, _ = snapshot(db, conversation, enforce_limit=False)
         return view(db, request, conversation, digest), False

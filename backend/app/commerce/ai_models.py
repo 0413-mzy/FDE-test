@@ -27,6 +27,7 @@ class AIAttempt(Base):
     finished_at: Mapped[datetime | None] = mapped_column(UtcDateTime)
     result: Mapped[dict | None] = mapped_column(JSONB)
     error_code: Mapped[str | None] = mapped_column(String(50))
+    logistics_context: Mapped[dict | None] = mapped_column(JSONB)
     usage: Mapped[list] = mapped_column(JSONB)
 
     __table_args__ = (

@@ -32,3 +32,16 @@ test('uncertain AI request retries original key without attaching edited convers
     assert.equal(calls[0].init.headers['Idempotency-Key'],calls[1].init.headers['Idempotency-Key']);
     assert.equal(calls[1].init.body,'{}');
 });
+test('refresh AI status reads server logistics staleness without generation or sending', async () => {
+    const calls = [];
+    globalThis.fetch = async (url, init) => {
+        calls.push({url, init});
+        return new Response(JSON.stringify({available: true, stale: true, latest_success: {logistics_context: {state: 'LINKED_ORDER', shipments: [{status: 'EXCEPTION'}]}}}), {status: 200});
+    };
+    const client = new CommerceClient('http://local', 'merchant-session');
+    const value = await client.request('/merchant/shops/s/conversations/c/ai-assistance');
+    assert.equal(value.stale, true);
+    assert.equal(value.latest_success.logistics_context.shipments[0].status, 'EXCEPTION');
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].init.method, 'GET');
+});

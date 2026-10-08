@@ -234,3 +234,73 @@ def test_real_http_failures_and_bounds(mode, expected):
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_real_http_logistics_context_all_chunks_and_merge():
+    import json
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from threading import Thread
+
+    from app.commerce.ai_provider import DeepSeek
+    from app.core.config import Settings
+
+    received = []
+    context = {
+        "state": "LINKED_ORDER",
+        "order": {"status": "SHIPPED"},
+        "shipments": [{"status": "EXCEPTION", "simulation": True}],
+        "source_ids": ["order:fictional", "shipment:fictional"],
+    }
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_POST(self):
+            envelope = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            received.append(envelope)
+            result = dict(
+                customer_needs="咨询物流",
+                conditions="模拟运输延迟",
+                commitments="未明确承诺",
+                unresolved="预计到达时间未明确",
+                draft="模拟物流显示运输延迟，暂无预计到达时间。",
+                source_ids=["shipment:fictional"],
+            )
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(
+                json.dumps(
+                    {
+                        "usage": {"prompt_tokens": 1},
+                        "choices": [
+                            {"finish_reason": "stop", "message": {"content": json.dumps(result)}}
+                        ],
+                    }
+                ).encode()
+            )
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        provider = DeepSeek(
+            Settings(app_env="test", deepseek_api_key="fictional"),
+            endpoint=f"http://127.0.0.1:{server.server_port}",
+        )
+        result, usage = provider.generate(
+            [
+                {"id": str(i), "sender_side": "CUSTOMER", "body": "咨询物流" * 1500}
+                for i in range(3)
+            ],
+            context=context,
+        )
+        assert len(received) == 4 and len(usage) == 4
+        assert result["source_ids"] == ["shipment:fictional"]
+        for envelope in received:
+            data = json.loads(envelope["messages"][1]["content"])
+            assert data["logistics_context"] == context
+            assert "没有ETA" in envelope["messages"][0]["content"]
+        assert "partial_summaries" in json.loads(received[-1]["messages"][1]["content"])
+    finally:
+        server.shutdown()
+        server.server_close()
